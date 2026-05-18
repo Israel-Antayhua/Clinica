@@ -1,0 +1,48 @@
+# Dependencias Composer
+/vendor/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Configuración IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Cache
+/cache/
+/tmp/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de sesión
+*.sess
+
+# Configuración XAMPP/Laragon local
+/php_errors.log
+
+# PHPUnit
+.phpunit.result.cache
+
+# Node modules (si usas frontend)
+node_modules/
+
+# Archivos compilados
+/dist/
+/build/
+
+# Coverage
+coverage/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Composer lock opcional
+# composer.lock
