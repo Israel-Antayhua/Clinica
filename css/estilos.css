@@ -1,0 +1,172 @@
+/* Estilos Globales para Maison de Santé */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f7f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+/* Menú Lateral (Sidebar) - Igual a las figuras 2, 3, 4, 5 y 6 */
+.sidebar {
+    width: 260px;
+    background-color: #002347; /* Azul oscuro corporativo */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+.sidebar-logo {
+    text-align: center;
+    padding: 10px 20px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.sidebar-user {
+    padding: 20px;
+    font-size: 14px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 15px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li a {
+    display: block;
+    padding: 12px 25px;
+    color: #b3c6d8;
+    text-decoration: none;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.sidebar-menu li a:hover, .sidebar-menu li.active a {
+    background-color: #003366;
+    color: white;
+    border-left: 4px solid #007bff;
+}
+
+.sidebar-menu li.logout-item a {
+    color: #ff4d4d;
+}
+
+/* Área de Contenido Principal (Main Content) */
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+}
+
+.main-header h2 {
+    margin: 0;
+    color: #1a202c;
+}
+
+/* Tarjetas y Contenedores */
+.tarjeta {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    margin-bottom: 25px;
+}
+
+/* Tablas Modernas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+}
+
+th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+th {
+    background-color: #f8fafc;
+    color: #4a5568;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Estados de las Citas (Badges) */
+.badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.badge-confirmada { background-color: #d4edda; color: #155724; }
+.badge-pendiente { background-color: #fff3cd; color: #856404; }
+.badge-cancelada { background-color: #f8d7da; color: #721c24; }
+
+/* Formularios de Registro */
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+input, select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #cbd5e0;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[readonly] {
+    background-color: #edf2f7;
+    color: #718096;
+}
+
+.btn-azul {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-azul:hover { background-color: #0056b3; }
+
+.btn-rojo {
+    color: #e53e3e;
+    text-decoration: none;
+    font-weight: bold;
+}
+.btn-rojo:hover { text-decoration: underline; }
