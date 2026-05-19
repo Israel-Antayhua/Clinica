@@ -5,109 +5,268 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maison de Santé - Sistema Integral</title>
 
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Tu CSS -->
-    <link rel="stylesheet" href="css/<?php echo $estilo_pagina; ?>">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/estilos.css">
 </head>
-<body>
+
+<body class="bg-light">
 
 <?php if (isset($_SESSION['usuario'])): 
-    // Detectamos en qué vista estamos para marcarla como activa en el menú
+    
     $vista_actual = isset($_GET['vista']) ? $_GET['vista'] : 'inicio';
 ?>
 
-<div class="d-flex w-100 min-vh-100">
+<div class="d-flex min-vh-100">
 
     <!-- Sidebar -->
-    <div class="bg-dark text-white p-3 vh-100" style="width: 280px;">
+    <aside 
+    id="sidebar"
+    class="text-white d-flex flex-column shadow-lg position-fixed top-0 start-0 vh-100"
+    style="width: 290px; background-color: #102542; z-index:1030;">
 
         <!-- Logo -->
-        <div class="fs-4 fw-bold mb-4 border-bottom pb-3">
-            ➕ Maison de Santé
+        <div class="p-4 border-bottom border-secondary border-opacity-25">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="bg-primary rounded-4 d-flex justify-content-center align-items-center shadow"
+                     style="width: 60px; height: 60px;">
+
+                    <i class="bi bi-hospital fs-2 text-white"></i>
+
+                </div>
+
+                <div>
+
+                    <h5 class="fw-bold mb-0">
+                        Maison de Santé
+                    </h5>
+
+                    <small class="text-light opacity-75">
+                        Sistema Integral Clínico
+                    </small>
+
+                </div>
+
+            </div>
+
         </div>
 
         <!-- Usuario -->
-        <div class="mb-4">
-            <div>
-                👤 <?php echo htmlspecialchars($_SESSION['usuario']); ?>
+        <div class="p-4 border-bottom border-secondary border-opacity-25">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center shadow"
+                     style="width: 55px; height: 55px;">
+
+                    <i class="bi bi-person-fill fs-4 text-white"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="fw-semibold small">
+                        <?php echo htmlspecialchars($_SESSION['usuario']); ?>
+                    </div>
+
+                    <small class="text-light opacity-75">
+                        <?php echo ucfirst($_SESSION['rol']); ?>
+                    </small>
+
+                </div>
+
             </div>
-            <small class="text-secondary">
-                Rol: <?php echo ucfirst($_SESSION['rol']); ?>
-            </small>
+
         </div>
 
         <!-- Menú -->
-        <ul class="nav nav-pills flex-column mb-auto">
+        <div class="p-3 flex-grow-1">
 
-            <li class="nav-item mb-2">
-                <a href="index.php"
-                   class="nav-link <?php echo $vista_actual == 'inicio' ? 'active' : 'text-white'; ?>">
-                    🏠 Inicio
-                </a>
-            </li>
+            <ul class="nav nav-pills flex-column gap-2">
 
-            <?php if ($_SESSION['rol'] == 'paciente'): ?>
+                <!-- Inicio -->
+                <li class="nav-item">
 
-                <li class="nav-item mb-2">
-                    <a href="index.php?vista=citas"
-                       class="nav-link <?php echo $vista_actual == 'citas' ? 'active' : 'text-white'; ?>">
-                        📅 Mis Citas
+                    <a href="../index.php"
+                       class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small transition
+                       <?php echo $vista_actual == 'inicio'
+                            ? 'active bg-primary shadow text-white'
+                            : 'text-white opacity-75'; ?>">
+
+                        <i class="bi bi-house-door-fill fs-6"></i>
+
+                        <span>Inicio</span>
+
                     </a>
+
                 </li>
 
-                <li class="nav-item mb-2">
-                    <a href="index.php?vista=pagos"
-                       class="nav-link <?php echo $vista_actual == 'pagos' ? 'active' : 'text-white'; ?>">
-                        💳 Mis Pagos
-                    </a>
-                </li>
+                <?php if ($_SESSION['rol'] == 'paciente'): ?>
 
-                <li class="nav-item mb-2">
-                    <a href="#"
-                       class="nav-link text-white">
-                        👤 Mi Perfil
-                    </a>
-                </li>
+                    <!-- Citas -->
+                    <li class="nav-item">
 
-            <?php endif; ?>
+                        <a href="../Vistas/citas.php"
+                           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'citas'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
 
-            <?php if ($_SESSION['rol'] == 'admin'): ?>
+                            <i class="bi bi-calendar-check-fill fs-6"></i>
 
-                <li class="nav-item mb-2">
-                    <a href="index.php?vista=agenda"
-                       class="nav-link <?php echo $vista_actual == 'agenda' ? 'active' : 'text-white'; ?>">
-                        📅 Mi Agenda
-                    </a>
-                </li>
+                            <span>Mis Citas</span>
 
-                <li class="nav-item mb-2">
-                    <a href="index.php?vista=mantenimiento"
-                       class="nav-link <?php echo $vista_actual == 'mantenimiento' ? 'active' : 'text-white'; ?>">
-                        👨‍⚕️ Catálogos / Mantenimiento
-                    </a>
-                </li>
+                        </a>
 
-                <li class="nav-item mb-2">
-                    <a href="index.php?vista=reportes"
-                       class="nav-link <?php echo $vista_actual == 'reportes' ? 'active' : 'text-white'; ?>">
-                        📊 Reportes Estadísticos
-                    </a>
-                </li>
+                    </li>
 
-            <?php endif; ?>
+                    <!-- Pagos -->
+                    <li class="nav-item">
 
-            <!-- Logout -->
-            <li class="nav-item mt-4">
-                <a href="logout.php" class="nav-link text-danger">
-                    🚪 Cerrar Sesión
-                </a>
-            </li>
+                        <a href="../Vistas/pagos.php"
+                           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'pagos'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
 
-        </ul>
-    </div>
+                            <i class="bi bi-credit-card-2-front-fill fs-6"></i>
 
-    <!-- Contenido principal -->
-    <div class="flex-grow-1 p-4 main-content">
+                            <span>Mis Pagos</span>
+
+                        </a>
+
+                    </li>
+
+                    <!-- Perfil -->
+                    <li class="nav-item">
+
+                        <a href="#"
+                           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium smalltext-white opacity-75">
+
+                            <i class="bi bi-person-vcard-fill fs-6"></i>
+
+                            <span>Mi Perfil</span>
+
+                        </a>
+
+                    </li>
+
+                <?php endif; ?>
+
+                <?php if ($_SESSION['rol'] == 'admin'): ?>
+
+                    <!-- Agenda -->
+                    <li class="nav-item">
+
+                        <a href="../Vistas/agenda.php"
+                           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'agenda'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
+
+                            <i class="bi bi-calendar-week-fill fs-6"></i>
+
+                            <span>Mi Agenda</span>
+
+                        </a>
+
+                    </li>
+
+                    <!-- Mantenimiento -->
+                    <li class="nav-item">
+
+                        <a href="../Vistas/mantenimiento.php"
+                           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'mantenimiento'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
+
+                            <i class="bi bi-gear-wide-connected fs-6"></i>
+
+                            <span>Mantenimiento</span>
+
+                        </a>
+
+                    </li>
+
+                    <!-- Reportes -->
+                    <li class="nav-item">
+
+                        <a href="../Vistas/reportes.php"
+                           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'reportes'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
+
+                            <i class="bi bi-bar-chart-line-fill fs-6"></i>
+
+                            <span>Reportes</span>
+
+                        </a>
+
+                    </li>
+
+                <?php endif; ?>
+
+            </ul>
+
+        </div>
+
+        <!-- Logout -->
+        <div class="p-3 border-top border-secondary border-opacity-25">
+
+            <a href="../Sesion/logout.php"
+               class="btn btn-outline-light w-100 rounded-4 py-2 small fw-semibold">
+
+                <i class="bi bi-box-arrow-right me-2"></i>
+
+                Cerrar Sesión
+
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow-1 p-3 p-md-4" id="mainContent">
+
+        <!-- Navbar Superior -->
+        <div class="bg-white rounded-4 shadow-sm p-3 mb-4 d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h5 class="fw-bold mb-0">
+                    Panel Principal
+                </h5>
+
+                <small class="text-secondary">
+                    Bienvenido al sistema clínico
+                </small>
+
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+
+                <button class="btn btn-light rounded-circle shadow-sm">
+                    <i class="bi bi-bell"></i>
+                </button>
+
+                <button class="btn btn-light rounded-circle shadow-sm">
+                    <i class="bi bi-gear"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Aquí va tu contenido -->
+
 <?php endif; ?>

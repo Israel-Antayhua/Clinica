@@ -1,7 +1,7 @@
 <?php
 // Iniciamos la sesión para poder guardar los datos del usuario
 session_start();
-include 'conexion.php';
+include '../ConexionDB/conexion.php';
 
 $usuario  = $_POST['usuario'];
 $password = $_POST['password'];
@@ -19,12 +19,12 @@ if ($resultado->num_rows == 1) {
     $_SESSION['rol']     = $datos_usuario['rol'];
     
     // Lo redirigimos a la página principal del sistema
-    header("Location: index.php");
+    header("Location: ../index.php");
 } else {
     // Si los datos son incorrectos, mandamos un aviso y lo regresamos al login
     echo "<script>
             alert('Usuario o contraseña incorrectos');
-            window.location.href='login.php';
+            window.location.href='../Sesion/login.php';
           </script>";
 }
 

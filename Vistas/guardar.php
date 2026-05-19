@@ -1,6 +1,10 @@
 <?php
 // 1. Incluimos la conexión
-include 'conexion.php';
+include '../ConexionDB/conexion.php';
+
+$estilo_pagina = "../css/estilos.css";
+
+include '../includes/cabecera.php';
 
 // 2. Recibimos los datos del formulario
 $nombre       = $_POST['nombre'];
@@ -30,7 +34,7 @@ if ($resultado_cruce->num_rows > 0) {
     if ($conexion->query($sql) === TRUE) {
         echo "<script>
                 alert('¡Cita registrada con éxito!');
-                window.location.href='index.php';
+                window.location.href='../index.php';
               </script>";
     } else {
         echo "Error al registrar la cita: " . $conexion->error;
