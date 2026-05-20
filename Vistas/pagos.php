@@ -3,7 +3,6 @@ session_start();
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 if ($_SESSION['rol'] == 'paciente'): ?>
-
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
@@ -73,7 +72,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                     <div class="d-flex align-items-center gap-3">
 
                                         <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                                             style="width:45px; height:45px;">
+                                            style="width:45px; height:45px;">
 
                                             <i class="bi bi-receipt text-primary"></i>
 
@@ -137,24 +136,26 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                                     <?php if ($f['estado_pago'] == 'Pendiente'): ?>
 
-                                        <a href="pagar.php?id=<?php echo $f['id']; ?>"
-                                           class="btn btn-primary btn-sm rounded-3 px-3">
-
+                                        <button class="btn btn-primary btn-sm rounded-3 px-3 btn-pagar"
+                                            data-id="<?php echo $f['id']; ?>"
+                                            data-monto="<?php echo $f['monto']; ?>">
                                             <i class="bi bi-credit-card me-1"></i>
 
                                             Registrar Pago
 
-                                        </a>
+                                        </button>
 
                                     <?php else: ?>
 
-                                        <button class="btn btn-light border btn-sm rounded-3 px-3">
+                                        <a href="comprobante.php?id=<?php echo $f['id']; ?>"
+                                            target="_blank"
+                                            class="btn btn-light border btn-sm rounded-3 px-3">
 
                                             <i class="bi bi-file-earmark-check me-1"></i>
 
                                             Ver Comprobante
 
-                                        </button>
+                                        </a>
 
                                     <?php endif; ?>
 
@@ -173,5 +174,105 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.culqi.com/js/v4"></script>
+    <script>
+        Culqi.publicKey = 'pk_test_k3Q7XjOI4T773JjS';
 
+        document.querySelectorAll('.btn-pagar').forEach(btn => {
+
+            btn.addEventListener("click", function() {
+
+                const monto = btn.dataset.monto;
+                const id_cita = btn.dataset.id;
+
+                // Configurar checkout dinámico
+                Culqi.settings({
+
+                    title: 'Maison de Santé',
+
+                    currency: 'PEN',
+
+                    amount: monto * 100
+
+                });
+
+                // Guardamos datos globalmente
+                window.id_cita_actual = id_cita;
+                window.monto_actual = monto;
+
+                Culqi.open();
+
+            });
+
+        });
+
+        // RESPUESTA CULQI
+        function culqi() {
+
+            if (Culqi.token) {
+
+                let token = Culqi.token.id;
+
+                fetch("../Controler/Get_Pagar.php", {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            token: token,
+
+                            id_cita: window.id_cita_actual,
+
+                            monto: window.monto_actual
+
+                        })
+
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+
+                        console.log(data);
+
+                        if (data.success) {
+                            Culqi.close();
+
+                            Swal.fire({
+
+                                icon: 'success',
+
+                                title: 'Pago exitoso',
+
+                                text: 'La cita fue pagada correctamente'
+
+                            }).then(() => {
+
+                                location.reload();
+
+                            });
+
+                        } else {
+                            Swal.fire({
+
+                                icon: 'error',
+
+                                title: $respuesta,
+
+                                text: 'La tarjeta fue rechazada'
+
+                            });
+                            alert(data.mensaje);
+
+                        }
+
+                    });
+
+            }
+
+        }
+    </script>
 <?php endif; ?>

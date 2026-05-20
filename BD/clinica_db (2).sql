@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-05-2026 a las 07:26:11
+-- Tiempo de generación: 21-05-2026 a las 01:29:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,8 +43,8 @@ CREATE TABLE `citas` (
 --
 
 INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`, `monto`, `estado_pago`) VALUES
-(12, 2, '2026-05-21', '14:00:00', 5, 'Confirmada', 90.00, 'Pendiente'),
-(13, 2, '2026-05-22', '08:00:00', 9, 'Confirmada', 90.00, 'Pendiente');
+(12, 2, '2026-05-21', '14:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
+(13, 2, '2026-05-22', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado');
 
 -- --------------------------------------------------------
 
@@ -123,6 +123,30 @@ INSERT INTO `pacientes` (`id_paciente`, `id_usuario`, `nombres`, `apellidos`, `d
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `pagos`
+--
+
+CREATE TABLE `pagos` (
+  `id` int(11) NOT NULL,
+  `id_cita` int(11) NOT NULL,
+  `monto` decimal(10,2) DEFAULT NULL,
+  `estado` varchar(30) DEFAULT NULL,
+  `metodo_pago` varchar(50) DEFAULT NULL,
+  `culqi_charge_id` varchar(100) DEFAULT NULL,
+  `fecha_pago` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pagos`
+--
+
+INSERT INTO `pagos` (`id`, `id_cita`, `monto`, `estado`, `metodo_pago`, `culqi_charge_id`, `fecha_pago`) VALUES
+(1, 13, 190.00, 'Pagado', 'Visa', 'chr_test_1nIe5Cvd5kfLmBzp', '2026-05-20 17:58:09'),
+(2, 12, 90.00, 'Pagado', 'Visa', 'chr_test_jzNsdta0ariE2Pfs', '2026-05-20 18:00:26');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -182,6 +206,13 @@ ALTER TABLE `pacientes`
   ADD KEY `id_usuario` (`id_usuario`);
 
 --
+-- Indices de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_cita` (`id_cita`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -217,6 +248,12 @@ ALTER TABLE `pacientes`
   MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -245,6 +282,12 @@ ALTER TABLE `medicos`
 --
 ALTER TABLE `pacientes`
   ADD CONSTRAINT `pacientes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`id_cita`) REFERENCES `citas` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
