@@ -6,7 +6,7 @@ $id = $_GET['id'];
 
 $sql = "SELECT m.id, u.usuario AS nombre
         FROM medicos m
-        INNER JOIN usuarios u ON m.id = u.id
+        INNER JOIN usuarios u ON m.id_usuario = u.id
         WHERE m.id_especialidad = ?";
 
 $stmt = $conexion->prepare($sql);
