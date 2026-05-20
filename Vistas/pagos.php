@@ -53,8 +53,9 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                         <?php
                         $pagos = $conexion->query(
-                            "SELECT * FROM citas 
-                             WHERE nombre_paciente = '" . $_SESSION['usuario'] . "'"
+                            "SELECT c.*,e.nombre AS especialidad FROM citas c
+                            INNER JOIN medicos m  ON c.id_medico = m.id JOIN especialidades e ON m.id_especialidad = e.id
+                             WHERE id_paciente = '" . $_SESSION['id_usuario'] . "'"
                         );
 
                         while ($f = $pagos->fetch_assoc()):

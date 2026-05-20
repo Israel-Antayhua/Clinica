@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
@@ -20,7 +20,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
         <button class="btn btn-primary rounded-4 shadow-sm px-4"
-                onclick="document.getElementById('form-registro').style.display='block'">
+            onclick="document.getElementById('form-registro').style.display='block'">
 
             <i class="bi bi-plus-circle me-2"></i>
 
@@ -31,9 +31,8 @@ if ($_SESSION['rol'] == 'paciente'): ?>
     </div>
 
     <!-- Formulario -->
-    <div id="form-registro"
-         class="card border-0 shadow-sm rounded-4 mb-4"
-         style="display:none; max-width: 550px;">
+    <div id="form-registro" class="card border-0 shadow-sm rounded-4 mb-4"
+        style="display:none;">
 
         <div class="card-body p-4">
 
@@ -52,19 +51,38 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                 </div>
 
                 <button type="button"
-                        class="btn-close"
-                        onclick="document.getElementById('form-registro').style.display='none'">
+                    class="btn-close"
+                    onclick="document.getElementById('form-registro').style.display='none'">
                 </button>
 
             </div>
 
-            <form action="guardar.php" method="POST">
+            <form action="../Controler/Add_Cita.php" method="POST">
+                <!-- Especialidad -->
+                <div class="mb-4">
 
-                <input type="hidden"
-                       name="nombre"
-                       value="<?php echo htmlspecialchars($_SESSION['usuario']); ?>">
+                    <label class="form-label fw-semibold">
+                        Especialidad
+                    </label>
 
-                <!-- Fecha -->
+                    <select id="especialidad" name="especialidad" class="form-select" required>
+                        <option value="">Seleccione especialidad</option>
+
+                        <?php
+                        $esp = $conexion->query("SELECT * FROM especialidades");
+                        while ($e = $esp->fetch_assoc()) {
+                            echo "<option value='{$e['id']}'>{$e['nombre']}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <select id="id_medico" name="id_medico" class="form-select" required>
+                        <option value="">Seleccione médico</option>
+                    </select>
+                </div>
+
                 <div class="mb-3">
 
                     <label class="form-label fw-semibold">
@@ -72,9 +90,9 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                     </label>
 
                     <input type="date"
-                           name="fecha"
-                           class="form-control rounded-3"
-                           required>
+                        name="fecha"
+                        class="form-control rounded-3"
+                        required>
 
                 </div>
 
@@ -86,37 +104,9 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                     </label>
 
                     <input type="time"
-                           name="hora"
-                           class="form-control rounded-3"
-                           required>
-
-                </div>
-
-                <!-- Especialidad -->
-                <div class="mb-4">
-
-                    <label class="form-label fw-semibold">
-                        Especialidad
-                    </label>
-
-                    <select name="especialidad"
-                            class="form-select rounded-3">
-
-                        <?php
-                        $esps = $conexion->query("SELECT * FROM especialidades WHERE estado='Activo'");
-
-                        while ($e = $esps->fetch_assoc()):
-                        ?>
-
-                            <option value="<?php echo $e['nombre']; ?>">
-
-                                <?php echo $e['nombre']; ?>
-
-                            </option>
-
-                        <?php endwhile; ?>
-
-                    </select>
+                        name="hora"
+                        class="form-control rounded-3"
+                        required>
 
                 </div>
 
@@ -124,7 +114,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                 <div class="d-flex gap-2">
 
                     <button type="submit"
-                            class="btn btn-primary rounded-3 px-4">
+                        class="btn btn-primary rounded-3 px-4">
 
                         <i class="bi bi-check-circle me-2"></i>
 
@@ -133,8 +123,8 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                     </button>
 
                     <button type="button"
-                            class="btn btn-light border rounded-3 px-4"
-                            onclick="document.getElementById('form-registro').style.display='none'">
+                        class="btn btn-light border rounded-3 px-4"
+                        onclick="document.getElementById('form-registro').style.display='none'">
 
                         Cancelar
 
@@ -197,8 +187,14 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                         <?php
                         $citas = $conexion->query(
-                            "SELECT * FROM citas 
-                             WHERE nombre_paciente = '" . $_SESSION['usuario'] . "'"
+                            "SELECT 
+                                c.*,
+                                m.nombre AS medico,
+                                e.nombre AS especialidad
+                            FROM citas c
+                            INNER JOIN medicos m ON c.id_medico = m.id
+                            INNER JOIN especialidades e ON m.id_especialidad = e.id
+                            WHERE c.id_paciente = " . $_SESSION['id_usuario']
                         );
 
                         while ($f = $citas->fetch_assoc()):
@@ -245,7 +241,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                     <div class="d-flex align-items-center gap-2">
 
                                         <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                                             style="width:40px; height:40px;">
+                                            style="width:40px; height:40px;">
 
                                             <i class="bi bi-person-fill text-primary"></i>
 
@@ -276,7 +272,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                 <td class="text-center">
 
                                     <a href="eliminar.php?id=<?php echo $f['id']; ?>"
-                                       class="btn btn-sm btn-outline-danger rounded-3">
+                                        class="btn btn-sm btn-outline-danger rounded-3">
 
                                         <i class="bi bi-x-circle me-1"></i>
 
@@ -299,5 +295,33 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
+    <script>
+        document.getElementById("especialidad").addEventListener("change", function() {
 
+            let idEspecialidad = this.value;
+
+            fetch("../Controler/Get_Medicos.php?id=" + idEspecialidad)
+                .then(res => res.text()) // 👈 cambia a text temporalmente
+                .then(data => {
+                    return JSON.parse(data);
+                })
+                .then(data => {
+                    console.log(data);
+
+                    let selectMedico = document.getElementById("id_medico");
+
+                    selectMedico.innerHTML = "<option value=''>Seleccione médico</option>";
+
+                    data.forEach(medico => {
+                        selectMedico.innerHTML += `
+                    <option value="${medico.id}">
+                        Dr. ${medico.nombre}
+                    </option>
+                `;
+                    });
+
+                });
+
+        });
+    </script>
 <?php endif; ?>

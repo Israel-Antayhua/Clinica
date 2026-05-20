@@ -2,7 +2,7 @@
 session_start();
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
-if ($_SESSION['rol'] == 'admin'): ?>
+if ($_SESSION['rol'] == 'medico'): ?>
 
     <?php
     $total_citas = $conexion->query(

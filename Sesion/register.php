@@ -39,9 +39,9 @@ if (isset($_SESSION['usuario'])) {
             </div>
 
             <!-- Login -->
-            <div class="col-6 d-flex justify-content-center align-items-center bg-white p-2">
+            <div class="col-6 d-flex justify-content-center align-items-center bg-white p-2 overflow-auto">
 
-                <div class="card shadow-lg border-0 rounded-4 w-100" style="max-width: 450px;">
+                <div class="card shadow-lg border-0 rounded-4 w-100" style="max-width: 600px; width: 100%; max-height: 95vh;">
 
                     <!-- HEADER -->
                     <div class="card-header bg-success text-white text-center py-4 rounded-top-4 border-0">
@@ -59,101 +59,78 @@ if (isset($_SESSION['usuario'])) {
                     </div>
 
                     <!-- BODY -->
-                    <div class="card-body p-4">
+                    <div class="card-body p-4" style="max-height: 85vh; overflow-y: auto;">
 
-                        <form action="guardar_paciente.php" method="POST">
+                        <form action="../Controler/Add_Paciente.php" method="POST">
 
-                            <!-- NOMBRE -->
-                            <div class="mb-3">
+                            <div class="row g-2">
 
-                                <label class="form-label fw-semibold">Nombre</label>
-
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-person-fill"></i>
-                                    </span>
-
-                                    <input type="text"
-                                        name="nombre"
-                                        class="form-control"
-                                        placeholder="Juan"
-                                        required>
+                                <!-- NOMBRES -->
+                                <div class="col-7">
+                                    <label class="form-label fw-semibold small">Nombres</label>
+                                    <input type="text" name="nombres" class="form-control form-control-sm" required>
                                 </div>
 
-                            </div>
-
-                            <!-- APELLIDO -->
-                            <div class="mb-3">
-
-                                <label class="form-label fw-semibold">Apellido</label>
-
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-person-badge-fill"></i>
-                                    </span>
-
-                                    <input type="text"
-                                        name="apellido"
-                                        class="form-control"
-                                        placeholder="Pérez"
-                                        required>
+                                <div class="col-5">
+                                    <label class="form-label fw-semibold small">DNI</label>
+                                    <input type="text" name="dni" maxlength="8" class="form-control form-control-sm" required>
                                 </div>
 
-                            </div>
-
-                            <!-- USUARIO -->
-                            <div class="mb-3">
-
-                                <label class="form-label fw-semibold">Usuario</label>
-
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-at"></i>
-                                    </span>
-
-                                    <input type="text"
-                                        name="usuario"
-                                        class="form-control"
-                                        placeholder="juanperez"
-                                        required>
+                                <!-- APELLIDOS -->
+                                <div class="col-7">
+                                    <label class="form-label fw-semibold small">Apellidos</label>
+                                    <input type="text" name="apellidos" class="form-control form-control-sm" required>
                                 </div>
 
-                            </div>
-
-                            <!-- CONTRASEÑA -->
-                            <div class="mb-3">
-
-                                <label class="form-label fw-semibold">Contraseña</label>
-
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-lock-fill"></i>
-                                    </span>
-
-                                    <input type="password"
-                                        name="password"
-                                        class="form-control"
-                                        placeholder="••••••••"
-                                        required>
+                                <div class="col-5">
+                                    <label class="form-label fw-semibold small">Nacimiento</label>
+                                    <input type="date" name="fecha_nacimiento" class="form-control form-control-sm" required>
                                 </div>
 
-                            </div>
+                                <!-- CELULAR + CORREO -->
+                                <div class="col-4">
+                                    <label class="form-label fw-semibold small">Celular</label>
+                                    <input type="text" name="celular" class="form-control form-control-sm" required>
+                                </div>
 
-                            <!-- BOTÓN -->
-                            <div class="d-grid mt-4">
+                                <div class="col-8">
+                                    <label class="form-label fw-semibold small">Correo</label>
+                                    <input type="email" name="correo" class="form-control form-control-sm" required>
+                                </div>
 
-                                <button type="submit" class="btn btn-success btn-lg rounded-3">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                    Registrarse
-                                </button>
+                                <!-- DIRECCION -->
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small">Dirección</label>
+                                    <input type="text" name="direccion" class="form-control form-control-sm">
+                                </div>
 
-                            </div>
+                                <!-- USUARIO -->
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small">Usuario</label>
+                                    <input type="text" name="usuario" class="form-control form-control-sm" required>
+                                </div>
 
-                            <!-- LINK LOGIN -->
-                            <div class="text-center mt-3">
-                                <a href="login.php" class="text-decoration-none text-secondary">
-                                    ¿Ya tienes cuenta? Inicia sesión
-                                </a>
+                                <!-- CONTRASEÑA + CONFIRMAR -->
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small">Contraseña</label>
+                                    <input type="password" name="password" class="form-control form-control-sm" required>
+                                </div>
+
+
+                                <!-- BOTÓN -->
+                                <div class="col-12 mt-2">
+                                    <button type="submit" class="btn btn-success btn-sm w-100 rounded-3">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        Registrarse
+                                    </button>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <a href="login.php" class="text-decoration-none text-secondary">
+                                        ¿ya tienes cuenta? Iniciar Sesion
+                                    </a>
+                                </div>
+
                             </div>
 
                         </form>

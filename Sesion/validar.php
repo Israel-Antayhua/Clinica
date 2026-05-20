@@ -1,32 +1,50 @@
 <?php
-// Iniciamos la sesión para poder guardar los datos del usuario
 session_start();
 include '../ConexionDB/conexion.php';
 
 $usuario  = $_POST['usuario'];
 $password = $_POST['password'];
 
-// Buscamos si existe el usuario con esa contraseña
-$consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario' AND password = '$password'";
-$resultado = $conexion->query($consulta);
 
-// Si encuentra exactamente 1 fila, las credenciales son correctas
+$sql = "SELECT * FROM usuarios WHERE usuario = ?";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("s", $usuario);
+$stmt->execute();
+
+$resultado = $stmt->get_result();
+
 if ($resultado->num_rows == 1) {
-    $datos_usuario = $resultado->fetch_assoc();
-    
-    // Guardamos el nombre y el rol en la sesión de la computadora
-    $_SESSION['usuario'] = $datos_usuario['usuario'];
-    $_SESSION['rol']     = $datos_usuario['rol'];
-    
-    // Lo redirigimos a la página principal del sistema
-    header("Location: ../index.php");
-} else {
-    // Si los datos son incorrectos, mandamos un aviso y lo regresamos al login
-    echo "<script>
-            alert('Usuario o contraseña incorrectos');
+
+    $datos = $resultado->fetch_assoc();
+
+    if (password_verify($password, $datos['password'])) {
+
+        $_SESSION['usuario'] = $datos['usuario'];
+        $_SESSION['rol'] = $datos['rol'];
+        $id_usuario = $datos['id'];
+
+        $sql2 = "SELECT id_paciente FROM pacientes WHERE id_usuario = ?";
+        $stmt = $conexion->prepare($sql2);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $paciente = $result->fetch_assoc();
+        $_SESSION['id_usuario'] = $paciente['id_paciente'];
+
+        header("Location: ../index.php");
+        exit;
+    } else {
+        echo "<script>
+            alert('Contraseña incorrecta');
             window.location.href='../Sesion/login.php';
-          </script>";
+        </script>";
+    }
+} else {
+    echo "<script>
+        alert('Usuario no existe');
+        window.location.href='../Sesion/login.php';
+    </script>";
 }
 
 $conexion->close();
-?>

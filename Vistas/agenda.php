@@ -3,7 +3,7 @@ session_start();
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
-if ($_SESSION['rol'] == 'admin'): ?>
+if ($_SESSION['rol'] == 'medico'): ?>
 
     <!-- Encabezado -->
     <!-- Encabezado -->
@@ -58,7 +58,11 @@ if ($_SESSION['rol'] == 'admin'): ?>
             <div class="d-flex flex-column gap-3">
 
                 <?php
-                $agenda = $conexion->prepare("SELECT * FROM citas WHERE fecha = ?");
+                $agenda = $conexion->prepare("SELECT c.*,p.nombres AS nombre_paciente,e.nombre AS especialidad
+                FROM citas c 
+                INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
+                INNER JOIN medicos m  ON c.id_medico = m.id JOIN especialidades e ON m.id_especialidad = e.id
+                WHERE fecha = ?");
                 $agenda->bind_param("s", $fecha);
                 $agenda->execute();
 
