@@ -1,5 +1,7 @@
 <?php
+
 session_start();
+if (isset($_SESSION['swal']));
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
@@ -61,9 +63,10 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 $agenda = $conexion->prepare("SELECT c.*,p.nombres AS nombre_paciente,e.nombre AS especialidad
                 FROM citas c 
                 INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
-                INNER JOIN medicos m  ON c.id_medico = m.id JOIN especialidades e ON m.id_especialidad = e.id
-                WHERE fecha = ?");
-                $agenda->bind_param("s", $fecha);
+                INNER JOIN medicos m  ON c.id_medico = m.id 
+                INNER JOIN especialidades e ON m.id_especialidad = e.id
+                WHERE fecha = ? AND id_medico = ?" );
+                $agenda->bind_param("si", $fecha,$_SESSION['id_medico']);
                 $agenda->execute();
 
                 $resultado = $agenda->get_result();
@@ -180,17 +183,35 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                     </div>
 
-                    <form>
+                    <form action="../Controler/Add_Cita.php" id="formCita">
 
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold">
-                                Paciente
+                                DNI del Paciente
                             </label>
 
                             <input type="text"
-                                class="form-control rounded-4 py-2">
+                                id="dni"
+                                class="form-control rounded-4 py-2"
+                                placeholder="Ingrese DNI y presione Enter">
 
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Datos del Paciente
+                            </label>
+                            <input type="hidden"
+                                name="id_paciente"
+                                id="id_paciente">
+
+                            <input type="text"
+                                style="background:#e9ecef; cursor:not-allowed;"
+                                id="nombre_paciente"
+                                class="form-control rounded-4 py-2"
+                                readonly>
                         </div>
 
                         <div class="mb-3">
@@ -199,12 +220,20 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 Especialidad
                             </label>
 
-                            <select class="form-select rounded-4 py-2">
-
-                                <option>Cardiología</option>
-                                <option>Pediatría</option>
-
-                            </select>
+                            <input type="text" class="form-control rounded-4 py-2"
+                                style="background:#e9ecef; cursor:not-allowed;"
+                                value="<?php
+                                        $sql = "SELECT e.nombre
+                                FROM especialidades e
+                                INNER JOIN medicos m On m.id_especialidad = e.id
+                                where m.id=?";
+                                        $stmt = $conexion->prepare($sql);
+                                        $stmt->bind_param("i", $_SESSION['id_medico']);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        $especialidad = $result->fetch_assoc();
+                                        echo $especialidad['nombre'];
+                                        ?>" readonly>
 
                         </div>
 
@@ -215,7 +244,9 @@ if ($_SESSION['rol'] == 'medico'): ?>
                             </label>
 
                             <input type="date"
-                                class="form-control rounded-4 py-2">
+                                name="fecha"
+                                class="form-control rounded-3"
+                                required>
 
                         </div>
 
@@ -225,9 +256,19 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 Hora
                             </label>
 
-                            <input type="time"
-                                class="form-control rounded-4 py-2">
+                            <select type="time"
+                                name="hora"
+                                class="form-control rounded-3"
+                                required>
+                                <?php
+                                for ($h = 8; $h <= 18; $h++) {
 
+                                    $hora = str_pad($h, 2, "0", STR_PAD_LEFT) . ":00";
+
+                                    echo "<option value='$hora'>$hora</option>";
+                                }
+                                ?>
+                            </select>
                         </div>
 
                         <button class="btn btn-success w-100 rounded-4 py-3 fw-semibold">
@@ -255,5 +296,88 @@ if ($_SESSION['rol'] == 'medico'): ?>
             transform: translateY(-3px);
         }
     </style>
-<script src="../js/agenda.js"></script>
+    <script src="../js/agenda.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("dni").addEventListener("keypress", function(e) {
+
+            if (e.key === "Enter") {
+
+                e.preventDefault();
+
+                let dni = this.value;
+
+                fetch("../Controler/GetDNI.php?dni=" + dni)
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        if (data) {
+
+                            document.getElementById("nombre_paciente").value = data.nombre;
+
+                            document.getElementById("id_paciente").value = data.id_paciente;
+
+                        } else {
+
+                            alert("Paciente no encontrado");
+
+                        }
+
+                    });
+
+            }
+
+        });
+    </script>
+    <script>
+        document.getElementById("formCita").addEventListener("submit", function(e) {
+
+            e.preventDefault();
+
+            let formData = new FormData(this);
+
+            fetch("../Controler/Add_cita.php", {
+
+                    method: "POST",
+                    body: formData
+
+                })
+
+                .then(res => res.text())
+
+                .then(data => {
+
+                    if (data == "ocupado") {
+
+                        Swal.fire({
+
+                            icon: 'warning',
+                            title: 'Horario ocupado',
+                            text: 'Este horario se encuentra ocupado'
+
+                        });
+
+                    } else if (data == "ok") {
+
+                        Swal.fire({
+
+                            icon: 'success',
+                            title: 'Correcto',
+                            text: 'Cita registrada correctamente'
+
+                        }).then(() => {
+
+                            location.reload();
+
+                        });
+
+                    }
+
+                });
+
+        });
+    </script>
+    <?php unset($_SESSION['swal']); ?>
 <?php endif; ?>

@@ -22,16 +22,29 @@ if ($resultado->num_rows == 1) {
         $_SESSION['usuario'] = $datos['usuario'];
         $_SESSION['rol'] = $datos['rol'];
         $id_usuario = $datos['id'];
+        if ($datos['rol'] == "paciente") {
+            $sql2 = "SELECT id_paciente FROM pacientes WHERE id_usuario = ?";
+            $stmt = $conexion->prepare($sql2);
+            $stmt->bind_param("i", $id_usuario);
+            $stmt->execute();
 
-        $sql2 = "SELECT id_paciente FROM pacientes WHERE id_usuario = ?";
-        $stmt = $conexion->prepare($sql2);
-        $stmt->bind_param("i", $id_usuario);
-        $stmt->execute();
+            $result = $stmt->get_result();
+            $paciente = $result->fetch_assoc();
+            $_SESSION['id_usuario'] = $paciente['id_paciente'];
+        } else{
+            $sql = "SELECT id
+             FROM medicos
+             WHERE id_usuario = ?";
 
-        $result = $stmt->get_result();
-        $paciente = $result->fetch_assoc();
-        $_SESSION['id_usuario'] = $paciente['id_paciente'];
+            $stmt2 = $conexion->prepare($sql);
+            $stmt2->bind_param("i", $id_usuario);
+            $stmt2->execute();
 
+            $result2 = $stmt2->get_result();
+            $medico = $result2->fetch_assoc();
+
+            $_SESSION['id_medico'] = $medico['id'];
+        }
         header("Location: ../index.php");
         exit;
     } else {

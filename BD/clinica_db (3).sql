@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-05-2026 a las 01:29:43
+-- Tiempo de generación: 21-05-2026 a las 09:25:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -44,7 +44,14 @@ CREATE TABLE `citas` (
 
 INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`, `monto`, `estado_pago`) VALUES
 (12, 2, '2026-05-21', '14:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(13, 2, '2026-05-22', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado');
+(13, 2, '2026-05-22', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado'),
+(14, 2, '2026-05-26', '16:00:00', 9, 'Confirmada', 200.00, 'Pagado'),
+(15, 1, '2026-05-25', '15:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
+(16, 1, '2026-05-20', '17:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(17, 2, '2026-05-17', '12:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(18, 1, '2026-05-21', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(19, 1, '2026-05-28', '16:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(20, 1, '2026-05-20', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente');
 
 -- --------------------------------------------------------
 
@@ -142,7 +149,9 @@ CREATE TABLE `pagos` (
 
 INSERT INTO `pagos` (`id`, `id_cita`, `monto`, `estado`, `metodo_pago`, `culqi_charge_id`, `fecha_pago`) VALUES
 (1, 13, 190.00, 'Pagado', 'Visa', 'chr_test_1nIe5Cvd5kfLmBzp', '2026-05-20 17:58:09'),
-(2, 12, 90.00, 'Pagado', 'Visa', 'chr_test_jzNsdta0ariE2Pfs', '2026-05-20 18:00:26');
+(2, 12, 90.00, 'Pagado', 'Visa', 'chr_test_jzNsdta0ariE2Pfs', '2026-05-20 18:00:26'),
+(3, 14, 200.00, 'Pagado', 'Visa', 'chr_test_a70RRoxyPAaqibyW', '2026-05-20 23:27:38'),
+(4, 15, 90.00, 'Pagado', 'Visa', 'chr_test_IQHB2rRPZ1dLdkwh', '2026-05-21 02:17:49');
 
 -- --------------------------------------------------------
 
@@ -164,7 +173,7 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `usuario`, `password`, `rol`) VALUES
 (1, 'doctor1', '12345', 'admin'),
 (2, 'paciente1', '12345', 'paciente'),
-(3, 'Anderson', '$2y$10$qM.vpb1Vy3Xum.QMilL7OeUs1DDOjSwtiakfSilrd8wdAb/5CQ3yq', 'medico'),
+(3, 'Anderson', '$2y$10$qM.vpb1Vy3Xum.QMilL7OeUs1DDOjSwtiakfSilrd8wdAb/5CQ3yq', 'paciente'),
 (4, 'Israel', '$2y$10$Nl0EcRwe.HmGwcIY2YCg3.LgYR4ADtUKWtZnpR7pb8H7ufN1QgtLe', 'paciente'),
 (5, 'Jose', '$2y$10$pEVijnTXO4r3lfxUqquUCejFs6H.VDZ/F2MgTwsSAmsMoMd4Qzyqq', 'medico'),
 (6, 'Miguel', '$2y$10$nxrzLGummzcRLr73b28eheJLHGogqe0pIfXuD.mdL9Paml/0xH1Qa', 'medico'),
@@ -227,7 +236,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`
@@ -251,7 +260,7 @@ ALTER TABLE `pacientes`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

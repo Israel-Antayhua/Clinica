@@ -303,6 +303,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.getElementById("especialidad").addEventListener("change", function() {
 
