@@ -54,7 +54,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                         $pagos = $conexion->query(
                             "SELECT c.*,e.nombre AS especialidad FROM citas c
                             INNER JOIN medicos m  ON c.id_medico = m.id JOIN especialidades e ON m.id_especialidad = e.id
-                             WHERE id_paciente = '" . $_SESSION['id_usuario'] . "'"
+                             WHERE id_paciente = '" . $_SESSION['id_usuario'] . "'"."ORDER BY fecha ASC,hora ASC"
                         );
 
                         while ($f = $pagos->fetch_assoc()):
@@ -149,9 +149,9 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                                         <a href="comprobante.php?id=<?php echo $f['id']; ?>"
                                             target="_blank"
-                                            class="btn btn-light border btn-sm rounded-3 px-3">
+                                            class="btn btn-light border rounded-4 px-4 shadow-sm">
 
-                                            <i class="bi bi-file-earmark-check me-1"></i>
+                                            <i class="bi bi-file-earmark-check text-success me-2"></i>
 
                                             Ver Comprobante
 

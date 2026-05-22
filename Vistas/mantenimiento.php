@@ -1,5 +1,6 @@
 <?php
 session_start();
+if (isset($_SESSION['swal']));
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 if ($_SESSION['rol'] == 'medico'): ?>
@@ -10,11 +11,11 @@ if ($_SESSION['rol'] == 'medico'): ?>
         <div>
 
             <h3 class="fw-bold mb-1">
-                Catálogos y Mantenimiento
+                Gestion de Medicos
             </h3>
 
             <small class="text-secondary">
-                Administración de médicos y especialidades
+                Administración de médicos
             </small>
 
         </div>
@@ -28,7 +29,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
         </button>
 
     </div>
-
     <!-- MÉDICOS -->
     <div class="card border-0 shadow-sm rounded-4 mb-4" id="tablaMedicos">
 
@@ -78,9 +78,10 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                         <?php
                         $meds = $conexion->query("
-                                    SELECT m.*, e.nombre AS especialidad
+                                    SELECT m.*, e.nombre AS especialidad, u.usuario AS usuario
                                     FROM medicos m
                                     INNER JOIN especialidades e ON m.id_especialidad = e.id
+                                    INNER JOIN usuarios u ON m.id_usuario = u.id
                                     ");
 
                         while ($m = $meds->fetch_assoc()):
@@ -169,13 +170,18 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                     <div class="d-flex justify-content-center gap-2">
 
-                                        <button class="btn btn-sm btn-light border rounded-3">
+                                        <button class="btn btn-sm btn-light border rounded-3" disabled>
 
                                             <i class="bi bi-eye"></i>
 
                                         </button>
 
-                                        <button class="btn btn-sm btn-light border rounded-3">
+                                        <button class="btnEditar2 btn btn-sm btn-light border rounded-3"
+                                            data-id="<?php echo $m['id']; ?>"
+                                            data-nombre="<?php echo $m['nombre']; ?>"
+                                            data-telefono="<?php echo $m['telefono']; ?>"
+                                            data-usuario="<?php echo $m['usuario']; ?>"
+                                            data-id_especialidad="<?php echo $m['id_especialidad']; ?>">
 
                                             <i class="bi bi-pencil"></i>
 
@@ -306,9 +312,165 @@ if ($_SESSION['rol'] == 'medico'): ?>
         </div>
 
     </div>
+    <!-- Modal Medico -->
+    <div class="modal fade" id="modalMedico" tabindex="-1">
 
+        <div class="modal-dialog modal-dialog-centered">
+
+            <form id="formMedico" action="../Controler/Add_Medico.php" method="POST" class="modal-content">
+
+                <!-- HEADER -->
+                <div class="modal-header bg-success text-white">
+
+                    <h5 class="modal-title">
+                        Registro de Médico
+                    </h5>
+
+                    <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body">
+
+                    <!-- ID (para editar) -->
+                    <input type="hidden" name="id" id="med_id">
+
+                    <!-- ACCION -->
+                    <input type="hidden" name="accion" value="guardar">
+
+                    <!-- NOMBRE -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">Nombre</label>
+
+                        <input type="text"
+                            name="nombre"
+                            id="med_nombre"
+                            class="form-control rounded-3"
+                            required>
+
+                    </div>
+
+                    <!-- TELEFONO -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">Teléfono</label>
+
+                        <input type="text"
+                            name="telefono"
+                            id="med_telefono"
+                            class="form-control rounded-3"
+                            required>
+
+                    </div>
+
+                    <!-- USUARIO -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">Usuario</label>
+
+                        <input type="text"
+                            name="usuario"
+                            id="med_usuario"
+                            class="form-control rounded-3"
+                            required>
+
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">Contraseña</label>
+
+                        <input type="password"
+                            name="password"
+                            id="med_password"
+                            class="form-control rounded-3">
+
+                        <small class="text-muted">
+                            (Solo completar si es nuevo o cambiar contraseña)
+                        </small>
+
+                    </div>
+
+                    <!-- ESPECIALIDAD -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">Especialidad</label>
+
+                        <select name="id_especialidad"
+                            id="med_especialidad"
+                            class="form-select rounded-3"
+                            required>
+
+                            <option value="">Seleccione...</option>
+
+                            <!-- dinámico desde BD -->
+                            <?php
+                            $esp = $conexion->query("SELECT * FROM especialidades");
+                            while ($e = $esp->fetch_assoc()) {
+                                echo "<option value='{$e['id']}'
+                            data-precio='{$e['precio_consulta']}'>
+                            {$e['nombre']}</option>";
+                            }
+                            ?>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer">
+
+                    <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                        class="btn btn-success">
+                        Guardar Médico
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!--Header Especialidades-->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h3 class="fw-bold mb-1">
+                Gestion de Especialidades
+            </h3>
+
+            <small class="text-secondary">
+                Administración de Especialidades
+            </small>
+
+        </div>
+
+        <button class="btn btn-primary rounded-4 px-4 shadow-sm" onclick="abrirFormulario2()">
+
+            <i class="bi bi-plus-circle me-2"></i>
+
+            Nuevo Registro
+
+        </button>
+
+    </div>
     <!-- ESPECIALIDADES -->
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-4" id="tablaEspecialidades">
 
         <div class="card-body p-4">
 
@@ -340,6 +502,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                             <th class="py-3">Especialidad</th>
 
+                            <th class="py-3">Precio Consulta</th>
+
                             <th class="py-3">Estado</th>
 
                             <th class="py-3 text-center">Acciones</th>
@@ -365,7 +529,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 <!-- ID -->
                                 <td>
 
-                                    <span class="fw-semibold">
+                                    <span class="fw-semibold text-dark">
 
                                         #<?php echo $e['id']; ?>
 
@@ -378,16 +542,16 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                     <div class="d-flex align-items-center gap-3">
 
-                                        <div class="bg-info bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                                            style="width:45px; height:45px;">
+                                        <div class="bg-info bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center shadow-sm"
+                                            style="width:50px; height:50px;">
 
-                                            <i class="bi bi-heart-pulse text-info"></i>
+                                            <i class="bi bi-heart-pulse-fill text-info fs-5"></i>
 
                                         </div>
 
                                         <div>
 
-                                            <div class="fw-semibold">
+                                            <div class="fw-bold text-dark">
 
                                                 <?php echo $e['nombre']; ?>
 
@@ -403,10 +567,35 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                 </td>
 
+                                <!-- Precio Consulta -->
+                                <td>
+
+                                    <div class="bg-success bg-opacity-10 rounded-4 px-3 py-2 d-inline-flex align-items-center gap-2">
+
+                                        <i class="bi bi-cash-stack text-success"></i>
+
+                                        <div>
+
+                                            <div class="fw-bold text-success">
+
+                                                S/ <?php echo number_format($e['precio_consulta'], 2); ?>
+
+                                            </div>
+
+                                            <small class="text-secondary">
+                                                Consulta
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
                                 <!-- Estado -->
                                 <td>
 
-                                    <span class="badge rounded-pill px-3 py-2 <?php echo $badge; ?>">
+                                    <span class="badge rounded-pill px-3 py-2 <?php echo $badge; ?> shadow-sm">
 
                                         <?php echo $e['estado']; ?>
 
@@ -419,15 +608,24 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                     <div class="d-flex justify-content-center gap-2">
 
-                                        <button class="btn btn-sm btn-light border rounded-3">
+                                        <button class="btn btn-sm btn-light border rounded-3 shadow-sm btnEditar"
+                                            data-id="<?php echo $e['id']; ?>"
+                                            data-nombre="<?php echo $e['nombre']; ?>"
+                                            data-precio="<?php echo $e['precio_consulta']; ?>">
 
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil text-primary"></i>
 
                                         </button>
 
-                                        <button class="btn btn-sm btn-light border rounded-3">
+                                        <button
+                                            class="btn btn-sm btn-light border toggleEstado"
+                                            data-id="<?php echo $e['id']; ?>">
 
-                                            <i class="bi bi-trash"></i>
+                                            <?php if ($e['estado'] == 'Activo') { ?>
+                                                <i class="bi bi-toggle-on text-success"></i>
+                                            <?php } else { ?>
+                                                <i class="bi bi-toggle-off text-danger"></i>
+                                            <?php } ?>
 
                                         </button>
 
@@ -448,17 +646,158 @@ if ($_SESSION['rol'] == 'medico'): ?>
         </div>
 
     </div>
+    <!-- Formulario -->
+    <div class="justify-content-center align-items-center bg-white p-3" id="formEspecialidades">
+
+        <div class="card border-0 shadow-lg rounded-4 w-100">
+
+            <!-- BODY -->
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <div>
+
+                        <h3 class="fw-bold mt-2 mb-0">
+                            Registro de Especialidad
+                        </h3>
+
+                        <small class="opacity-75">
+                            Agrega una nueva Especialidad al sistema
+                        </small>
+
+                    </div>
+
+                    <button type="button"
+                        class="btn-close"
+                        onclick="cerrarFormulario2()">
+                    </button>
+
+                </div>
+
+                <form action="../Controler/Add_Especia.php" method="POST">
+
+                    <!-- USUARIO -->
+                    <!-- NOMBRE ESPECIALIDAD -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold small text-secondary">
+                            Nombre de Especialidad
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-heart-pulse"></i>
+                            </span>
+
+                            <input type="text"
+                                name="nombre"
+                                class="form-control form-control-sm"
+                                placeholder="Ej: Cardiología"
+                                required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- PRECIO CONSULTA -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold small text-secondary">
+                            Precio de Consulta
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                S/
+                            </span>
+
+                            <input type="number"
+                                name="precio_consulta"
+                                class="form-control form-control-sm"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="d-grid gap-2 mt-4">
+
+                        <button type="submit" class="btn btn-primary btn-sm rounded-3 shadow-sm">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Guardar Especialidad
+                        </button>
+
+                        <button type="button"
+                            class="btn btn-outline-secondary btn-sm rounded-3"
+                            onclick="cerrarFormulario2()">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Volver
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+    <!-- Modal Especia -->
+    <div class="modal fade" id="modalEditar">
+        <div class="modal-dialog">
+
+            <form action="../Controler/Add_Especia.php" method="POST" class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Editar Especialidad</h5>
+                </div>
+                <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    style="position:absolute; right:15px; top:15px;">
+                </button>
+                <div class="modal-body">
+
+                    <input type="hidden" name="id" id="edit_id">
+
+                    <div class="mb-2">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" id="edit_nombre" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Precio</label>
+                        <input type="number" name="precio" id="edit_precio" class="form-control">
+                    </div>
+
+                    <input type="hidden" name="accion" value="editar">
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary">Guardar</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/mantenimiento.js"></script>
     <script>
-        document.getElementById("formMedicos").style.display = "none";
+        Swal.fire({
 
-        function abrirFormulario() {
-            document.getElementById("tablaMedicos").style.display = "none";
-            document.getElementById("formMedicos").style.display = "block";
-        }
+            icon: <?php echo json_encode($_SESSION['swal']['icon']); ?>,
+            title: <?php echo json_encode($_SESSION['swal']['title']); ?>,
+            text: <?php echo json_encode($_SESSION['swal']['text']); ?>
 
-        function cerrarFormulario() {
-            document.getElementById("formMedicos").style.display = "none";
-            document.getElementById("tablaMedicos").style.display = "block";
-        }
+        });
     </script>
 <?php endif; ?>

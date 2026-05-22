@@ -1,21 +1,49 @@
 <?php
+session_start();
 include("../ConexionDB/conexion.php");
 include("../Dao/MedicoDAO.php");
 
 $dao = new MedicoDAO($conexion);
 
-$data = [
-    "usuario" => $_POST["usuario"],
-    "password" => $_POST["password"],
-    "telefono" => $_POST["telefono"],
-    "id_especialidad" => $_POST["id_especialidad"]
-];
+/* =========================
+   REGISTRAR / EDITAR MÉDICO
+========================= */
 
-$resultado = $dao->registrarMedico($data);
+if (isset($_POST['accion']) && $_POST['accion'] == 'guardar') {
 
-if ($resultado === true) {
-    header("Location: ../Vistas/mantenimiento.php?msg=ok");
+    $data = [
+        "id" => $_POST["id"] ?? null,
+        "nombre" => $_POST["nombre"],
+        "telefono" => $_POST["telefono"],
+        "usuario" => $_POST["usuario"],
+        "password" => $_POST["password"] ?? "",
+        "id_especialidad" => $_POST["id_especialidad"]
+    ];
+
+    // EDITAR
+    if (!empty($data["id"])) {
+
+        $resultado = $dao->editarMedico($data);
+
+        $_SESSION['swal'] = [
+            'icon' => $resultado ? 'success' : 'error',
+            'title' => $resultado ? 'Actualizado' : 'Error',
+            'text' => $resultado ? 'Médico actualizado correctamente' : $resultado
+        ];
+
+    } 
+    // REGISTRAR
+    else {
+
+        $resultado = $dao->registrarMedico($data);
+
+        $_SESSION['swal'] = [
+            'icon' => $resultado ? 'success' : 'error',
+            'title' => $resultado ? 'Correcto' : 'Error',
+            'text' => $resultado ? 'Médico registrado correctamente' : $resultado
+        ];
+    }
+
+    header("Location: ../Vistas/mantenimiento.php");
     exit;
-} else {
-    echo $resultado;
 }

@@ -15,19 +15,33 @@ if ($_SESSION['rol'] == "medico") {
 }
 $fecha = $_POST['fecha'];
 $hora = $_POST['hora'];
+$monto = $_POST['monto'];
 
 if ($dao->existeCruce($fecha, $hora, $id_medico)) {
     echo "ocupado";
     exit;
 }
-$resultado = $dao->insertarCita($id_usuario, $id_medico, $fecha, $hora);
+$resultado = $dao->insertarCita($id_usuario, $id_medico, $monto, $fecha, $hora);
 
 if ($resultado === true) {
 
-    echo "ok";
+    $_SESSION['swal'] = [
+
+        'icon' => 'success',
+        'title' => 'Correcto',
+        'text' => 'Especialidad registrado correctamente'
+
+    ];
+    header("Location: ../Vistas/citas.php?msg=ok");
 
 } else {
 
-    echo "error";
+    $_SESSION['swal'] = [
+
+        'icon' => 'error',
+        'title' => 'Error',
+        'text' => $resultado
+
+    ];
 
 }

@@ -1,5 +1,6 @@
 <?php
 session_start();
+if (isset($_SESSION['swal']));
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 if ($_SESSION['rol'] == 'paciente'): ?>
@@ -71,13 +72,18 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                         <?php
                         $esp = $conexion->query("SELECT * FROM especialidades");
                         while ($e = $esp->fetch_assoc()) {
-                            echo "<option value='{$e['id']}'>{$e['nombre']}</option>";
+                            echo "<option value='{$e['id']}'
+                            data-precio='{$e['precio_consulta']}'>
+                            {$e['nombre']}</option>";
                         }
                         ?>
                     </select>
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Medico
+                    </label>
                     <select id="id_medico" name="id_medico" class="form-select" required>
                         <option value="">Seleccione médico</option>
                     </select>
@@ -99,25 +105,57 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                 <!-- Hora -->
                 <div class="mb-3">
 
-                    <label class="form-label fw-semibold">
-                        Hora
-                    </label>
+                    <div class="row g-2">
 
-                    <select type="time"
-                        name="hora"
-                        class="form-control rounded-3"
-                        required>
-                        <?php
-                        for ($h = 8; $h <= 18; $h++) {
+                        <!-- HORA -->
+                        <div class="col-md-6">
 
-                            $hora = str_pad($h, 2, "0", STR_PAD_LEFT) . ":00";
+                            <label class="form-label fw-semibold">
+                                Hora
+                            </label>
 
-                            echo "<option value='$hora'>$hora</option>";
-                        }
-                        ?>
-                        </select>
+                            <select
+                                name="hora"
+                                class="form-control rounded-3"
+                                required>
+
+                                <?php
+                                for ($h = 8; $h <= 18; $h++) {
+
+                                    $hora = str_pad($h, 2, "0", STR_PAD_LEFT) . ":00";
+
+                                    echo "<option value='$hora'>$hora</option>";
+                                }
+                                ?>
+
+                            </select>
+
+                        </div>
+
+                        <!-- MONTO -->
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+                                Monto
+                            </label>
+
+                            <!-- visible -->
+                            <input
+                                type="text"
+                                id="montoVisible"
+                                class="form-control rounded-3 bg-light"
+                                value="S/ 120"
+                                readonly>
+                            <input
+                                type="hidden"
+                                id="monto"
+                                name="monto"
+                                value="120">
+                        </div>
+
+                    </div>
+
                 </div>
-
                 <!-- Botones -->
                 <div class="d-flex gap-2">
 
@@ -202,7 +240,8 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                             FROM citas c
                             INNER JOIN medicos m ON c.id_medico = m.id
                             INNER JOIN especialidades e ON m.id_especialidad = e.id
-                            WHERE c.id_paciente = " . $_SESSION['id_usuario']
+                            WHERE c.id_paciente = " . $_SESSION['id_usuario'] . " And c.fecha >= CURDATE()
+                            ORDER BY c.fecha ASC, c.hora ASC"
                         );
 
                         while ($f = $citas->fetch_assoc()):
@@ -305,6 +344,34 @@ if ($_SESSION['rol'] == 'paciente'): ?>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        const especialidad = document.getElementById("especialidad");
+
+        const montoVisible = document.getElementById("montoVisible");
+
+        const monto = document.getElementById("monto");
+
+        function actualizarMonto() {
+
+            let opcion =
+                especialidad.options[especialidad.selectedIndex];
+
+            let precio =
+                opcion.dataset.precio;
+
+            montoVisible.value = "S/ " + precio;
+
+            monto.value = precio;
+
+        }
+
+        actualizarMonto();
+
+        especialidad.addEventListener(
+            "change",
+            actualizarMonto
+        );
+    </script>
+    <script>
         document.getElementById("especialidad").addEventListener("change", function() {
 
             let idEspecialidad = this.value;
@@ -322,16 +389,46 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                     selectMedico.innerHTML = "<option value=''>Seleccione médico</option>";
 
-                    data.forEach(medico => {
-                        selectMedico.innerHTML += `
-                    <option value="${medico.id}">
-                        Dr. ${medico.nombre}
-                    </option>
-                `;
-                    });
+                    if (data.length > 0) {
+
+                        data.forEach(medico => {
+
+                            selectMedico.innerHTML += `
+        
+                            <option value="${medico.id}">
+                                Dr. ${medico.nombre}
+                            </option>
+                            
+                        `;
+
+                        });
+
+                    } else {
+
+                        selectMedico.innerHTML = `
+                    
+                        <option disabled selected>
+                            No hay médicos disponibles.
+                        </option>
+                        
+                    `;
+
+                    }
 
                 });
 
         });
     </script>
+    <script>
+        Swal.fire({
+
+            icon: '<?php echo $_SESSION['swal']['icon']; ?>',
+
+            title: '<?php echo $_SESSION['swal']['title']; ?>',
+
+            text: '<?php echo $_SESSION['swal']['text']; ?>'
+
+        });
+    </script>
+    <?php unset($_SESSION['swal']); ?>
 <?php endif; ?>

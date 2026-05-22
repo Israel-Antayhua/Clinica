@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-05-2026 a las 09:25:35
+-- Tiempo de generación: 23-05-2026 a las 00:33:16
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,15 +43,25 @@ CREATE TABLE `citas` (
 --
 
 INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`, `monto`, `estado_pago`) VALUES
-(12, 2, '2026-05-21', '14:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(13, 2, '2026-05-22', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado'),
-(14, 2, '2026-05-26', '16:00:00', 9, 'Confirmada', 200.00, 'Pagado'),
+(12, 2, '2026-05-22', '12:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
+(13, 2, '2026-05-21', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado'),
+(14, 2, '2026-05-21', '21:00:00', 9, 'Confirmada', 200.00, 'Pagado'),
 (15, 1, '2026-05-25', '15:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
-(16, 1, '2026-05-20', '17:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(16, 1, '2026-05-22', '17:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (17, 2, '2026-05-17', '12:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (18, 1, '2026-05-21', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (19, 1, '2026-05-28', '16:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(20, 1, '2026-05-20', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente');
+(20, 1, '2026-05-20', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(21, 3, '2026-05-23', '15:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(22, 3, '2026-05-25', '17:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
+(23, 1, '2026-05-21', '22:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
+(24, 2, '2026-05-23', '14:00:00', 5, 'Confirmada', 200.00, 'Pendiente'),
+(25, 3, '2026-05-22', '18:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(26, 2, '2026-05-22', '17:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
+(27, 2, '2026-05-22', '18:00:00', 7, 'Confirmada', 90.00, 'Pendiente'),
+(28, 2, '2026-05-22', '15:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
+(29, 2, '2026-05-31', '16:00:00', 8, 'Confirmada', 150.00, 'Pendiente'),
+(30, 2, '2026-05-20', '17:00:00', 7, 'Confirmada', 220.00, 'Pendiente');
 
 -- --------------------------------------------------------
 
@@ -62,18 +72,25 @@ INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`
 CREATE TABLE `especialidades` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `estado` varchar(20) DEFAULT 'Activo'
+  `estado` varchar(20) DEFAULT 'Activo',
+  `precio_consulta` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `especialidades`
 --
 
-INSERT INTO `especialidades` (`id`, `nombre`, `estado`) VALUES
-(1, 'Cardiología', 'Activo'),
-(2, 'Dermatología', 'Activo'),
-(3, 'Medicina General', 'Activo'),
-(4, 'Pediatría', 'Activo');
+INSERT INTO `especialidades` (`id`, `nombre`, `estado`, `precio_consulta`) VALUES
+(1, 'Cardiología', 'Activo', 150.00),
+(2, 'Dermatología', 'Activo', 150.00),
+(3, 'Medicina General', 'Activo', 60.00),
+(4, 'Pediatría', 'Activo', 100.00),
+(5, 'Ginecología', 'Activo', 120.00),
+(6, 'Oncología', 'Activo', 220.00),
+(7, 'Reumatología', 'Activo', 160.00),
+(8, 'Medicina Interna', 'Activo', 120.00),
+(9, 'Traumatología', 'Activo', 130.00),
+(10, 'Gestion de lavadero', 'Activo', 300.00);
 
 -- --------------------------------------------------------
 
@@ -97,9 +114,11 @@ CREATE TABLE `medicos` (
 INSERT INTO `medicos` (`id`, `id_usuario`, `nombre`, `id_especialidad`, `telefono`, `estado`) VALUES
 (5, 5, 'Jose', 3, '943402322', 'Activo'),
 (6, 6, 'Miguel', 1, '923323999', 'Activo'),
-(7, 9, 'Rusbelt', 4, '924323022', 'Activo'),
+(7, 9, 'Rusbelt', 4, '924321122', 'Activo'),
 (8, 10, 'Joshep', 1, '999232922', 'Activo'),
-(9, 11, 'Carla', 4, '924323021', 'Activo');
+(9, 11, 'Carla', 4, '924323021', 'Activo'),
+(10, 12, 'Reile', 5, '924242923', 'Activo'),
+(11, 13, 'Cristina', 10, '924859549', 'Activo');
 
 -- --------------------------------------------------------
 
@@ -125,7 +144,8 @@ CREATE TABLE `pacientes` (
 
 INSERT INTO `pacientes` (`id_paciente`, `id_usuario`, `nombres`, `apellidos`, `dni`, `fecha_nacimiento`, `celular`, `correo`, `direccion`) VALUES
 (1, 3, 'Anderson', 'Achulla Huaraca', 75918856, '2002-12-19', 931139271, 'anderachu7@gmail.com', 'A.H Santa rosa Mz.D lt.3'),
-(2, 4, 'Israel', 'Huayta Peña', 42472472, '2010-07-14', 931120132, 'correo_prueba@gmail.com', 'Prueba Direccion 2');
+(2, 4, 'Israel', 'Huayta Peña', 42472472, '2004-07-14', 931120132, 'correo_prueba@gmail.com', 'Prueba Direccion 2'),
+(3, 14, 'Valery', 'Capcha Peña', 73483492, '2000-06-21', 942583934, 'correo_prueba2@gmail.com', 'Prueba Direccion 3');
 
 -- --------------------------------------------------------
 
@@ -151,7 +171,11 @@ INSERT INTO `pagos` (`id`, `id_cita`, `monto`, `estado`, `metodo_pago`, `culqi_c
 (1, 13, 190.00, 'Pagado', 'Visa', 'chr_test_1nIe5Cvd5kfLmBzp', '2026-05-20 17:58:09'),
 (2, 12, 90.00, 'Pagado', 'Visa', 'chr_test_jzNsdta0ariE2Pfs', '2026-05-20 18:00:26'),
 (3, 14, 200.00, 'Pagado', 'Visa', 'chr_test_a70RRoxyPAaqibyW', '2026-05-20 23:27:38'),
-(4, 15, 90.00, 'Pagado', 'Visa', 'chr_test_IQHB2rRPZ1dLdkwh', '2026-05-21 02:17:49');
+(4, 15, 90.00, 'Pagado', 'Visa', 'chr_test_IQHB2rRPZ1dLdkwh', '2026-05-21 02:17:49'),
+(5, 22, 90.00, 'Pagado', 'Visa', 'chr_test_h0n4enn6iSiyY3Jb', '2026-05-21 20:38:43'),
+(6, 23, 90.00, 'Pagado', 'Visa', 'chr_test_2ic50N8xPEWBakBw', '2026-05-21 20:49:23'),
+(7, 26, 90.00, 'Pagado', 'Visa', 'chr_test_b8Xh0Ns1epVj2GQ2', '2026-05-22 14:29:26'),
+(8, 28, 90.00, 'Pagado', 'Visa', 'chr_test_LDV0uD6EZmKURaAK', '2026-05-22 15:00:29');
 
 -- --------------------------------------------------------
 
@@ -179,7 +203,10 @@ INSERT INTO `usuarios` (`id`, `usuario`, `password`, `rol`) VALUES
 (6, 'Miguel', '$2y$10$nxrzLGummzcRLr73b28eheJLHGogqe0pIfXuD.mdL9Paml/0xH1Qa', 'medico'),
 (9, 'Rusbelt', '$2y$10$PwqGait8r5j4Lo7P2aBMIuHFdP7.4d22SzDanzb2lK8QPH..0nlbu', 'medico'),
 (10, 'Joshep', '$2y$10$RXhczx.ixXhq0ZKf8u6fyeVne2TL6qLt8Fk9DVxE5lyDzM9BYIozu', 'medico'),
-(11, 'Carla', '$2y$10$kYbdZSAh5GJxuohXRa.W/OOfx/P2CpJcsquehXupQN6sSrX6UB7u2', 'medico');
+(11, 'Carla', '$2y$10$l6tnmxdrNEzzTZsfrRw65u3eraFd0eQbRgWc53cuaIwi5MIMpBN3m', 'medico'),
+(12, 'Reile', '$2y$10$lmNR7ng0yb6ekdX9iufCFu9hseMezjkjAA/vf5C1mLPJZsrHaMXyW', 'medico'),
+(13, 'Cristina', '$2y$10$RcrQcbKqm9a447xxvDptl.J1QGVs5c7EzM75AAR.3rKoMJYa.nJuy', 'medico'),
+(14, 'Valery', '$2y$10$aOOrRpdLYfghWwWqF5yyZ.4LdNUX3bPJhhbpumE.3j9tdSoMwNF9S', 'paciente');
 
 --
 -- Índices para tablas volcadas
@@ -236,37 +263,37 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`
 --
 ALTER TABLE `especialidades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `medicos`
 --
 ALTER TABLE `medicos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `pacientes`
 --
 ALTER TABLE `pacientes`
-  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Restricciones para tablas volcadas

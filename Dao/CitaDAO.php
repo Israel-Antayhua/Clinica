@@ -24,13 +24,13 @@ class CitaDAO {
     }
 
     // ➕ insertar cita
-    public function insertarCita($id_usuario, $id_medico, $fecha, $hora) {
+    public function insertarCita($id_usuario, $id_medico, $monto, $fecha, $hora) {
 
-        $sql = "INSERT INTO citas (id_paciente, id_medico, fecha, hora)
-                VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO citas (id_paciente, id_medico, fecha, hora,monto)
+                VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("iiss", $id_usuario, $id_medico, $fecha, $hora);
+        $stmt->bind_param("iissi", $id_usuario, $id_medico, $fecha, $hora,$monto);
 
         return $stmt->execute();
     }

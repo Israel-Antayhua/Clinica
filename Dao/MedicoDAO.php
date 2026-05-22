@@ -1,14 +1,17 @@
 <?php
 
-class MedicoDAO {
+class MedicoDAO
+{
 
     private $conexion;
 
-    public function __construct($conexion) {
+    public function __construct($conexion)
+    {
         $this->conexion = $conexion;
     }
 
-    public function registrarMedico($data) {
+    public function registrarMedico($data)
+    {
 
         try {
 
@@ -58,9 +61,81 @@ class MedicoDAO {
             $stmtMedico->close();
 
             return true;
-
         } catch (Exception $e) {
             return "Exception: " . $e->getMessage();
+        }
+    }
+
+    public function editarMedico($data)
+    {
+        // actualizar datos del médico
+        if (!empty($data["password"])) {
+            $sql = "UPDATE medicos 
+            SET nombre = ?, telefono = ?, id_especialidad = ?
+            WHERE id = ?";
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param(
+                "ssii",
+                $data["nombre"],
+                $data["telefono"],
+                $data["id_especialidad"],
+                $data["id"]
+            );
+
+            $stmt->execute();
+
+            // si quiere cambiar usuario/password
+            $sql2 = "UPDATE usuarios 
+                SET usuario = ?, password = ?
+                WHERE id = (
+                    SELECT id_usuario FROM medicos WHERE id = ?
+                )";
+
+            $stmt2 = $this->conexion->prepare($sql2);
+            $stmt2->bind_param(
+                "ssi",
+                $data["usuario"],
+                password_hash($data["password"], PASSWORD_DEFAULT),
+                $data["id"]
+            );
+
+            return $stmt2->execute();
+        }
+
+        // SI NO VIENE PASSWORD → NO TOCAR PASSWORD
+        else {
+
+            $sql = "UPDATE medicos 
+                SET nombre = ?, telefono = ?, id_especialidad = ?
+                WHERE id = ?";
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param(
+                "ssii",
+                $data["nombre"],
+                $data["telefono"],
+                $data["id_especialidad"],
+                $data["id"]
+            );
+
+            $stmt->execute();
+
+            // solo actualizar usuario
+            $sql2 = "UPDATE usuarios 
+                SET usuario = ?
+                WHERE id = (
+                    SELECT id_usuario FROM medicos WHERE id = ?
+                )";
+
+            $stmt2 = $this->conexion->prepare($sql2);
+            $stmt2->bind_param(
+                "si",
+                $data["usuario"],
+                $data["id"]
+            );
+
+            return $stmt2->execute();
         }
     }
 }
