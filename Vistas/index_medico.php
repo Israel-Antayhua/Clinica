@@ -321,7 +321,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                                 <td>
 
                                                     <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
-                                                        <?php echo $f['estado']; ?>
+                                                        <?php echo $f['estado'] ; ?>
                                                     </span>
 
                                                 </td>
@@ -472,7 +472,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                     <h5 class="fw-bold mb-1">
 
-                                        <?php echo htmlspecialchars($fila['nombre']); ?>
+                                        <?php echo htmlspecialchars($fila['nombre']?? ''); ?>
 
                                     </h5>
 
@@ -503,7 +503,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary">
-                                        <?php echo htmlspecialchars($fila['edad']); ?> años
+                                        <?php echo htmlspecialchars($fila['edad']?? ''); ?> años
                                     </span>
 
                                 </div>
@@ -522,7 +522,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary small">
-                                        <?php echo htmlspecialchars($fila['correo']); ?>
+                                        <?php echo htmlspecialchars($fila['correo']?? ''); ?>
                                     </span>
 
                                 </div>
@@ -541,7 +541,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary">
-                                        <?php echo htmlspecialchars($fila['celular']); ?>
+                                        <?php echo htmlspecialchars($fila['celular']?? ''); ?>
                                     </span>
 
                                 </div>
@@ -560,7 +560,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary">
-                                        <?php echo htmlspecialchars($fila['hora']); ?>
+                                        <?php echo htmlspecialchars($fila['hora']?? ''); ?>
                                     </span>
 
                                 </div>
@@ -581,7 +581,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </span>
                                     <input type="hidden"
                                         id="horaCita"
-                                        value="<?php echo $fila['hora']; ?>">
+                                        value="<?php echo $fila['hora']?? ''; ?>">
                                 </div>
 
                                 <!-- ESTADO -->

@@ -59,6 +59,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
             </div>
 
             <form action="../Controler/Add_Cita.php" method="POST">
+                <input type="hidden" name="accion" value="crear">
                 <!-- Especialidad -->
                 <div class="mb-4">
 
@@ -317,6 +318,16 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                                 <!-- Acciones -->
                                 <td class="text-center">
+                                    <button class="btn btn-sm btn-light border btnEditarCita"
+                                        data-id="<?php echo $f['id']; ?>"
+                                        data-monto="<?php echo $f['monto']; ?>"
+                                        data-fecha="<?php echo $f['fecha']; ?>"
+                                        data-hora="<?php echo $f['hora']; ?>"
+                                        data-medico="<?php echo $f['id_medico']; ?>">
+
+                                        <i class="bi bi-clock text-primary"></i>
+
+                                    </button>
 
                                     <a href="eliminar.php?id=<?php echo $f['id']; ?>"
                                         class="btn btn-sm btn-outline-danger rounded-3">
@@ -342,6 +353,68 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalEditarHora" tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <form action="../Controler/Add_Cita.php" method="POST" class="modal-content">
+
+                <div class="modal-header bg-warning">
+
+                    <h5 class="modal-title">Cambiar Hora de Cita</h5>
+
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+                     <input type="hidden" name="accion" value="cambiar_hora">
+
+                    <input type="hidden" id="edit_id_medico" name="medico">
+
+                    <input type="hidden" id="edit_id" name="id">
+
+                    <input type="hidden" id="edit_fecha" name="fecha">
+
+                    <input type="hidden" id="edit_monto" name="monto">
+
+                    <label class="form-label fw-semibold">Hora</label>
+
+                    <select name="hora" id="edit_hora" class="form-select" required>
+
+                        <?php
+                        for ($h = 8; $h <= 18; $h++) {
+                            $hora = str_pad($h, 2, "0", STR_PAD_LEFT) . ":00";
+                            echo "<option value='$hora'>$hora</option>";
+                        }
+                        ?>
+
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button class="btn btn-warning">
+                        Actualizar Hora
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const especialidad = document.getElementById("especialidad");
@@ -373,7 +446,6 @@ if ($_SESSION['rol'] == 'paciente'): ?>
     </script>
     <script>
         document.getElementById("especialidad").addEventListener("change", function() {
-
             let idEspecialidad = this.value;
 
             fetch("../Controler/Get_Medicos.php?id=" + idEspecialidad)
@@ -416,6 +488,23 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                     }
 
                 });
+
+        });
+        document.querySelectorAll(".btnEditarCita").forEach(btn => {
+
+            btn.addEventListener("click", function() {
+
+                document.getElementById("edit_id").value = this.dataset.id;
+                document.getElementById("edit_monto").value = this.dataset.monto;
+                document.getElementById("edit_fecha").value = this.dataset.fecha;
+                document.getElementById("edit_hora").value = this.dataset.hora;
+                document.getElementById("edit_id_medico").value = this.dataset.medico;
+
+                new bootstrap.Modal(
+                    document.getElementById("modalEditarHora")
+                ).show();
+
+            });
 
         });
     </script>

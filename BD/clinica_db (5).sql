@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-05-2026 a las 00:33:16
+-- Tiempo de generación: 23-05-2026 a las 03:04:51
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,7 +43,7 @@ CREATE TABLE `citas` (
 --
 
 INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`, `monto`, `estado_pago`) VALUES
-(12, 2, '2026-05-22', '12:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
+(12, 2, '2026-05-22', '22:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
 (13, 2, '2026-05-21', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado'),
 (14, 2, '2026-05-21', '21:00:00', 9, 'Confirmada', 200.00, 'Pagado'),
 (15, 1, '2026-05-25', '15:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
@@ -55,13 +55,21 @@ INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`
 (21, 3, '2026-05-23', '15:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (22, 3, '2026-05-25', '17:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
 (23, 1, '2026-05-21', '22:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(24, 2, '2026-05-23', '14:00:00', 5, 'Confirmada', 200.00, 'Pendiente'),
-(25, 3, '2026-05-22', '18:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(26, 2, '2026-05-22', '17:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
+(24, 2, '2026-05-23', '17:00:00', 5, 'Confirmada', 200.00, 'Pendiente'),
+(25, 3, '2026-05-22', '10:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(26, 2, '2026-05-22', '22:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
 (27, 2, '2026-05-22', '18:00:00', 7, 'Confirmada', 90.00, 'Pendiente'),
 (28, 2, '2026-05-22', '15:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(29, 2, '2026-05-31', '16:00:00', 8, 'Confirmada', 150.00, 'Pendiente'),
-(30, 2, '2026-05-20', '17:00:00', 7, 'Confirmada', 220.00, 'Pendiente');
+(29, 2, '2026-05-31', '18:00:00', 8, 'Confirmada', 150.00, 'Pendiente'),
+(30, 2, '2026-05-20', '17:00:00', 7, 'Confirmada', 220.00, 'Pendiente'),
+(31, 2, '2026-05-25', '12:00:00', 9, 'Confirmada', NULL, 'Pendiente'),
+(32, 2, '2026-05-23', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(33, 2, '2026-05-24', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(34, 2, '2026-05-18', '18:00:00', 7, 'Confirmada', 100.00, 'Pendiente'),
+(35, 2, '2026-05-25', '18:00:00', 7, 'Confirmada', 100.00, 'Pendiente'),
+(36, 2, '2026-05-29', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(37, 2, '2026-06-01', '16:00:00', 5, 'Confirmada', 60.00, 'Pendiente'),
+(38, 2, '2026-05-23', '11:00:00', 9, 'Confirmada', 100.00, 'Pendiente');
 
 -- --------------------------------------------------------
 
@@ -263,7 +271,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`

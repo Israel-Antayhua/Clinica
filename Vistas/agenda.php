@@ -65,8 +65,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
                 INNER JOIN medicos m  ON c.id_medico = m.id 
                 INNER JOIN especialidades e ON m.id_especialidad = e.id
-                WHERE fecha = ? AND id_medico = ?" );
-                $agenda->bind_param("si", $fecha,$_SESSION['id_medico']);
+                WHERE fecha = ? AND id_medico = ?");
+                $agenda->bind_param("si", $fecha, $_SESSION['id_medico']);
                 $agenda->execute();
 
                 $resultado = $agenda->get_result();
@@ -186,7 +186,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                     <form action="../Controler/Add_Cita.php" id="formCita">
 
                         <div class="mb-3">
-
+                            <input type="hidden" name="accion" value="crear">
                             <label class="form-label fw-semibold">
                                 DNI del Paciente
                             </label>
@@ -223,7 +223,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                             <input type="text" class="form-control rounded-4 py-2"
                                 style="background:#e9ecef; cursor:not-allowed;"
                                 value="<?php
-                                        $sql = "SELECT e.nombre
+                                        $sql = "SELECT e.nombre,e.precio_consulta
                                 FROM especialidades e
                                 INNER JOIN medicos m On m.id_especialidad = e.id
                                 where m.id=?";
@@ -269,6 +269,10 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 }
                                 ?>
                             </select>
+                            <input type="hidden"
+                                id="monto"
+                                name="monto"
+                                value="<?php echo $especialidad['precio_consulta'] ?? 0; ?>">
                         </div>
 
                         <button class="btn btn-success w-100 rounded-4 py-3 fw-semibold">
@@ -276,6 +280,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
                             Guardar atención
 
                         </button>
+
+                        <input type="hidden" name="accion" value="crear">
 
                     </form>
 
@@ -376,6 +382,17 @@ if ($_SESSION['rol'] == 'medico'): ?>
                     }
 
                 });
+
+        });
+    </script>
+    <script>
+        Swal.fire({
+
+            icon: '<?php echo $_SESSION['swal']['icon']; ?>',
+
+            title: '<?php echo $_SESSION['swal']['title']; ?>',
+
+            text: '<?php echo $_SESSION['swal']['text']; ?>'
 
         });
     </script>
