@@ -7,8 +7,6 @@ $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 if ($_SESSION['rol'] == 'medico'): ?>
-
-    <!-- Encabezado -->
     <!-- Encabezado -->
     <div class="d-flex flex-column gap-3 mb-4">
 
@@ -21,16 +19,20 @@ if ($_SESSION['rol'] == 'medico'): ?>
         </div>
 
         <!-- FILTRO DE FECHA -->
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center"
+            id="barraAgenda">
 
             <!-- flechas + fecha -->
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3" id="filtrosAgenda">
 
                 <button class="btn btn-light border rounded-3" id="btnPrevDia">
                     <i class="bi bi-chevron-left"></i>
                 </button>
 
-                <input type="date" class="form-control w-auto" id="filtroFecha" value="<?php echo $fecha; ?>">
+                <input type="date"
+                    class="form-control w-auto"
+                    id="filtroFecha"
+                    value="<?php echo $fecha; ?>">
 
                 <button class="btn btn-light border rounded-3" id="btnNextDia">
                     <i class="bi bi-chevron-right"></i>
@@ -38,14 +40,28 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
             </div>
 
-            <!-- NUEVA CITA -->
-            <button class="btn btn-primary rounded-4 px-4 shadow-sm"
-                id="btnNuevaCita">
+            <!-- BOTONES DERECHA -->
+            <div class="d-flex align-items-center gap-2">
 
-                <i class="bi bi-plus-circle me-2"></i>
-                Nueva Cita
+                <!-- HISTORIAL -->
+                <button class="btn btn-outline-secondary rounded-4 px-4 shadow-sm"
+                    id="btnHistorial">
 
-            </button>
+                    <i class="bi bi-clock-history me-2"></i>
+                    Historial
+
+                </button>
+
+                <!-- NUEVA CITA -->
+                <button class="btn btn-primary rounded-4 px-4 shadow-sm"
+                    id="btnNuevaCita">
+
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Nueva Cita
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -151,7 +167,122 @@ if ($_SESSION['rol'] == 'medico'): ?>
             </div>
 
         </div>
+        <!-- HISTORIAL -->
+        <div class="col-12 d-none" id="contenedorHistorial">
+            <div class="card border-0 shadow-sm rounded-4">
 
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+
+                        <div>
+
+                            <h4 class="fw-bold mb-1">
+                                Historial de Citas
+                            </h4>
+
+                            <small class="text-secondary">
+                                Registro completo de atenciones médicas
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Especialidad</th>
+                                    <th>Estado</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <?php
+                                $historial = $conexion->prepare("
+                            SELECT c.*, 
+                                   p.nombres AS nombre_paciente,
+                                   e.nombre AS especialidad
+                            FROM citas c
+                            INNER JOIN pacientes p 
+                                ON c.id_paciente = p.id_paciente
+                            INNER JOIN medicos m  
+                                ON c.id_medico = m.id
+                            INNER JOIN especialidades e 
+                                ON m.id_especialidad = e.id
+                            WHERE c.id_medico = ?
+                            ORDER BY c.fecha DESC, c.hora DESC
+                        ");
+
+                                $historial->bind_param("i", $_SESSION['id_medico']);
+                                $historial->execute();
+
+                                $resultadoHistorial = $historial->get_result();
+
+                                while ($h = $resultadoHistorial->fetch_assoc()):
+
+                                    $estado = strtolower($h['estado']);
+                                    $color = "primary";
+
+                                    if ($estado == "confirmada") $color = "success";
+                                    if ($estado == "pendiente") $color = "warning";
+                                    if ($estado == "cancelada") $color = "danger";
+                                ?>
+
+                                    <tr>
+
+                                        <td>
+                                            <?php echo date('d/m/Y', strtotime($h['fecha'])); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo $h['hora']; ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($h['nombre_paciente']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo $h['especialidad']; ?>
+                                        </td>
+
+                                        <td>
+
+                                            <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
+
+                                                <?php echo $h['estado']; ?>
+
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                <?php endwhile; ?>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
         <!-- FORMULARIO -->
         <div class="col-6 d-none" id="panelFormulario">
 

@@ -4,741 +4,458 @@ if (isset($_SESSION['swal']));
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 if ($_SESSION['rol'] == 'medico'): ?>
+    <div class="d-flex gap-2 mb-4">
 
-    <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+        <button class="btn btn-primary rounded-4"
+            id="btnVistaMedicos"
+            onclick="cambiarVista('medicos')">
 
-        <div>
+            <i class="bi bi-person-badge me-2"></i>
+            Médicos
 
-            <h3 class="fw-bold mb-1">
-                Gestion de Medicos
-            </h3>
+        </button>
 
-            <small class="text-secondary">
-                Administración de médicos
-            </small>
+        <button class="btn btn-outline-primary rounded-4"
+            id="btnVistaEspecialidades"
+            onclick="cambiarVista('especialidades')">
 
-        </div>
-
-        <button class="btn btn-primary rounded-4 px-4 shadow-sm" onclick="abrirFormulario()">
-
-            <i class="bi bi-plus-circle me-2"></i>
-
-            Nuevo Registro
+            <i class="bi bi-heart-pulse me-2"></i>
+            Especialidades
 
         </button>
 
     </div>
-    <!-- MÉDICOS -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4" id="tablaMedicos">
+    <div id="vistaMedicos">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="card-body p-4">
+            <div>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-1">
+                    Gestion de Medicos
+                </h3>
 
-                <div>
-
-                    <h4 class="fw-bold mb-1">
-                        Gestión de Médicos
-                    </h4>
-
-                    <small class="text-secondary">
-                        Registro y administración del personal médico
-                    </small>
-
-                </div>
+                <small class="text-secondary">
+                    Administración de médicos
+                </small>
 
             </div>
 
-            <div class="table-responsive">
+            <button class="btn btn-primary rounded-4 px-4 shadow-sm" onclick="abrirFormulario()">
 
-                <table class="table table-hover align-middle">
+                <i class="bi bi-plus-circle me-2"></i>
 
-                    <thead class="table-light">
+                Nuevo Registro
 
-                        <tr>
+            </button>
 
-                            <th class="py-3">ID</th>
+        </div>
+        <!-- MÉDICOS -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4" id="tablaMedicos">
 
-                            <th class="py-3">Médico</th>
+            <div class="card-body p-4">
 
-                            <th class="py-3">Especialidad</th>
+                <div class="d-flex justify-content-between align-items-center mb-4">
 
-                            <th class="py-3">Teléfono</th>
+                    <div>
 
-                            <th class="py-3">Estado</th>
+                        <h4 class="fw-bold mb-1">
+                            Gestión de Médicos
+                        </h4>
 
-                            <th class="py-3 text-center">Acciones</th>
+                        <small class="text-secondary">
+                            Registro y administración del personal médico
+                        </small>
 
-                        </tr>
+                    </div>
 
-                    </thead>
+                </div>
 
-                    <tbody>
+                <div class="table-responsive">
 
-                        <?php
-                        $meds = $conexion->query("
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th class="py-3">ID</th>
+
+                                <th class="py-3">Médico</th>
+
+                                <th class="py-3">Especialidad</th>
+
+                                <th class="py-3">Teléfono</th>
+
+                                <th class="py-3">Estado</th>
+
+                                <th class="py-3 text-center">Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <?php
+                            $meds = $conexion->query("
                                     SELECT m.*, e.nombre AS especialidad, u.usuario AS usuario
                                     FROM medicos m
                                     INNER JOIN especialidades e ON m.id_especialidad = e.id
                                     INNER JOIN usuarios u ON m.id_usuario = u.id
                                     ");
 
-                        while ($m = $meds->fetch_assoc()):
+                            while ($m = $meds->fetch_assoc()):
 
-                            $badge = ($m['estado'] == 'Activo')
-                                ? 'bg-success-subtle text-success border border-success-subtle'
-                                : 'bg-danger-subtle text-danger border border-danger-subtle';
-                        ?>
+                                $badge = ($m['estado'] == 'Activo')
+                                    ? 'bg-success-subtle text-success border border-success-subtle'
+                                    : 'bg-danger-subtle text-danger border border-danger-subtle';
+                            ?>
 
-                            <tr>
+                                <tr>
 
-                                <!-- ID -->
-                                <td>
+                                    <!-- ID -->
+                                    <td>
 
-                                    <span class="fw-semibold">
+                                        <span class="fw-semibold">
 
-                                        #<?php echo $m['id']; ?>
+                                            #<?php echo $m['id']; ?>
 
-                                    </span>
+                                        </span>
 
-                                </td>
+                                    </td>
 
-                                <!-- Médico -->
-                                <td>
+                                    <!-- Médico -->
+                                    <td>
 
-                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center gap-3">
 
-                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                                            style="width:45px; height:45px;">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
+                                                style="width:45px; height:45px;">
 
-                                            <i class="bi bi-person-badge text-primary"></i>
-
-                                        </div>
-
-                                        <div>
-
-                                            <div class="fw-semibold">
-
-                                                <?php echo $m['nombre']; ?>
+                                                <i class="bi bi-person-badge text-primary"></i>
 
                                             </div>
 
-                                            <small class="text-secondary">
-                                                Médico registrado
-                                            </small>
+                                            <div>
+
+                                                <div class="fw-semibold">
+
+                                                    <?php echo $m['nombre']; ?>
+
+                                                </div>
+
+                                                <small class="text-secondary">
+                                                    Médico registrado
+                                                </small>
+
+                                            </div>
 
                                         </div>
 
-                                    </div>
+                                    </td>
 
-                                </td>
+                                    <!-- Especialidad -->
+                                    <td>
 
-                                <!-- Especialidad -->
-                                <td>
+                                        <span class="fw-medium">
 
-                                    <span class="fw-medium">
+                                            <?php
 
-                                        <?php
+                                            echo $m['especialidad']; ?>
 
-                                        echo $m['especialidad']; ?>
+                                        </span>
 
-                                    </span>
+                                    </td>
 
-                                </td>
+                                    <!-- Teléfono -->
+                                    <td>
 
-                                <!-- Teléfono -->
-                                <td>
+                                        <?php echo $m['telefono']; ?>
 
-                                    <?php echo $m['telefono']; ?>
+                                    </td>
 
-                                </td>
+                                    <!-- Estado -->
+                                    <td>
 
-                                <!-- Estado -->
-                                <td>
+                                        <span class="badge rounded-pill px-3 py-2 <?php echo $badge; ?>">
 
-                                    <span class="badge rounded-pill px-3 py-2 <?php echo $badge; ?>">
+                                            <?php echo $m['estado']; ?>
 
-                                        <?php echo $m['estado']; ?>
+                                        </span>
 
-                                    </span>
+                                    </td>
 
-                                </td>
+                                    <!-- Acciones -->
+                                    <td class="text-center">
 
-                                <!-- Acciones -->
-                                <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
 
-                                    <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-sm btn-light border rounded-3" disabled>
 
-                                        <button class="btn btn-sm btn-light border rounded-3" disabled>
+                                                <i class="bi bi-eye"></i>
 
-                                            <i class="bi bi-eye"></i>
+                                            </button>
 
-                                        </button>
+                                            <button class="btnEditar2 btn btn-sm btn-light border rounded-3"
+                                                data-id="<?php echo $m['id']; ?>"
+                                                data-nombre="<?php echo $m['nombre']; ?>"
+                                                data-telefono="<?php echo $m['telefono']; ?>"
+                                                data-usuario="<?php echo $m['usuario']; ?>"
+                                                data-id_especialidad="<?php echo $m['id_especialidad']; ?>">
 
-                                        <button class="btnEditar2 btn btn-sm btn-light border rounded-3"
-                                            data-id="<?php echo $m['id']; ?>"
-                                            data-nombre="<?php echo $m['nombre']; ?>"
-                                            data-telefono="<?php echo $m['telefono']; ?>"
-                                            data-usuario="<?php echo $m['usuario']; ?>"
-                                            data-id_especialidad="<?php echo $m['id_especialidad']; ?>">
+                                                <i class="bi bi-pencil"></i>
 
-                                            <i class="bi bi-pencil"></i>
+                                            </button>
 
-                                        </button>
+                                        </div>
 
-                                    </div>
+                                    </td>
 
-                                </td>
+                                </tr>
 
-                            </tr>
+                            <?php endwhile; ?>
 
-                        <?php endwhile; ?>
+                        </tbody>
 
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-    </div>
-    <!-- Formulario -->
-    <div class="justify-content-center align-items-center bg-white p-3" id="formMedicos">
-
-        <div class="card border-0 shadow-lg rounded-4 w-100">
-
-            <!-- BODY -->
-            <div class="card-body p-4">
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-
-                    <div>
-
-                        <h3 class="fw-bold mt-2 mb-0">
-                            Registro de Médico
-                        </h3>
-
-                        <small class="opacity-75">
-                            Agrega un nuevo médico al sistema
-                        </small>
-
-                    </div>
-
-                    <button type="button"
-                        class="btn-close"
-                        onclick="cerrarFormulario()">
-                    </button>
+                    </table>
 
                 </div>
 
-                <form action="../Controler/Add_Medico.php" method="POST">
-
-                    <!-- USUARIO -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Usuario</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-person"></i>
-                            </span>
-                            <input type="text" name="usuario" class="form-control form-control-sm" required>
-                        </div>
-                    </div>
-
-                    <!-- CONTRASEÑA -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Contraseña</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-lock"></i>
-                            </span>
-                            <input type="password" name="password" class="form-control form-control-sm" required>
-                        </div>
-                    </div>
-
-                    <!-- TELEFONO -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Teléfono</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-telephone"></i>
-                            </span>
-                            <input type="text" name="telefono" class="form-control form-control-sm" required>
-                        </div>
-                    </div>
-
-                    <!-- ESPECIALIDAD -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Especialidad</label>
-
-                        <select name="id_especialidad" class="form-select form-select-sm" required>
-
-                            <option value="">Seleccione especialidad</option>
-
-                            <?php
-                            include("conexion.php");
-
-                            $sql = "SELECT * FROM especialidades";
-                            $res = $conexion->query($sql);
-
-                            while ($e = $res->fetch_assoc()) {
-                                echo "<option value='{$e['id']}'>{$e['nombre']}</option>";
-                            }
-                            ?>
-
-                        </select>
-                    </div>
-
-                    <!-- BOTONES -->
-                    <div class="d-grid gap-2 mt-4">
-
-                        <button type="submit" class="btn btn-primary btn-sm rounded-3 shadow-sm">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Guardar Médico
-                        </button>
-
-                        <button type="button"
-                            class="btn btn-outline-secondary btn-sm rounded-3"
-                            onclick="cerrarFormulario()">
-                            <i class="bi bi-arrow-left me-2"></i>
-                            Volver
-                        </button>
-
-                    </div>
-
-                </form>
-
             </div>
         </div>
+        <!-- Formulario -->
+        <div class="justify-content-center align-items-center bg-white p-3" id="formMedicos">
 
-    </div>
-    <!-- Modal Medico -->
-    <div class="modal fade" id="modalMedico" tabindex="-1">
-
-        <div class="modal-dialog modal-dialog-centered">
-
-            <form id="formMedico" action="../Controler/Add_Medico.php" method="POST" class="modal-content">
-
-                <!-- HEADER -->
-                <div class="modal-header bg-success text-white">
-
-                    <h5 class="modal-title">
-                        Registro de Médico
-                    </h5>
-
-                    <button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="modal"></button>
-
-                </div>
+            <div class="card border-0 shadow-lg rounded-4 w-100">
 
                 <!-- BODY -->
-                <div class="modal-body">
+                <div class="card-body p-4">
 
-                    <!-- ID (para editar) -->
-                    <input type="hidden" name="id" id="med_id">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
-                    <!-- ACCION -->
-                    <input type="hidden" name="accion" value="guardar">
+                        <div>
 
-                    <!-- NOMBRE -->
-                    <div class="mb-3">
+                            <h3 class="fw-bold mt-2 mb-0">
+                                Registro de Médico
+                            </h3>
 
-                        <label class="form-label fw-semibold">Nombre</label>
+                            <small class="opacity-75">
+                                Agrega un nuevo médico al sistema
+                            </small>
 
-                        <input type="text"
-                            name="nombre"
-                            id="med_nombre"
-                            class="form-control rounded-3"
-                            required>
+                        </div>
 
-                    </div>
-
-                    <!-- TELEFONO -->
-                    <div class="mb-3">
-
-                        <label class="form-label fw-semibold">Teléfono</label>
-
-                        <input type="text"
-                            name="telefono"
-                            id="med_telefono"
-                            class="form-control rounded-3"
-                            required>
+                        <button type="button"
+                            class="btn-close"
+                            onclick="cerrarFormulario()">
+                        </button>
 
                     </div>
 
-                    <!-- USUARIO -->
-                    <div class="mb-3">
+                    <form action="../Controler/Add_Medico.php" method="POST">
 
-                        <label class="form-label fw-semibold">Usuario</label>
+                        <!-- USUARIO -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">Usuario</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input type="text" name="usuario" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
 
-                        <input type="text"
-                            name="usuario"
-                            id="med_usuario"
-                            class="form-control rounded-3"
-                            required>
+                        <!-- CONTRASEÑA -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="password" name="password" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
 
-                    </div>
+                        <!-- TELEFONO -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">Teléfono</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-telephone"></i>
+                                </span>
+                                <input type="text" name="telefono" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
 
-                    <!-- PASSWORD -->
-                    <div class="mb-3">
+                        <!-- ESPECIALIDAD -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">Especialidad</label>
 
-                        <label class="form-label fw-semibold">Contraseña</label>
+                            <select name="id_especialidad" class="form-select form-select-sm" required>
 
-                        <input type="password"
-                            name="password"
-                            id="med_password"
-                            class="form-control rounded-3">
+                                <option value="">Seleccione especialidad</option>
 
-                        <small class="text-muted">
-                            (Solo completar si es nuevo o cambiar contraseña)
-                        </small>
+                                <?php
+                                include("conexion.php");
 
-                    </div>
+                                $sql = "SELECT * FROM especialidades";
+                                $res = $conexion->query($sql);
 
-                    <!-- ESPECIALIDAD -->
-                    <div class="mb-3">
+                                while ($e = $res->fetch_assoc()) {
+                                    echo "<option value='{$e['id']}'>{$e['nombre']}</option>";
+                                }
+                                ?>
 
-                        <label class="form-label fw-semibold">Especialidad</label>
+                            </select>
+                        </div>
 
-                        <select name="id_especialidad"
-                            id="med_especialidad"
-                            class="form-select rounded-3"
-                            required>
+                        <!-- BOTONES -->
+                        <div class="d-grid gap-2 mt-4">
 
-                            <option value="">Seleccione...</option>
+                            <button type="submit" class="btn btn-primary btn-sm rounded-3 shadow-sm">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Guardar Médico
+                            </button>
 
-                            <!-- dinámico desde BD -->
-                            <?php
-                            $esp = $conexion->query("SELECT * FROM especialidades");
-                            while ($e = $esp->fetch_assoc()) {
-                                echo "<option value='{$e['id']}'
-                            data-precio='{$e['precio_consulta']}'>
-                            {$e['nombre']}</option>";
-                            }
-                            ?>
+                            <button type="button"
+                                class="btn btn-outline-secondary btn-sm rounded-3"
+                                onclick="cerrarFormulario()">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver
+                            </button>
 
-                        </select>
+                        </div>
 
-                    </div>
+                    </form>
 
                 </div>
-
-                <!-- FOOTER -->
-                <div class="modal-footer">
-
-                    <button type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-
-                    <button type="submit"
-                        class="btn btn-success">
-                        Guardar Médico
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <!--Header Especialidades-->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-
-            <h3 class="fw-bold mb-1">
-                Gestion de Especialidades
-            </h3>
-
-            <small class="text-secondary">
-                Administración de Especialidades
-            </small>
-
-        </div>
-
-        <button class="btn btn-primary rounded-4 px-4 shadow-sm" onclick="abrirFormulario2()">
-
-            <i class="bi bi-plus-circle me-2"></i>
-
-            Nuevo Registro
-
-        </button>
-
-    </div>
-    <!-- ESPECIALIDADES -->
-    <div class="card border-0 shadow-sm rounded-4" id="tablaEspecialidades">
-
-        <div class="card-body p-4">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-
-                <div>
-
-                    <h4 class="fw-bold mb-1">
-                        Gestión de Especialidades
-                    </h4>
-
-                    <small class="text-secondary">
-                        Administración de áreas médicas disponibles
-                    </small>
-
-                </div>
-
-            </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead class="table-light">
-
-                        <tr>
-
-                            <th class="py-3">ID</th>
-
-                            <th class="py-3">Especialidad</th>
-
-                            <th class="py-3">Precio Consulta</th>
-
-                            <th class="py-3">Estado</th>
-
-                            <th class="py-3 text-center">Acciones</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <?php
-                        $espe = $conexion->query("SELECT * FROM especialidades");
-
-                        while ($e = $espe->fetch_assoc()):
-
-                            $badge = ($e['estado'] == 'Activo')
-                                ? 'bg-success-subtle text-success border border-success-subtle'
-                                : 'bg-danger-subtle text-danger border border-danger-subtle';
-                        ?>
-
-                            <tr>
-
-                                <!-- ID -->
-                                <td>
-
-                                    <span class="fw-semibold text-dark">
-
-                                        #<?php echo $e['id']; ?>
-
-                                    </span>
-
-                                </td>
-
-                                <!-- Especialidad -->
-                                <td>
-
-                                    <div class="d-flex align-items-center gap-3">
-
-                                        <div class="bg-info bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center shadow-sm"
-                                            style="width:50px; height:50px;">
-
-                                            <i class="bi bi-heart-pulse-fill text-info fs-5"></i>
-
-                                        </div>
-
-                                        <div>
-
-                                            <div class="fw-bold text-dark">
-
-                                                <?php echo $e['nombre']; ?>
-
-                                            </div>
-
-                                            <small class="text-secondary">
-                                                Especialidad médica
-                                            </small>
-
-                                        </div>
-
-                                    </div>
-
-                                </td>
-
-                                <!-- Precio Consulta -->
-                                <td>
-
-                                    <div class="bg-success bg-opacity-10 rounded-4 px-3 py-2 d-inline-flex align-items-center gap-2">
-
-                                        <i class="bi bi-cash-stack text-success"></i>
-
-                                        <div>
-
-                                            <div class="fw-bold text-success">
-
-                                                S/ <?php echo number_format($e['precio_consulta'], 2); ?>
-
-                                            </div>
-
-                                            <small class="text-secondary">
-                                                Consulta
-                                            </small>
-
-                                        </div>
-
-                                    </div>
-
-                                </td>
-
-                                <!-- Estado -->
-                                <td>
-
-                                    <span class="badge rounded-pill px-3 py-2 <?php echo $badge; ?> shadow-sm">
-
-                                        <?php echo $e['estado']; ?>
-
-                                    </span>
-
-                                </td>
-
-                                <!-- Acciones -->
-                                <td class="text-center">
-
-                                    <div class="d-flex justify-content-center gap-2">
-
-                                        <button class="btn btn-sm btn-light border rounded-3 shadow-sm btnEditar"
-                                            data-id="<?php echo $e['id']; ?>"
-                                            data-nombre="<?php echo $e['nombre']; ?>"
-                                            data-precio="<?php echo $e['precio_consulta']; ?>">
-
-                                            <i class="bi bi-pencil text-primary"></i>
-
-                                        </button>
-
-                                        <button
-                                            class="btn btn-sm btn-light border toggleEstado"
-                                            data-id="<?php echo $e['id']; ?>">
-
-                                            <?php if ($e['estado'] == 'Activo') { ?>
-                                                <i class="bi bi-toggle-on text-success"></i>
-                                            <?php } else { ?>
-                                                <i class="bi bi-toggle-off text-danger"></i>
-                                            <?php } ?>
-
-                                        </button>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        <?php endwhile; ?>
-
-                    </tbody>
-
-                </table>
-
             </div>
 
         </div>
+        <!-- Modal Medico -->
+        <div class="modal fade" id="modalMedico" tabindex="-1">
 
-    </div>
-    <!-- Formulario -->
-    <div class="justify-content-center align-items-center bg-white p-3" id="formEspecialidades">
+            <div class="modal-dialog modal-dialog-centered">
 
-        <div class="card border-0 shadow-lg rounded-4 w-100">
+                <form id="formMedico" action="../Controler/Add_Medico.php" method="POST" class="modal-content">
 
-            <!-- BODY -->
-            <div class="card-body p-4">
+                    <!-- HEADER -->
+                    <div class="modal-header bg-success text-white">
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="modal-title">
+                            Registro de Médico
+                        </h5>
 
-                    <div>
-
-                        <h3 class="fw-bold mt-2 mb-0">
-                            Registro de Especialidad
-                        </h3>
-
-                        <small class="opacity-75">
-                            Agrega una nueva Especialidad al sistema
-                        </small>
+                        <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button>
 
                     </div>
 
-                    <button type="button"
-                        class="btn-close"
-                        onclick="cerrarFormulario2()">
-                    </button>
+                    <!-- BODY -->
+                    <div class="modal-body">
 
-                </div>
+                        <!-- ID (para editar) -->
+                        <input type="hidden" name="id" id="med_id">
 
-                <form action="../Controler/Add_Especia.php" method="POST">
+                        <!-- ACCION -->
+                        <input type="hidden" name="accion" value="guardar">
 
-                    <!-- USUARIO -->
-                    <!-- NOMBRE ESPECIALIDAD -->
-                    <div class="mb-3">
+                        <!-- NOMBRE -->
+                        <div class="mb-3">
 
-                        <label class="form-label fw-semibold small text-secondary">
-                            Nombre de Especialidad
-                        </label>
-
-                        <div class="input-group">
-
-                            <span class="input-group-text">
-                                <i class="bi bi-heart-pulse"></i>
-                            </span>
+                            <label class="form-label fw-semibold">Nombre</label>
 
                             <input type="text"
                                 name="nombre"
-                                class="form-control form-control-sm"
-                                placeholder="Ej: Cardiología"
+                                id="med_nombre"
+                                class="form-control rounded-3"
                                 required>
+
+                        </div>
+
+                        <!-- TELEFONO -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">Teléfono</label>
+
+                            <input type="text"
+                                name="telefono"
+                                id="med_telefono"
+                                class="form-control rounded-3"
+                                required>
+
+                        </div>
+
+                        <!-- USUARIO -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">Usuario</label>
+
+                            <input type="text"
+                                name="usuario"
+                                id="med_usuario"
+                                class="form-control rounded-3"
+                                required>
+
+                        </div>
+
+                        <!-- PASSWORD -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">Contraseña</label>
+
+                            <input type="password"
+                                name="password"
+                                id="med_password"
+                                class="form-control rounded-3">
+
+                            <small class="text-muted">
+                                (Solo completar si es nuevo o cambiar contraseña)
+                            </small>
+
+                        </div>
+
+                        <!-- ESPECIALIDAD -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">Especialidad</label>
+
+                            <select name="id_especialidad"
+                                id="med_especialidad"
+                                class="form-select rounded-3"
+                                required>
+
+                                <option value="">Seleccione...</option>
+
+                                <!-- dinámico desde BD -->
+                                <?php
+                                $esp = $conexion->query("SELECT * FROM especialidades");
+                                while ($e = $esp->fetch_assoc()) {
+                                    echo "<option value='{$e['id']}'
+                            data-precio='{$e['precio_consulta']}'>
+                            {$e['nombre']}</option>";
+                                }
+                                ?>
+
+                            </select>
 
                         </div>
 
                     </div>
 
-                    <!-- PRECIO CONSULTA -->
-                    <div class="mb-3">
-
-                        <label class="form-label fw-semibold small text-secondary">
-                            Precio de Consulta
-                        </label>
-
-                        <div class="input-group">
-
-                            <span class="input-group-text">
-                                S/
-                            </span>
-
-                            <input type="number"
-                                name="precio_consulta"
-                                class="form-control form-control-sm"
-                                placeholder="0.00"
-                                step="0.01"
-                                min="0"
-                                required>
-
-                        </div>
-
-                    </div>
-
-                    <!-- BOTONES -->
-                    <div class="d-grid gap-2 mt-4">
-
-                        <button type="submit" class="btn btn-primary btn-sm rounded-3 shadow-sm">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Guardar Especialidad
-                        </button>
+                    <!-- FOOTER -->
+                    <div class="modal-footer">
 
                         <button type="button"
-                            class="btn btn-outline-secondary btn-sm rounded-3"
-                            onclick="cerrarFormulario2()">
-                            <i class="bi bi-arrow-left me-2"></i>
-                            Volver
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+
+                        <button type="submit"
+                            class="btn btn-success">
+                            Guardar Médico
                         </button>
 
                     </div>
@@ -746,47 +463,353 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 </form>
 
             </div>
+
         </div>
-
     </div>
-    <!-- Modal Especia -->
-    <div class="modal fade" id="modalEditar">
-        <div class="modal-dialog">
+    <div id="vistaEspecialidades" style="display:none;">
+        <!--Header Especialidades-->
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-            <form action="../Controler/Add_Especia.php" method="POST" class="modal-content">
+            <div>
 
-                <div class="modal-header">
-                    <h5>Editar Especialidad</h5>
-                </div>
-                <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    style="position:absolute; right:15px; top:15px;">
-                </button>
-                <div class="modal-body">
+                <h3 class="fw-bold mb-1">
+                    Gestion de Especialidades
+                </h3>
 
-                    <input type="hidden" name="id" id="edit_id">
+                <small class="text-secondary">
+                    Administración de Especialidades
+                </small>
 
-                    <div class="mb-2">
-                        <label>Nombre</label>
-                        <input type="text" name="nombre" id="edit_nombre" class="form-control">
+            </div>
+
+            <button class="btn btn-primary rounded-4 px-4 shadow-sm" onclick="abrirFormulario2()">
+
+                <i class="bi bi-plus-circle me-2"></i>
+
+                Nuevo Registro
+
+            </button>
+
+        </div>
+        <!-- ESPECIALIDADES -->
+        <div class="card border-0 shadow-sm rounded-4" id="tablaEspecialidades">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <div>
+
+                        <h4 class="fw-bold mb-1">
+                            Gestión de Especialidades
+                        </h4>
+
+                        <small class="text-secondary">
+                            Administración de áreas médicas disponibles
+                        </small>
+
                     </div>
 
-                    <div class="mb-2">
-                        <label>Precio</label>
-                        <input type="number" name="precio" id="edit_precio" class="form-control">
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th class="py-3">ID</th>
+
+                                <th class="py-3">Especialidad</th>
+
+                                <th class="py-3">Precio Consulta</th>
+
+                                <th class="py-3">Estado</th>
+
+                                <th class="py-3 text-center">Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <?php
+                            $espe = $conexion->query("SELECT * FROM especialidades");
+
+                            while ($e = $espe->fetch_assoc()):
+
+                                $badge = ($e['estado'] == 'Activo')
+                                    ? 'bg-success-subtle text-success border border-success-subtle'
+                                    : 'bg-danger-subtle text-danger border border-danger-subtle';
+                            ?>
+
+                                <tr>
+
+                                    <!-- ID -->
+                                    <td>
+
+                                        <span class="fw-semibold text-dark">
+
+                                            #<?php echo $e['id']; ?>
+
+                                        </span>
+
+                                    </td>
+
+                                    <!-- Especialidad -->
+                                    <td>
+
+                                        <div class="d-flex align-items-center gap-3">
+
+                                            <div class="bg-info bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center shadow-sm"
+                                                style="width:50px; height:50px;">
+
+                                                <i class="bi bi-heart-pulse-fill text-info fs-5"></i>
+
+                                            </div>
+
+                                            <div>
+
+                                                <div class="fw-bold text-dark">
+
+                                                    <?php echo $e['nombre']; ?>
+
+                                                </div>
+
+                                                <small class="text-secondary">
+                                                    Especialidad médica
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- Precio Consulta -->
+                                    <td>
+
+                                        <div class="bg-success bg-opacity-10 rounded-4 px-3 py-2 d-inline-flex align-items-center gap-2">
+
+                                            <i class="bi bi-cash-stack text-success"></i>
+
+                                            <div>
+
+                                                <div class="fw-bold text-success">
+
+                                                    S/ <?php echo number_format($e['precio_consulta'], 2); ?>
+
+                                                </div>
+
+                                                <small class="text-secondary">
+                                                    Consulta
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- Estado -->
+                                    <td>
+
+                                        <span class="badge estadoBadge rounded-pill px-3 py-2 <?php echo $badge; ?> shadow-sm">
+
+                                            <?php echo $e['estado']; ?>
+
+                                        </span>
+
+                                    </td>
+
+                                    <!-- Acciones -->
+                                    <td class="text-center">
+
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            <button class="btn btn-sm btn-light border rounded-3 shadow-sm btnEditar"
+                                                data-id="<?php echo $e['id']; ?>"
+                                                data-nombre="<?php echo $e['nombre']; ?>"
+                                                data-precio="<?php echo $e['precio_consulta']; ?>">
+
+                                                <i class="bi bi-pencil text-primary"></i>
+
+                                            </button>
+
+                                            <button
+                                                class="btn btn-sm btn-light border toggleEstado"
+                                                data-id="<?php echo $e['id']; ?>">
+
+                                                <?php if ($e['estado'] == 'Activo') { ?>
+                                                    <i class="bi bi-toggle-on text-success"></i>
+                                                <?php } else { ?>
+                                                    <i class="bi bi-toggle-off text-danger"></i>
+                                                <?php } ?>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            <?php endwhile; ?>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- Formulario -->
+        <div class="justify-content-center align-items-center bg-white p-3" id="formEspecialidades">
+
+            <div class="card border-0 shadow-lg rounded-4 w-100">
+
+                <!-- BODY -->
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+
+                        <div>
+
+                            <h3 class="fw-bold mt-2 mb-0">
+                                Registro de Especialidad
+                            </h3>
+
+                            <small class="opacity-75">
+                                Agrega una nueva Especialidad al sistema
+                            </small>
+
+                        </div>
+
+                        <button type="button"
+                            class="btn-close"
+                            onclick="cerrarFormulario2()">
+                        </button>
+
                     </div>
 
-                    <input type="hidden" name="accion" value="editar">
+                    <form action="../Controler/Add_Especia.php" method="POST" id="formEspecialidad">
+
+                        <!-- USUARIO -->
+                        <!-- NOMBRE ESPECIALIDAD -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold small text-secondary">
+                                Nombre de Especialidad
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-heart-pulse"></i>
+                                </span>
+
+                                <input type="text"
+                                    name="nombre"
+                                    class="form-control form-control-sm"
+                                    placeholder="Ej: Cardiología"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- PRECIO CONSULTA -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold small text-secondary">
+                                Precio de Consulta
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    S/
+                                </span>
+
+                                <input type="number"
+                                    name="precio_consulta"
+                                    class="form-control form-control-sm"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="d-grid gap-2 mt-4">
+
+                            <button type="submit" class="btn btn-primary btn-sm rounded-3 shadow-sm">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Guardar Especialidad
+                            </button>
+
+                            <button type="button"
+                                class="btn btn-outline-secondary btn-sm rounded-3"
+                                onclick="cerrarFormulario2()">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver
+                            </button>
+
+                        </div>
+
+                    </form>
 
                 </div>
+            </div>
 
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Guardar</button>
-                </div>
+        </div>
+        <!-- Modal Especia -->
+        <div class="modal fade" id="modalEditar">
+            <div class="modal-dialog">
 
-            </form>
+                <form action="../Controler/Add_Especia.php" method="POST" class="modal-content">
 
+                    <div class="modal-header">
+                        <h5>Editar Especialidad</h5>
+                    </div>
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        style="position:absolute; right:15px; top:15px;">
+                    </button>
+                    <div class="modal-body">
+
+                        <input type="hidden" name="id" id="edit_id">
+
+                        <div class="mb-2">
+                            <label>Nombre</label>
+                            <input type="text" name="nombre" id="edit_nombre" class="form-control">
+                        </div>
+
+                        <div class="mb-2">
+                            <label>Precio</label>
+                            <input type="number" name="precio" id="edit_precio" class="form-control">
+                        </div>
+
+                        <input type="hidden" name="accion" value="editar">
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-primary">Guardar</button>
+                    </div>
+
+                </form>
+
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -1,9 +1,15 @@
-const btnNueva = document.getElementById("btnNuevaCita");
 const panel = document.getElementById("panelFormulario");
 const cerrar = document.getElementById("cerrarFormulario");
 const listado = document.getElementById("contenedorListado");
 const listado1 = document.getElementById("columna1");
 const listado2 = document.getElementById("columna2");
+const btnHistorial = document.getElementById("btnHistorial");
+const btnNuevaCita = document.getElementById("btnNuevaCita");
+const contenedorListado = document.getElementById("contenedorListado");
+const contenedorHistorial = document.getElementById("contenedorHistorial");
+const panelFormulario = document.getElementById("panelFormulario");
+const barraAgenda = document.getElementById("barraAgenda");
+const filtrosAgenda = document.getElementById("filtrosAgenda");
 
 function toggleAcciones(abrirForm) {
   document.querySelectorAll(".acciones-cita").forEach((el) => {
@@ -62,15 +68,6 @@ document.getElementById("btnNextDia").addEventListener("click", () => {
   const nuevaFecha = fecha.toISOString().split("T")[0];
 
   window.location.href = "agenda.php?fecha=" + nuevaFecha;
-});
-
-btnNueva.addEventListener("click", () => {
-  panel.classList.remove("d-none");
-
-  listado.classList.remove("col-12");
-  listado.classList.add("col-6");
-  toggleAcciones(true);
-  modoFormulario(true);
 });
 
 cerrar.addEventListener("click", () => {
@@ -142,4 +139,50 @@ document.getElementById("formCita").addEventListener("submit", function (e) {
         });
       }
     });
+});
+
+btnHistorial.addEventListener("click", () => {
+  contenedorListado.classList.add("d-none");
+  panelFormulario.classList.add("d-none");
+
+  contenedorHistorial.classList.remove("d-none");
+  filtrosAgenda.classList.add("d-none");
+
+  btnHistorial.classList.add("d-none");
+  btnNuevaCita.innerHTML = `
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver a Agenda
+    `;
+});
+
+btnNuevaCita.addEventListener("click", () => {
+  // SI ESTÁ EN HISTORIAL → VOLVER
+  if (!contenedorHistorial.classList.contains("d-none")) {
+    contenedorHistorial.classList.add("d-none");
+
+    contenedorListado.classList.remove("d-none");
+
+    filtrosAgenda.classList.remove("d-none");
+
+    btnHistorial.classList.remove("d-none");
+
+    panelFormulario.classList.add("d-none");
+
+    btnNuevaCita.innerHTML = `
+            <i class="bi bi-plus-circle me-2"></i>
+            Nueva Cita
+        `;
+
+    return;
+  }
+
+  // ABRIR FORMULARIO
+  panel.classList.remove("d-none");
+
+  listado.classList.remove("col-12");
+  listado.classList.add("col-6");
+
+  toggleAcciones(true);
+
+  modoFormulario(true);
 });
