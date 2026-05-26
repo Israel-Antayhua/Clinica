@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-05-2026 a las 03:04:51
+-- Tiempo de generación: 26-05-2026 a las 03:34:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -50,7 +50,7 @@ INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`
 (16, 1, '2026-05-22', '17:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (17, 2, '2026-05-17', '12:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (18, 1, '2026-05-21', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(19, 1, '2026-05-28', '16:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
+(19, 1, '2026-05-28', '16:00:00', 9, 'Pendiente', 90.00, 'Pendiente'),
 (20, 1, '2026-05-20', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (21, 3, '2026-05-23', '15:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
 (22, 3, '2026-05-25', '17:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
@@ -69,7 +69,14 @@ INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`
 (35, 2, '2026-05-25', '18:00:00', 7, 'Confirmada', 100.00, 'Pendiente'),
 (36, 2, '2026-05-29', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
 (37, 2, '2026-06-01', '16:00:00', 5, 'Confirmada', 60.00, 'Pendiente'),
-(38, 2, '2026-05-23', '11:00:00', 9, 'Confirmada', 100.00, 'Pendiente');
+(38, 2, '2026-05-23', '11:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(39, 2, '2026-05-25', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(40, 2, '2026-05-25', '16:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(41, 2, '2026-05-25', '10:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(42, 2, '2026-05-25', '14:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(43, 2, '2026-05-29', '11:00:00', 8, 'Confirmada', 150.00, 'Pendiente'),
+(44, 2, '2026-06-04', '11:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
+(45, 2, '2026-05-25', '08:00:00', 9, 'Confirmada', 100.00, 'Pendiente');
 
 -- --------------------------------------------------------
 
@@ -90,7 +97,7 @@ CREATE TABLE `especialidades` (
 
 INSERT INTO `especialidades` (`id`, `nombre`, `estado`, `precio_consulta`) VALUES
 (1, 'Cardiología', 'Activo', 150.00),
-(2, 'Dermatología', 'Activo', 150.00),
+(2, 'Dermatología', 'Activo', 160.00),
 (3, 'Medicina General', 'Activo', 60.00),
 (4, 'Pediatría', 'Activo', 100.00),
 (5, 'Ginecología', 'Activo', 120.00),
@@ -271,7 +278,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`

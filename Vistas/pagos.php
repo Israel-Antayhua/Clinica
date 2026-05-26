@@ -20,12 +20,35 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
     </div>
 
-    <!-- Card -->
+    <!-- BOTONES FILTRO -->
+    <div class="d-flex gap-2 mb-4">
+
+        <button class="btn btn-primary rounded-4 px-4 filtro-btn active"
+            data-filtro="pendiente">
+
+            <i class="bi bi-clock-history me-2"></i>
+
+            Pendientes
+
+        </button>
+
+        <button class="btn btn-light border rounded-4 px-4 filtro-btn"
+            data-filtro="pagado">
+
+            <i class="bi bi-check-circle me-2"></i>
+
+            Historial de Pagos
+
+        </button>
+
+    </div>
+
+    <!-- CARD -->
     <div class="card border-0 shadow-sm rounded-4">
 
         <div class="card-body p-4">
 
-            <!-- Tabla -->
+            <!-- TABLA -->
             <div class="table-responsive">
 
                 <table class="table table-hover align-middle">
@@ -52,9 +75,12 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                         <?php
                         $pagos = $conexion->query(
-                            "SELECT c.*,e.nombre AS especialidad FROM citas c
-                            INNER JOIN medicos m  ON c.id_medico = m.id JOIN especialidades e ON m.id_especialidad = e.id
-                             WHERE id_paciente = '" . $_SESSION['id_usuario'] . "'"."ORDER BY fecha ASC,hora ASC"
+                            "SELECT c.*,e.nombre AS especialidad 
+                        FROM citas c
+                        INNER JOIN medicos m ON c.id_medico = m.id 
+                        INNER JOIN especialidades e ON m.id_especialidad = e.id
+                        WHERE id_paciente = '" . $_SESSION['id_usuario'] . "'
+                        ORDER BY fecha ASC, hora ASC"
                         );
 
                         while ($f = $pagos->fetch_assoc()):
@@ -62,9 +88,11 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                             $badge_pago = ($f['estado_pago'] == 'Pagado')
                                 ? 'bg-success-subtle text-success border border-success-subtle'
                                 : 'bg-warning-subtle text-warning border border-warning-subtle';
+
+                            $estadoClase = strtolower($f['estado_pago']);
                         ?>
 
-                            <tr>
+                            <tr class="fila-pago <?php echo $estadoClase; ?>">
 
                                 <!-- Especialidad -->
                                 <td>
@@ -139,6 +167,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                         <button class="btn btn-primary btn-sm rounded-3 px-3 btn-pagar"
                                             data-id="<?php echo $f['id']; ?>"
                                             data-monto="<?php echo $f['monto']; ?>">
+
                                             <i class="bi bi-credit-card me-1"></i>
 
                                             Registrar Pago
@@ -174,6 +203,42 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
+    <script>
+        const botones = document.querySelectorAll(".filtro-btn");
+        const filas = document.querySelectorAll(".fila-pago");
+
+        botones.forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                // estilos botones
+                botones.forEach(b => {
+                    b.classList.remove("btn-primary");
+                    b.classList.add("btn-light", "border");
+                });
+
+                btn.classList.remove("btn-light", "border");
+                btn.classList.add("btn-primary");
+
+                let filtro = btn.dataset.filtro;
+
+                filas.forEach(fila => {
+
+                    if (fila.classList.contains(filtro)) {
+                        fila.style.display = "";
+                    } else {
+                        fila.style.display = "none";
+                    }
+
+                });
+
+            });
+
+        });
+
+        // mostrar pendientes por defecto
+        document.querySelector('[data-filtro="pendiente"]').click();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.culqi.com/js/v4"></script>
     <script>

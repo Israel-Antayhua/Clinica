@@ -180,16 +180,17 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                     FROM citas c 
                                     INNER JOIN medicos m  ON c.id_medico = m.id 
                                     INNER JOIN especialidades e ON m.id_especialidad = e.id
-                                    WHERE fecha = CURDATE()
-                                    AND hora > CURTIME() 
-                                    AND id_paciente = ?");
+                                    WHERE (
+                                            fecha = CURDATE() AND hora > CURTIME()
+                                        ) OR fecha > CURDATE()
+                                    AND id_paciente = ?
+                                    ORDER BY fecha ASC, hora ASC");
                                     $agenda->bind_param("i", $_SESSION['id_usuario']);
                                     $agenda->execute();
 
                                     $resultado = $agenda->get_result();
                                     $fila = $resultado->fetch_assoc();
-                                    echo htmlspecialchars($fila['especialidad']);
-                                    ?>
+                                    echo htmlspecialchars($fila['especialidad'] ?? 'No hay cita proxima') ?>
                                 </h5>
 
                             </div>
@@ -285,43 +286,54 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                             </h4>
 
-                            <span class="badge bg-success rounded-pill px-3 py-2">
-
-                                <?php
-                                $cont_citas = $conexion->prepare("SELECT c.estado AS estado
+                            <?php
+                            $cont_citas = $conexion->prepare("SELECT c.estado AS estado
                                     FROM citas c 
-                                    WHERE fecha = CURDATE()
-                                    AND hora > CURTIME() 
-                                    AND id_paciente = ?");
-                                $cont_citas->bind_param("i", $_SESSION['id_usuario']);
-                                $cont_citas->execute();
-                                $result = $cont_citas->get_result();
-                                $fila = $result->fetch_assoc();
-                                ?>
-                                <?php echo htmlspecialchars($fila['estado']); ?>
+                                    WHERE (
+                                            fecha = CURDATE() AND hora > CURTIME()
+                                        ) OR fecha > CURDATE()
+                                    AND id_paciente = ?
+                                    ORDER BY fecha ASC, hora ASC");
+                            $cont_citas->bind_param("i", $_SESSION['id_usuario']);
+                            $cont_citas->execute();
+                            $result = $cont_citas->get_result();
+                            $fila = $result->fetch_assoc();
+                            $color = "primary";
+
+                            if ($fila['estado'] == "Confirmada") $color = "success";
+                            if ($fila['estado']  == "Pendiente") $color = "warning";
+                            if ($fila['estado']  == "Cancelada") $color = "danger";
+
+                            ?>
+
+                            <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
+                                <?php echo htmlspecialchars($fila['estado'] ?? 'No hay cita'); ?>
                             </span>
 
                         </div>
 
                         <!-- INFO -->
                         <div class="row g-4">
-
-                            <!-- MEDICO -->
-                            <div class="col-md-6">
-                                <?php
-                                $agenda = $conexion->prepare("SELECT c.fecha, c.hora, c.id, m.nombre AS nombre, e.nombre AS especialidad
+                            <?php
+                            $agenda = $conexion->prepare("SELECT c.fecha, c.hora, c.id,c.estado_pago, m.nombre AS nombre, e.nombre AS especialidad
                                     FROM citas c 
                                     INNER JOIN medicos m  ON c.id_medico = m.id 
                                     INNER JOIN especialidades e ON m.id_especialidad = e.id
-                                    WHERE fecha = CURDATE()
-                                    AND hora > CURTIME() 
-                                    AND id_paciente = ?");
-                                $agenda->bind_param("i", $_SESSION['id_usuario']);
-                                $agenda->execute();
+                                    WHERE (
+                                            fecha = CURDATE() AND hora > CURTIME()
+                                        ) OR fecha > CURDATE()
+                                    AND id_paciente = ?
+                                    ORDER BY fecha ASC, hora ASC");
+                            $agenda->bind_param("i", $_SESSION['id_usuario']);
+                            $agenda->execute();
 
-                                $resultado = $agenda->get_result();
-                                $fila = $resultado->fetch_assoc();
-                                ?>
+                            $resultado = $agenda->get_result();
+                            $fila = $resultado->fetch_assoc();
+                            ?>
+                            <input type="hidden" id="fechaCita" value="<?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>">
+                            <input type="hidden" id="horaCita" value="<?php echo htmlspecialchars($fila['hora'] ?? ''); ?>">
+                            <!-- MEDICO -->
+                            <div class="col-md-6">
                                 <div class="border rounded-4 p-4 h-100">
 
                                     <div class="d-flex align-items-center gap-3 mb-3">
@@ -337,13 +349,13 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                                             <h5 class="fw-bold mb-1">
 
-                                                Dr. <?php echo htmlspecialchars($fila['nombre']); ?>
+                                                Dr. <?php echo htmlspecialchars($fila['nombre'] ?? ''); ?>
 
                                             </h5>
 
                                             <span class="text-secondary">
 
-                                                <?php echo htmlspecialchars($fila['especialidad']); ?>
+                                                <?php echo htmlspecialchars($fila['especialidad'] ?? ''); ?>
 
                                             </span>
 
@@ -373,7 +385,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                         </span>
 
                                         <span class="text-secondary">
-                                            <?php echo htmlspecialchars($fila['fecha']); ?>
+                                            <?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>
                                         </span>
 
                                     </div>
@@ -385,7 +397,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                         </span>
 
                                         <span class="text-secondary">
-                                            <?php echo htmlspecialchars($fila['hora']); ?>
+                                            <?php echo htmlspecialchars($fila['hora'] ?? ''); ?>
                                         </span>
 
                                     </div>
@@ -420,17 +432,29 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                 Trabajando ...
 
                             </button>
+                            <?php
+                            if ($fila['estado_pago'] == 'Pagado') {
+                            ?>
+                                <a href="comprobante.php?id=<?php echo $fila['id']; ?>"
+                                    target="_blank"
+                                    class="btn btn-light border btn-sm rounded-3 px-3">
 
-                            <a href="comprobante.php?id=<?php echo $fila['id']; ?>"
-                                target="_blank"
-                                class="btn btn-light border btn-sm rounded-3 px-3">
+                                    <i class="bi bi-file-earmark-check me-1"></i>
 
-                                <i class="bi bi-file-earmark-check me-1"></i>
+                                    Ver comprobante
 
-                                Ver comprobante
+                                </a>
+                            <?php } else { ?>
+                                <a href="pagos.php"
+                                    class="btn btn-success btn-sm rounded-3 px-3">
 
-                            </a>
+                                    <i class="bi bi-credit-card me-1"></i>
 
+                                    Ir a pagar
+
+                                </a>
+
+                            <?php } ?>
                         </div>
 
                     </div>

@@ -81,3 +81,65 @@ cerrar.addEventListener("click", () => {
   toggleAcciones(false);
   modoFormulario(false);
 });
+document.getElementById("dni").addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    let dni = this.value;
+
+    fetch("../Controler/GetDNI.php?dni=" + dni)
+      .then((response) => response.json())
+
+      .then((data) => {
+        if (data) {
+          document.getElementById("nombre_paciente").value = data.nombre;
+
+          document.getElementById("id_paciente").value = data.id_paciente;
+        } else {
+          alert("Paciente no encontrado");
+        }
+      });
+  }
+});
+document.getElementById("formCita").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  let formData = new FormData(this);
+
+  fetch("../Controler/Add_cita.php", {
+    method: "POST",
+    body: formData,
+  })
+    .then((res) => res.text())
+
+    .then((data) => {
+      let partes = data.split("|");
+
+      let status = partes[0];
+      let redirect = partes[2];
+      let message = partes[1];
+
+      if (status === "ocupado") {
+        Swal.fire({
+          icon: "warning",
+          title: "Horario ocupado",
+          text: message,
+        });
+        return;
+      } else if (status === "ok") {
+        Swal.fire({
+          icon: "success",
+          title: "Cita registrada",
+          text: message,
+        }).then(() => {
+          window.location.href = redirect;
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Ocurrio un problema",
+          text: message,
+        });
+      }
+    });
+});

@@ -30,7 +30,62 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </button>
 
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalEditarHora" tabindex="-1">
 
+        <div class="modal-dialog modal-dialog-centered">
+
+            <form action="../Controler/Add_Cita.php" method="POST" class="modal-content" id="formCambiarHora">
+
+                <div class="modal-header bg-warning">
+
+                    <h5 class="modal-title">Cambiar Hora de Cita</h5>
+
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="accion" value="cambiar_hora">
+
+                    <input type="hidden" id="edit_id_medico" name="id_medico">
+
+                    <input type="hidden" id="edit_id" name="id">
+
+                    <input type="hidden" id="edit_fecha" name="fecha">
+
+                    <input type="hidden" id="edit_monto" name="monto">
+
+                    <label class="form-label fw-semibold">Hora</label>
+
+                    <select name="hora" id="edit_hora" class="form-select" required>
+
+                        <?php
+                        for ($h = 8; $h <= 18; $h++) {
+                            $hora = str_pad($h, 2, "0", STR_PAD_LEFT) . ":00";
+                            echo "<option value='$hora'>$hora</option>";
+                        }
+                        ?>
+
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button class="btn btn-warning">
+                        Actualizar Hora
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Formulario -->
     <div id="form-registro" class="card border-0 shadow-sm rounded-4 mb-4"
         style="display:none;">
@@ -58,7 +113,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
             </div>
 
-            <form action="../Controler/Add_Cita.php" method="POST">
+            <form action="../Controler/Add_Cita.php" method="POST" id="formCita">
                 <input type="hidden" name="accion" value="crear">
                 <!-- Especialidad -->
                 <div class="mb-4">
@@ -184,8 +239,30 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
-
     <!-- Tabla -->
+    <!-- FILTROS -->
+    <div class="d-flex gap-2 mb-4">
+
+        <button class="btn btn-primary rounded-4 px-4 filtro-cita active"
+            data-filtro="proxima">
+
+            <i class="bi bi-calendar-event me-2"></i>
+
+            Próximas Citas
+
+        </button>
+
+        <button class="btn btn-light border rounded-4 px-4 filtro-cita"
+            data-filtro="historial">
+
+            <i class="bi bi-clock-history me-2"></i>
+
+            Historial
+
+        </button>
+
+    </div>
+    <!-- TABLA -->
     <div class="card border-0 shadow-sm rounded-4">
 
         <div class="card-body p-4">
@@ -195,7 +272,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                 <div>
 
                     <h4 class="fw-bold mb-1">
-                        Próximas Citas
+                        Mis Citas
                     </h4>
 
                     <small class="text-secondary">
@@ -235,14 +312,14 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                         <?php
                         $citas = $conexion->query(
                             "SELECT 
-                                c.*,
-                                m.nombre AS medico,
-                                e.nombre AS especialidad
-                            FROM citas c
-                            INNER JOIN medicos m ON c.id_medico = m.id
-                            INNER JOIN especialidades e ON m.id_especialidad = e.id
-                            WHERE c.id_paciente = " . $_SESSION['id_usuario'] . " And c.fecha >= CURDATE()
-                            ORDER BY c.fecha ASC, c.hora ASC"
+                            c.*,
+                            m.nombre AS medico,
+                            e.nombre AS especialidad
+                        FROM citas c
+                        INNER JOIN medicos m ON c.id_medico = m.id
+                        INNER JOIN especialidades e ON m.id_especialidad = e.id
+                        WHERE c.id_paciente = " . $_SESSION['id_usuario'] . "
+                        ORDER BY c.fecha ASC, c.hora ASC"
                         );
 
                         while ($f = $citas->fetch_assoc()):
@@ -250,9 +327,13 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                             $badge = ($f['estado'] == 'Confirmada')
                                 ? 'bg-success-subtle text-success border border-success-subtle'
                                 : 'bg-warning-subtle text-warning border border-warning-subtle';
+
+                            $tipo = (strtotime($f['fecha']) >= strtotime(date('Y-m-d')))
+                                ? 'proxima'
+                                : 'historial';
                         ?>
 
-                            <tr>
+                            <tr class="fila-cita <?php echo $tipo; ?>">
 
                                 <!-- Fecha -->
                                 <td>
@@ -318,25 +399,36 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                                 <!-- Acciones -->
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-light border btnEditarCita"
-                                        data-id="<?php echo $f['id']; ?>"
-                                        data-monto="<?php echo $f['monto']; ?>"
-                                        data-fecha="<?php echo $f['fecha']; ?>"
-                                        data-hora="<?php echo $f['hora']; ?>"
-                                        data-medico="<?php echo $f['id_medico']; ?>">
 
-                                        <i class="bi bi-clock text-primary"></i>
+                                    <?php if ($tipo == 'proxima'): ?>
 
-                                    </button>
+                                        <button class="btn btn-sm btn-light border btnEditarCita"
+                                            data-id="<?php echo $f['id']; ?>"
+                                            data-monto="<?php echo $f['monto']; ?>"
+                                            data-fecha="<?php echo $f['fecha']; ?>"
+                                            data-hora="<?php echo $f['hora']; ?>"
+                                            data-medico="<?php echo $f['id_medico']; ?>">
 
-                                    <a href="eliminar.php?id=<?php echo $f['id']; ?>"
-                                        class="btn btn-sm btn-outline-danger rounded-3">
+                                            <i class="bi bi-clock text-primary"></i>
 
-                                        <i class="bi bi-x-circle me-1"></i>
+                                        </button>
 
-                                        Cancelar
+                                        <a href="eliminar.php?id=<?php echo $f['id']; ?>"
+                                            class="btn btn-sm btn-outline-danger rounded-3">
 
-                                    </a>
+                                            <i class="bi bi-x-circle me-1"></i>
+
+                                            Cancelar
+
+                                        </a>
+
+                                    <?php else: ?>
+
+                                        <span class="text-secondary small">
+                                            Finalizada
+                                        </span>
+
+                                    <?php endif; ?>
 
                                 </td>
 
@@ -354,160 +446,43 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="modalEditarHora" tabindex="-1">
-
-        <div class="modal-dialog modal-dialog-centered">
-
-            <form action="../Controler/Add_Cita.php" method="POST" class="modal-content">
-
-                <div class="modal-header bg-warning">
-
-                    <h5 class="modal-title">Cambiar Hora de Cita</h5>
-
-                    <button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
-
-                </div>
-
-                <div class="modal-body">
-                     <input type="hidden" name="accion" value="cambiar_hora">
-
-                    <input type="hidden" id="edit_id_medico" name="medico">
-
-                    <input type="hidden" id="edit_id" name="id">
-
-                    <input type="hidden" id="edit_fecha" name="fecha">
-
-                    <input type="hidden" id="edit_monto" name="monto">
-
-                    <label class="form-label fw-semibold">Hora</label>
-
-                    <select name="hora" id="edit_hora" class="form-select" required>
-
-                        <?php
-                        for ($h = 8; $h <= 18; $h++) {
-                            $hora = str_pad($h, 2, "0", STR_PAD_LEFT) . ":00";
-                            echo "<option value='$hora'>$hora</option>";
-                        }
-                        ?>
-
-                    </select>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-
-                    <button class="btn btn-warning">
-                        Actualizar Hora
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const especialidad = document.getElementById("especialidad");
+        const botonesCita = document.querySelectorAll(".filtro-cita");
+        const filasCita = document.querySelectorAll(".fila-cita");
 
-        const montoVisible = document.getElementById("montoVisible");
+        botonesCita.forEach(btn => {
 
-        const monto = document.getElementById("monto");
+            btn.addEventListener("click", () => {
 
-        function actualizarMonto() {
+                botonesCita.forEach(b => {
+                    b.classList.remove("btn-primary");
+                    b.classList.add("btn-light", "border");
+                });
 
-            let opcion =
-                especialidad.options[especialidad.selectedIndex];
+                btn.classList.remove("btn-light", "border");
+                btn.classList.add("btn-primary");
 
-            let precio =
-                opcion.dataset.precio;
+                let filtro = btn.dataset.filtro;
 
-            montoVisible.value = "S/ " + precio;
+                filasCita.forEach(fila => {
 
-            monto.value = precio;
-
-        }
-
-        actualizarMonto();
-
-        especialidad.addEventListener(
-            "change",
-            actualizarMonto
-        );
-    </script>
-    <script>
-        document.getElementById("especialidad").addEventListener("change", function() {
-            let idEspecialidad = this.value;
-
-            fetch("../Controler/Get_Medicos.php?id=" + idEspecialidad)
-                .then(res => res.text()) // 👈 cambia a text temporalmente
-                .then(data => {
-                    return JSON.parse(data);
-                })
-                .then(data => {
-                    console.log(data.length);
-                    console.log(data);
-
-                    let selectMedico = document.getElementById("id_medico");
-
-                    selectMedico.innerHTML = "<option value=''>Seleccione médico</option>";
-
-                    if (data.length > 0) {
-
-                        data.forEach(medico => {
-
-                            selectMedico.innerHTML += `
-        
-                            <option value="${medico.id}">
-                                Dr. ${medico.nombre}
-                            </option>
-                            
-                        `;
-
-                        });
-
+                    if (fila.classList.contains(filtro)) {
+                        fila.style.display = "";
                     } else {
-
-                        selectMedico.innerHTML = `
-                    
-                        <option disabled selected>
-                            No hay médicos disponibles.
-                        </option>
-                        
-                    `;
-
+                        fila.style.display = "none";
                     }
 
                 });
 
-        });
-        document.querySelectorAll(".btnEditarCita").forEach(btn => {
-
-            btn.addEventListener("click", function() {
-
-                document.getElementById("edit_id").value = this.dataset.id;
-                document.getElementById("edit_monto").value = this.dataset.monto;
-                document.getElementById("edit_fecha").value = this.dataset.fecha;
-                document.getElementById("edit_hora").value = this.dataset.hora;
-                document.getElementById("edit_id_medico").value = this.dataset.medico;
-
-                new bootstrap.Modal(
-                    document.getElementById("modalEditarHora")
-                ).show();
-
             });
 
         });
+
+        // mostrar próximas por defecto
+        document.querySelector('[data-filtro="proxima"]').click();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/cita.js"></script>
     <script>
         Swal.fire({
 

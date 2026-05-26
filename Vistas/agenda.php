@@ -2,6 +2,7 @@
 
 session_start();
 if (isset($_SESSION['swal']));
+date_default_timezone_set('America/Lima');
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
@@ -49,11 +50,9 @@ if ($_SESSION['rol'] == 'medico'): ?>
         </div>
 
     </div>
-
     <!-- Layout -->
     <!-- LISTADO + FORM -->
     <div class="row g-4">
-
         <!-- LISTADO -->
         <div class="col-12" id="contenedorListado">
 
@@ -65,7 +64,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
                 INNER JOIN medicos m  ON c.id_medico = m.id 
                 INNER JOIN especialidades e ON m.id_especialidad = e.id
-                WHERE fecha = ? AND id_medico = ?");
+                WHERE fecha = ? AND id_medico = ?
+                Order by hora Asc");
                 $agenda->bind_param("si", $fecha, $_SESSION['id_medico']);
                 $agenda->execute();
 
@@ -292,7 +292,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
         </div>
 
     </div>
-
     <style>
         .card-cita {
             transition: .2s ease;
@@ -304,87 +303,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
     </style>
     <script src="../js/agenda.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.getElementById("dni").addEventListener("keypress", function(e) {
-
-            if (e.key === "Enter") {
-
-                e.preventDefault();
-
-                let dni = this.value;
-
-                fetch("../Controler/GetDNI.php?dni=" + dni)
-
-                    .then(response => response.json())
-
-                    .then(data => {
-
-                        if (data) {
-
-                            document.getElementById("nombre_paciente").value = data.nombre;
-
-                            document.getElementById("id_paciente").value = data.id_paciente;
-
-                        } else {
-
-                            alert("Paciente no encontrado");
-
-                        }
-
-                    });
-
-            }
-
-        });
-    </script>
-    <script>
-        document.getElementById("formCita").addEventListener("submit", function(e) {
-
-            e.preventDefault();
-
-            let formData = new FormData(this);
-
-            fetch("../Controler/Add_cita.php", {
-
-                    method: "POST",
-                    body: formData
-
-                })
-
-                .then(res => res.text())
-
-                .then(data => {
-
-                    if (data == "ocupado") {
-
-                        Swal.fire({
-
-                            icon: 'warning',
-                            title: 'Horario ocupado',
-                            text: 'Este horario se encuentra ocupado'
-
-                        });
-
-                    } else if (data == "ok") {
-
-                        Swal.fire({
-
-                            icon: 'success',
-                            title: 'Correcto',
-                            text: 'Cita registrada correctamente'
-
-                        }).then(() => {
-
-                            location.reload();
-
-                        });
-
-                    }
-
-                });
-
-        });
-    </script>
     <script>
         Swal.fire({
 

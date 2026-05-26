@@ -1,35 +1,47 @@
 function actualizarTiempo() {
-  let horaCita = document.getElementById("horaCita").value;
 
-  let [h, m, s] = horaCita.split(":");
+  let horaCita = document.getElementById("horaCita")?.value;
+  let fechaCita = document.getElementById("fechaCita")?.value;
 
-  let ahora = new Date();
-
-  let cita = new Date(
-    ahora.getFullYear(),
-    ahora.getMonth(),
-    ahora.getDate(),
-    parseInt(h),
-    parseInt(m),
-    parseInt(s || 0),
-  );
-
-  let diff = cita.getTime() - ahora.getTime();
-
-  if (diff <= 0) {
-    document.getElementById("tiempoRestante").innerHTML = "En curso";
-
+  if (!horaCita || !fechaCita) {
+    console.log("Faltan datos de fecha u hora");
     return;
   }
 
-  let horas = Math.floor(diff / 3600000);
+  let [h, m, s] = horaCita.split(":");
 
-  let minutos = Math.floor((diff % 3600000) / 60000);
+  // 🔥 FIX seguro de fecha (evita bugs del Date string)
+  let [year, month, day] = fechaCita.split("-");
 
-  document.getElementById("tiempoRestante").innerHTML =
-    horas + "h " + minutos + "min";
+  let cita = new Date(
+    parseInt(year),
+    parseInt(month) - 1,
+    parseInt(day),
+    parseInt(h),
+    parseInt(m),
+    parseInt(s || 0)
+  );
+
+  let ahora = new Date();
+
+  let diff = cita - ahora;
+
+  if (diff <= 0) {
+    document.getElementById("tiempoRestante").innerHTML = "En curso";
+    return;
+  }
+
+  let dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+  let horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  let texto = "";
+
+  if (dias > 0) texto += dias + "d ";
+  texto += horas + "h " + minutos + "min";
+
+  document.getElementById("tiempoRestante").innerHTML = texto;
 }
 
 actualizarTiempo();
-
 setInterval(actualizarTiempo, 1000);

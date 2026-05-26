@@ -41,7 +41,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
         <!-- CARDS -->
         <div class="row g-4 mb-4">
-
             <!-- CITAS HOY -->
             <div class="col-md-3">
 
@@ -91,7 +90,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 </div>
 
             </div>
-
             <!-- PACIENTES -->
             <div class="col-md-3">
 
@@ -137,7 +135,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 </div>
 
             </div>
-
             <!-- PROXIMA CITA -->
             <div class="col-md-3">
 
@@ -155,13 +152,14 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                 <h5 class="fw-bold mb-0">
                                     <?php
-                                    $cont_citas = $conexion->prepare("SELECT hora
-                                    FROM citas
-                                    WHERE fecha = CURDATE()
-                                    AND hora > CURTIME()
-                                    AND id_medico = ?
-                                    ORDER BY hora ASC
-                                    LIMIT 1
+                                    $cont_citas = $conexion->prepare("SELECT fecha, hora
+                                        FROM citas
+                                        WHERE (
+                                            fecha = CURDATE() AND hora > CURTIME()
+                                        ) OR fecha > CURDATE()
+                                        AND id_medico = ?
+                                        ORDER BY fecha ASC, hora ASC
+                                        LIMIT 1;
                                     ");
                                     $cont_citas->bind_param("i", $_SESSION['id_medico']);
                                     $cont_citas->execute();
@@ -187,7 +185,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 </div>
 
             </div>
-
             <!-- PENDIENTES -->
             <div class="col-md-3">
 
@@ -240,7 +237,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 </div>
 
             </div>
-
         </div>
 
         <!-- AGENDA + PANEL -->
@@ -321,7 +317,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                                 <td>
 
                                                     <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
-                                                        <?php echo $f['estado'] ; ?>
+                                                        <?php echo $f['estado']; ?>
                                                     </span>
 
                                                 </td>
@@ -386,9 +382,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
                         $resultado = $agenda->get_result();
                         ?>
                         <?php if ($resultado->num_rows > 0): ?>
-
-                            <?php while ($f = $resultado->fetch_assoc()): ?>
-                                <div class="d-flex flex-column gap-3">
+                            <div class="d-flex flex-column gap-3">
+                                <?php while ($f = $resultado->fetch_assoc()): ?>
 
                                     <div class="border rounded-4 p-3">
 
@@ -402,16 +397,14 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                                     </div>
                                 <?php endwhile; ?>
+                            </div>
+                        <?php else: ?>
 
-                            <?php else: ?>
+                            <div class="alert alert-warning text-center">
+                                No hay citas para hoy
+                            </div>
 
-                                <div class="alert alert-warning text-center">
-                                    No hay citas para esta fecha
-                                </div>
-
-                            <?php endif; ?>
-
-                                </div>
+                        <?php endif; ?>
 
                     </div>
 
@@ -457,10 +450,11 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     p.correo, p.celular,TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) AS edad
                                     FROM citas c
                                     INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
-                                    WHERE fecha = CURDATE()
-                                    AND hora > CURTIME()
+                                    WHERE (
+                                            fecha = CURDATE() AND hora > CURTIME()
+                                        ) OR fecha > CURDATE()
                                     AND id_medico = ?
-                                    ORDER BY hora ASC
+                                    ORDER BY fecha ASC, hora ASC
                                     LIMIT 1
                                     ");
                                 $cont_citas->bind_param("i", $_SESSION['id_medico']);
@@ -469,10 +463,12 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 $fila = $result->fetch_assoc();
                                 ?>
                                 <div>
+                                    <input type="hidden" id="fechaCita" value="<?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>">
+                                    <input type="hidden" id="horaCita" value="<?php echo htmlspecialchars($fila['hora'] ?? ''); ?>">
 
                                     <h5 class="fw-bold mb-1">
 
-                                        <?php echo htmlspecialchars($fila['nombre']?? ''); ?>
+                                        <?php echo htmlspecialchars($fila['nombre'] ?? ''); ?>
 
                                     </h5>
 
@@ -503,7 +499,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary">
-                                        <?php echo htmlspecialchars($fila['edad']?? ''); ?> años
+                                        <?php echo htmlspecialchars($fila['edad'] ?? ''); ?> años
                                     </span>
 
                                 </div>
@@ -522,7 +518,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary small">
-                                        <?php echo htmlspecialchars($fila['correo']?? ''); ?>
+                                        <?php echo htmlspecialchars($fila['correo'] ?? ''); ?>
                                     </span>
 
                                 </div>
@@ -541,7 +537,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary">
-                                        <?php echo htmlspecialchars($fila['celular']?? ''); ?>
+                                        <?php echo htmlspecialchars($fila['celular'] ?? ''); ?>
                                     </span>
 
                                 </div>
@@ -560,7 +556,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                     <span class="text-secondary">
-                                        <?php echo htmlspecialchars($fila['hora']?? ''); ?>
+                                        <?php echo htmlspecialchars($fila['hora'] ?? ''); ?>
                                     </span>
 
                                 </div>
@@ -577,11 +573,11 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                         </span>
 
                                     </div>
-                                    <span class="text-secondary" id="tiempoRestante">
+                                    <span class="text-secondary small" id="tiempoRestante">
                                     </span>
                                     <input type="hidden"
                                         id="horaCita"
-                                        value="<?php echo $fila['hora']?? ''; ?>">
+                                        value="<?php echo $fila['hora'] ?? ''; ?>">
                                 </div>
 
                                 <!-- ESTADO -->

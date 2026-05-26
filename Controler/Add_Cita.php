@@ -21,20 +21,30 @@ $monto = $_POST['monto'];
 /* =========================
    VALIDAR CRUCE
 ========================= */
+function validarCruce($dao, $fecha, $hora, $id_medico)
+{
+    if ($dao->existeCruce($fecha, $hora, $id_medico)) {
+        if ($_SESSION['rol'] == 'paciente') {
+            echo "ocupado|El médico ya tiene una cita en ese horario";
+        } else {
+            echo "ocupado|El horario ya está ocupado";
+        }
+        exit;
+    }
+    return "ok";
+}
 /* =========================
    CAMBIAR HORA (AJAX O FORM)
 ========================= */
 if (isset($_POST['accion']) && $_POST['accion'] == 'cambiar_hora') {
-    if ($dao->existeCruce($fecha, $hora, $id_medico)) {
-        $_SESSION['swal'] = [
-            'icon' => 'warning',
-            'title' => 'Horario ocupado',
-            'text' => 'El médico ya tiene una cita en ese horario'
-        ];
 
-        header("Location: ../Vistas/citas.php");
-        exit;
+    $cruce = validarCruce($dao, $fecha, $hora, $id_medico);
+
+    if ($cruce !== "ok") {
+        echo $cruce;
+        exit; // 🔴 IMPORTANTE: detener todo
     }
+
 
     $id = $_POST['id'];
 
@@ -44,64 +54,41 @@ if (isset($_POST['accion']) && $_POST['accion'] == 'cambiar_hora') {
 
     $resultado = $stmt->execute();
 
-    $_SESSION['swal'] = [
-        'icon' => $resultado ? 'success' : 'error',
-        'title' => $resultado ? 'Actualizado' : 'Error',
-        'text' => $resultado ? 'Hora actualizada correctamente' : 'Error al actualizar'
-    ];
+    if ($resultado) {
+        echo "ok|Hora actualizada correctamente";
+    } else {
 
-    if ($_SESSION['rol'] == 'paciente') {
-            header("Location: ../Vistas/citas.php?msg=ok");
-            exit;
-        } else {
-            header("Location: ../Vistas/agenda.php?msg=ok");
-            exit;
-        }
+        echo "error|Error al actualizar la hora";
+    }
+
+    exit;
 }
 /* =========================
    INSERTAR CITA
 ========================= */
 if (isset($_POST['accion']) && $_POST['accion'] == 'crear') {
-    if ($dao->existeCruce($fecha, $hora, $id_medico)) {
-        $_SESSION['swal'] = [
-            'icon' => 'warning',
-            'title' => 'Horario ocupado',
-            'text' => 'El médico ya tiene una cita en ese horario'
-        ];
 
-        header("Location: ../Vistas/citas.php");
-        exit;
+    $cruce = validarCruce($dao, $fecha, $hora, $id_medico);
+
+    if ($cruce !== "ok") {
+        echo $cruce;
+        exit; // 🔴 IMPORTANTE: detener todo
     }
 
     $resultado = $dao->insertarCita($id_usuario, $id_medico, $monto, $fecha, $hora);
 
     if ($resultado === true) {
-
-        $_SESSION['swal'] = [
-            'icon' => 'success',
-            'title' => 'Correcto',
-            'text' => 'Cita registrada correctamente'
-        ];
         if ($_SESSION['rol'] == 'paciente') {
-            header("Location: ../Vistas/citas.php?msg=ok");
-            exit;
+            echo "ok|Se registro la cita|../Vistas/citas.php";
         } else {
-            header("Location: ../Vistas/agenda.php?msg=ok");
-            exit;
+            echo "ok|Se registro la cita|../Vistas/agenda.php";
         }
     } else {
-        $_SESSION['swal'] = [
-            'icon' => 'error',
-            'title' => 'Error',
-            'text' => $resultado
-        ];
-
-        if ($_SESSION['id_usuario'] == 'paciente') {
-            header("Location: ../Vistas/citas.php?msg=Error");
-            exit;
+        if ($_SESSION['rol'] == 'paciente') {
+            echo "error|$resultado|../Vistas/citas.php";
         } else {
-            header("Location: ../Vistas/agenda.php?msg=error");
-            exit;
+            echo "error|$resultado|../Vistas/agenda.php";
         }
     }
+    exit;
 }
