@@ -19,12 +19,10 @@
 </head>
 
 <body class="bg-light">
-
     <?php if (isset($_SESSION['usuario'])):
 
-        $vista_actual = isset($_GET['vista']) ? $_GET['vista'] : 'inicio';
+        $vista_actual = basename($_SERVER['PHP_SELF']);
     ?>
-
         <div class="d-flex min-vh-100">
 
             <!-- Sidebar -->
@@ -104,11 +102,11 @@
 
                             <a href="../index.php"
                                 class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small transition
-                       <?php echo $vista_actual == 'inicio'
+                       <?php echo $vista_actual == ('index_' . $_SESSION['rol'] . '.php')
                             ? 'active bg-primary shadow text-white'
                             : 'text-white opacity-75'; ?>">
 
-                                <i class="bi bi-house-door-fill fs-6"></i>
+                                <i class=" bi bi-house-door-fill fs-6"></i>
 
                                 <span>Inicio</span>
 
@@ -123,7 +121,7 @@
 
                                 <a href="../Vistas/citas.php"
                                     class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
-                           <?php echo $vista_actual == 'citas'
+                           <?php echo $vista_actual == 'citas.php'
                                 ? 'active bg-primary shadow text-white'
                                 : 'text-white opacity-75'; ?>">
 
@@ -140,7 +138,7 @@
 
                                 <a href="../Vistas/pagos.php"
                                     class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
-                           <?php echo $vista_actual == 'pagos'
+                           <?php echo $vista_actual == 'pagos.php'
                                 ? 'active bg-primary shadow text-white'
                                 : 'text-white opacity-75'; ?>">
 
@@ -156,7 +154,10 @@
                             <li class="nav-item">
 
                                 <a href="#"
-                                    class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium smalltext-white opacity-75">
+                                    class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'perfil.php'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
 
                                     <i class="bi bi-person-vcard-fill fs-6"></i>
 
@@ -175,7 +176,7 @@
 
                                 <a href="../Vistas/agenda.php"
                                     class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
-                           <?php echo $vista_actual == 'agenda'
+                           <?php echo $vista_actual == 'agenda.php'
                                 ? 'active bg-primary shadow text-white'
                                 : 'text-white opacity-75'; ?>">
 
@@ -192,7 +193,7 @@
 
                                 <a href="../Vistas/mantenimiento.php"
                                     class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
-                           <?php echo $vista_actual == 'mantenimiento'
+                           <?php echo $vista_actual == 'mantenimiento.php'
                                 ? 'active bg-primary shadow text-white'
                                 : 'text-white opacity-75'; ?>">
 
@@ -209,7 +210,7 @@
 
                                 <a href="../Vistas/reportes.php"
                                     class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
-                           <?php echo $vista_actual == 'reportes'
+                           <?php echo $vista_actual == 'reportes.php'
                                 ? 'active bg-primary shadow text-white'
                                 : 'text-white opacity-75'; ?>">
 
