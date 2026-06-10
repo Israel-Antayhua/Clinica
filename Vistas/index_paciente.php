@@ -276,46 +276,65 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                 <div class="card border-0 shadow-sm rounded-4 h-100">
 
                     <div class="card-body p-4">
-
-                        <!-- TITULO -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-
-                            <h4 class="fw-bold mb-0">
-
-                                Próxima Cita
-
-                            </h4>
-
-                            <?php
-                            $cont_citas = $conexion->prepare("SELECT c.estado AS estado
+                        <?php
+                        $cont_citas = $conexion->prepare("SELECT c.estado AS estado
                                     FROM citas c 
                                     WHERE (
                                             fecha = CURDATE() AND hora > CURTIME()
                                         ) OR fecha > CURDATE()
                                     AND id_paciente = ?
                                     ORDER BY fecha ASC, hora ASC");
-                            $cont_citas->bind_param("i", $_SESSION['id_usuario']);
-                            $cont_citas->execute();
-                            $result = $cont_citas->get_result();
-                            $fila = $result->fetch_assoc();
+                        $cont_citas->bind_param("i", $_SESSION['id_usuario']);
+                        $cont_citas->execute();
+                        $result = $cont_citas->get_result();
+                        $fila = $result->fetch_assoc();
+                        ?>
+                        <!-- TITULO -->
+                        <?php if (!$fila) { ?>
+
+                            <!-- NO HAY CITA -->
+                            <div class="text-center py-5">
+
+                                <i class="bi bi-calendar-x display-4 text-secondary"></i>
+
+                                <h5 class="fw-bold mt-3">
+                                    No tienes próximas citas
+                                </h5>
+
+                                <p class="text-secondary">
+                                    Agenda una cita para recibir atención médica
+                                </p>
+
+                                <a href="citas.php" class="btn btn-primary rounded-4 px-4 mt-2">
+                                    <i class="bi bi-plus-circle me-2"></i>
+                                    Agendar cita
+                                </a>
+
+                            </div>
+
+                        <?php } else {
                             $color = "primary";
 
                             if ($fila['estado'] == "Confirmada") $color = "success";
-                            if ($fila['estado']  == "Pendiente") $color = "warning";
-                            if ($fila['estado']  == "Cancelada") $color = "danger";
+                            if ($fila['estado'] == "Pendiente") $color = "warning";
+                            if ($fila['estado'] == "Cancelada") $color = "danger"; ?>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
 
-                            ?>
+                                <h4 class="fw-bold mb-0">
 
-                            <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
-                                <?php echo htmlspecialchars($fila['estado'] ?? 'No hay cita'); ?>
-                            </span>
+                                    Próxima Cita
 
-                        </div>
+                                </h4>
 
-                        <!-- INFO -->
-                        <div class="row g-4">
-                            <?php
-                            $agenda = $conexion->prepare("SELECT c.fecha, c.hora, c.id,c.estado_pago, m.nombre AS nombre, e.nombre AS especialidad
+                                <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
+                                    <?php echo htmlspecialchars($fila['estado'] ?? 'No hay cita'); ?>
+                                </span>
+
+                            </div>
+                            <!-- INFO -->
+                            <div class="row g-4">
+                                <?php
+                                $agenda = $conexion->prepare("SELECT c.fecha, c.hora, c.id,c.estado_pago, m.nombre AS nombre, e.nombre AS especialidad
                                     FROM citas c 
                                     INNER JOIN medicos m  ON c.id_medico = m.id 
                                     INNER JOIN especialidades e ON m.id_especialidad = e.id
@@ -324,143 +343,139 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                         ) OR fecha > CURDATE()
                                     AND id_paciente = ?
                                     ORDER BY fecha ASC, hora ASC");
-                            $agenda->bind_param("i", $_SESSION['id_usuario']);
-                            $agenda->execute();
+                                $agenda->bind_param("i", $_SESSION['id_usuario']);
+                                $agenda->execute();
 
-                            $resultado = $agenda->get_result();
-                            $fila = $resultado->fetch_assoc();
-                            ?>
-                            <input type="hidden" id="fechaCita" value="<?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>">
-                            <input type="hidden" id="horaCita" value="<?php echo htmlspecialchars($fila['hora'] ?? ''); ?>">
-                            <!-- MEDICO -->
-                            <div class="col-md-6">
-                                <div class="border rounded-4 p-4 h-100">
+                                $resultado = $agenda->get_result();
+                                $fila = $resultado->fetch_assoc();
+                                ?>
+                                <input type="hidden" id="fechaCita" value="<?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>">
+                                <input type="hidden" id="horaCita" value="<?php echo htmlspecialchars($fila['hora'] ?? ''); ?>">
+                                <!-- MEDICO -->
+                                <div class="col-md-6">
+                                    <div class="border rounded-4 p-4 h-100">
 
-                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="d-flex align-items-center gap-3 mb-3">
 
-                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                                            style="width:60px; height:60px;">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
+                                                style="width:60px; height:60px;">
 
-                                            <i class="bi bi-person-badge text-primary fs-3"></i>
+                                                <i class="bi bi-person-badge text-primary fs-3"></i>
+
+                                            </div>
+
+                                            <div>
+
+                                                <h5 class="fw-bold mb-1">
+
+                                                    Dr. <?php echo htmlspecialchars($fila['nombre'] ?? ''); ?>
+
+                                                </h5>
+
+                                                <span class="text-secondary">
+
+                                                    <?php echo htmlspecialchars($fila['especialidad'] ?? ''); ?>
+
+                                                </span>
+
+                                            </div>
 
                                         </div>
 
-                                        <div>
+                                        <div class="small text-secondary">
 
-                                            <h5 class="fw-bold mb-1">
+                                            Médico especialista asignado
 
-                                                Dr. <?php echo htmlspecialchars($fila['nombre'] ?? ''); ?>
+                                        </div>
 
-                                            </h5>
+                                    </div>
+
+                                </div>
+
+                                <!-- DETALLES -->
+                                <div class="col-md-6">
+
+                                    <div class="border rounded-4 p-4 h-100 d-flex flex-column gap-3">
+
+                                        <div class="d-flex justify-content-between">
+
+                                            <span class="fw-semibold">
+                                                Fecha
+                                            </span>
 
                                             <span class="text-secondary">
-
-                                                <?php echo htmlspecialchars($fila['especialidad'] ?? ''); ?>
-
+                                                <?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>
                                             </span>
 
                                         </div>
 
-                                    </div>
+                                        <div class="d-flex justify-content-between">
 
-                                    <div class="small text-secondary">
+                                            <span class="fw-semibold">
+                                                Hora
+                                            </span>
 
-                                        Médico especialista asignado
+                                            <span class="text-secondary">
+                                                <?php echo htmlspecialchars($fila['hora'] ?? ''); ?>
+                                            </span>
 
-                                    </div>
+                                        </div>
 
-                                </div>
+                                        <div class="d-flex justify-content-between">
 
-                            </div>
+                                            <span class="fw-semibold">
+                                                Tiempo restante
+                                            </span>
 
-                            <!-- DETALLES -->
-                            <div class="col-md-6">
+                                            <span class="text-primary fw-semibold" id="tiempoRestante">
+                                            </span>
+                                            <input type="hidden"
+                                                id="horaCita"
+                                                value="<?php echo $fila['hora']; ?>">
 
-                                <div class="border rounded-4 p-4 h-100 d-flex flex-column gap-3">
-
-                                    <div class="d-flex justify-content-between">
-
-                                        <span class="fw-semibold">
-                                            Fecha
-                                        </span>
-
-                                        <span class="text-secondary">
-                                            <?php echo htmlspecialchars($fila['fecha'] ?? ''); ?>
-                                        </span>
-
-                                    </div>
-
-                                    <div class="d-flex justify-content-between">
-
-                                        <span class="fw-semibold">
-                                            Hora
-                                        </span>
-
-                                        <span class="text-secondary">
-                                            <?php echo htmlspecialchars($fila['hora'] ?? ''); ?>
-                                        </span>
-
-                                    </div>
-
-                                    <div class="d-flex justify-content-between">
-
-                                        <span class="fw-semibold">
-                                            Tiempo restante
-                                        </span>
-
-                                        <span class="text-primary fw-semibold" id="tiempoRestante">
-                                        </span>
-                                        <input type="hidden"
-                                            id="horaCita"
-                                            value="<?php echo $fila['hora']; ?>">
+                                        </div>
 
                                     </div>
 
                                 </div>
 
                             </div>
+                            <!-- BOTONES -->
+                            <div class="d-flex gap-3 mt-4 flex-wrap">
 
-                        </div>
+                                <button class="btn btn-warning rounded-4 px-4">
 
-                        <!-- BOTONES -->
-                        <div class="d-flex gap-3 mt-4 flex-wrap">
+                                    <i class="bi bi-tools me-2"></i>
 
-                            <button class="btn btn-warning rounded-4 px-4">
+                                    Trabajando ...
 
-                                <i class="bi bi-tools me-2"></i>
+                                </button>
+                                <?php
+                                if ($fila['estado_pago'] == 'Pagado') {
+                                ?>
+                                    <a href="comprobante.php?id=<?php echo $fila['id']; ?>"
+                                        target="_blank"
+                                        class="btn btn-light border btn-sm rounded-3 px-3">
 
-                                Trabajando ...
+                                        <i class="bi bi-file-earmark-check me-1"></i>
 
-                            </button>
-                            <?php
-                            if ($fila['estado_pago'] == 'Pagado') {
-                            ?>
-                                <a href="comprobante.php?id=<?php echo $fila['id']; ?>"
-                                    target="_blank"
-                                    class="btn btn-light border btn-sm rounded-3 px-3">
+                                        Ver comprobante
 
-                                    <i class="bi bi-file-earmark-check me-1"></i>
+                                    </a>
+                                <?php } else { ?>
+                                    <a href="pagos.php"
+                                        class="btn btn-success btn-sm rounded-3 px-3">
 
-                                    Ver comprobante
+                                        <i class="bi bi-credit-card me-1"></i>
 
-                                </a>
-                            <?php } else { ?>
-                                <a href="pagos.php"
-                                    class="btn btn-success btn-sm rounded-3 px-3">
+                                        Ir a pagar
 
-                                    <i class="bi bi-credit-card me-1"></i>
-
-                                    Ir a pagar
-
-                                </a>
-
-                            <?php } ?>
-                        </div>
-
+                                    </a>
+                                <?php } ?>
+                            </div>
+                        <?php } ?>
                     </div>
-
                 </div>
-
             </div>
 
             <!-- PANEL DERECHO -->
@@ -578,101 +593,6 @@ if ($_SESSION['rol'] == 'paciente'): ?>
             </div>
 
         </div>
-
-        <!-- ========================= -->
-        <!-- TABLA CITAS -->
-        <!--
-
-        <div class="card border-0 shadow-sm rounded-4 mt-4">
-
-            <div class="card-body p-4">
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-
-                    <h4 class="fw-bold mb-0">
-
-                        Mis Citas
-
-                    </h4>
-
-                    <button class="btn btn-primary rounded-4 px-4">
-
-                        <i class="bi bi-plus-circle me-2"></i>
-
-                        Nueva cita
-
-                    </button>
-
-                </div>
-
-                <div class="table-responsive">
-
-                    <table class="table align-middle">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Fecha</th>
-                                <th>Médico</th>
-                                <th>Especialidad</th>
-                                <th>Estado</th>
-                                <th class="text-center">Acciones</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            <tr>
-
-                                <td>
-                                    22/05/2026
-                                </td>
-
-                                <td>
-                                    Dr. Carlos Ruiz
-                                </td>
-
-                                <td>
-                                    Cardiología
-                                </td>
-
-                                <td>
-
-                                    <span class="badge bg-success rounded-pill px-3 py-2">
-
-                                        Confirmada
-
-                                    </span>
-
-                                </td>
-
-                                <td class="text-center">
-
-                                    <button class="btn btn-light border rounded-3 btn-sm">
-
-                                        <i class="bi bi-eye"></i>
-
-                                    </button>
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        -->
-
     </div>
     <script src="../js/time.js"></script>
 <?php endif; ?>

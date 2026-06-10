@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-05-2026 a las 03:34:40
+-- Tiempo de generación: 11-06-2026 a las 01:58:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -97,7 +97,7 @@ CREATE TABLE `especialidades` (
 
 INSERT INTO `especialidades` (`id`, `nombre`, `estado`, `precio_consulta`) VALUES
 (1, 'Cardiología', 'Activo', 150.00),
-(2, 'Dermatología', 'Activo', 160.00),
+(2, 'Dermatología', 'Activo', 140.00),
 (3, 'Medicina General', 'Activo', 60.00),
 (4, 'Pediatría', 'Activo', 100.00),
 (5, 'Ginecología', 'Activo', 120.00),
@@ -127,7 +127,7 @@ CREATE TABLE `medicos` (
 --
 
 INSERT INTO `medicos` (`id`, `id_usuario`, `nombre`, `id_especialidad`, `telefono`, `estado`) VALUES
-(5, 5, 'Jose', 3, '943402322', 'Activo'),
+(5, 5, 'Joses', 3, '943402323', 'Activo'),
 (6, 6, 'Miguel', 1, '923323999', 'Activo'),
 (7, 9, 'Rusbelt', 4, '924321122', 'Activo'),
 (8, 10, 'Joshep', 1, '999232922', 'Activo'),
@@ -200,7 +200,7 @@ INSERT INTO `pagos` (`id`, `id_cita`, `monto`, `estado`, `metodo_pago`, `culqi_c
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `usuario` varchar(50) NOT NULL,
+  `correo` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `rol` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -209,19 +209,17 @@ CREATE TABLE `usuarios` (
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `usuario`, `password`, `rol`) VALUES
-(1, 'doctor1', '12345', 'admin'),
-(2, 'paciente1', '12345', 'paciente'),
-(3, 'Anderson', '$2y$10$qM.vpb1Vy3Xum.QMilL7OeUs1DDOjSwtiakfSilrd8wdAb/5CQ3yq', 'paciente'),
-(4, 'Israel', '$2y$10$Nl0EcRwe.HmGwcIY2YCg3.LgYR4ADtUKWtZnpR7pb8H7ufN1QgtLe', 'paciente'),
-(5, 'Jose', '$2y$10$pEVijnTXO4r3lfxUqquUCejFs6H.VDZ/F2MgTwsSAmsMoMd4Qzyqq', 'medico'),
-(6, 'Miguel', '$2y$10$nxrzLGummzcRLr73b28eheJLHGogqe0pIfXuD.mdL9Paml/0xH1Qa', 'medico'),
-(9, 'Rusbelt', '$2y$10$PwqGait8r5j4Lo7P2aBMIuHFdP7.4d22SzDanzb2lK8QPH..0nlbu', 'medico'),
-(10, 'Joshep', '$2y$10$RXhczx.ixXhq0ZKf8u6fyeVne2TL6qLt8Fk9DVxE5lyDzM9BYIozu', 'medico'),
-(11, 'Carla', '$2y$10$l6tnmxdrNEzzTZsfrRw65u3eraFd0eQbRgWc53cuaIwi5MIMpBN3m', 'medico'),
-(12, 'Reile', '$2y$10$lmNR7ng0yb6ekdX9iufCFu9hseMezjkjAA/vf5C1mLPJZsrHaMXyW', 'medico'),
-(13, 'Cristina', '$2y$10$RcrQcbKqm9a447xxvDptl.J1QGVs5c7EzM75AAR.3rKoMJYa.nJuy', 'medico'),
-(14, 'Valery', '$2y$10$aOOrRpdLYfghWwWqF5yyZ.4LdNUX3bPJhhbpumE.3j9tdSoMwNF9S', 'paciente');
+INSERT INTO `usuarios` (`id`, `correo`, `password`, `rol`) VALUES
+(3, 'anderachu7@gmail.com', '$2y$10$qM.vpb1Vy3Xum.QMilL7OeUs1DDOjSwtiakfSilrd8wdAb/5CQ3yq', 'paciente'),
+(4, 'israel@gmail.com', '$2y$10$Nl0EcRwe.HmGwcIY2YCg3.LgYR4ADtUKWtZnpR7pb8H7ufN1QgtLe', 'paciente'),
+(5, 'jose@gmail.com', '$2y$10$pEVijnTXO4r3lfxUqquUCejFs6H.VDZ/F2MgTwsSAmsMoMd4Qzyqq', 'medico'),
+(6, 'Miguel@gmail.com', '$2y$10$nxrzLGummzcRLr73b28eheJLHGogqe0pIfXuD.mdL9Paml/0xH1Qa', 'medico'),
+(9, 'Rusbelt@gmail.com', '$2y$10$PwqGait8r5j4Lo7P2aBMIuHFdP7.4d22SzDanzb2lK8QPH..0nlbu', 'medico'),
+(10, 'Joshep@gmail.com', '$2y$10$RXhczx.ixXhq0ZKf8u6fyeVne2TL6qLt8Fk9DVxE5lyDzM9BYIozu', 'medico'),
+(11, 'Carla@gmail.com', '$2y$10$l6tnmxdrNEzzTZsfrRw65u3eraFd0eQbRgWc53cuaIwi5MIMpBN3m', 'medico'),
+(12, 'Reile@gmail.com', '$2y$10$lmNR7ng0yb6ekdX9iufCFu9hseMezjkjAA/vf5C1mLPJZsrHaMXyW', 'medico'),
+(13, 'Cristina@gmail.com', '$2y$10$RcrQcbKqm9a447xxvDptl.J1QGVs5c7EzM75AAR.3rKoMJYa.nJuy', 'medico'),
+(14, 'Valery@gmail.com', '$2y$10$aOOrRpdLYfghWwWqF5yyZ.4LdNUX3bPJhhbpumE.3j9tdSoMwNF9S', 'paciente');
 
 --
 -- Índices para tablas volcadas
@@ -268,7 +266,7 @@ ALTER TABLE `pagos`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `usuario` (`usuario`);
+  ADD UNIQUE KEY `usuario` (`correo`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas

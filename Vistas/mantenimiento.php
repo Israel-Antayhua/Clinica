@@ -99,7 +99,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                             <?php
                             $meds = $conexion->query("
-                                    SELECT m.*, e.nombre AS especialidad, u.usuario AS usuario
+                                    SELECT m.*, e.nombre AS especialidad, u.correo AS usuario
                                     FROM medicos m
                                     INNER JOIN especialidades e ON m.id_especialidad = e.id
                                     INNER JOIN usuarios u ON m.id_usuario = u.id
@@ -257,7 +257,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                         <!-- USUARIO -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">Usuario</label>
+                            <label class="form-label fw-semibold small text-secondary">Correo</label>
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="bi bi-person"></i>
@@ -390,7 +390,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                         <!-- USUARIO -->
                         <div class="mb-3">
 
-                            <label class="form-label fw-semibold">Usuario</label>
+                            <label class="form-label fw-semibold">Correo</label>
 
                             <input type="text"
                                 name="usuario"

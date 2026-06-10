@@ -1,12 +1,25 @@
 <?php
 session_start();
+header('Content-Type: application/json');
+require '../PHPMailer/PHPMailer.php';
+require '../PHPMailer/SMTP.php';
+require '../PHPMailer/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+
 include '../ConexionDB/conexion.php';
+
+$env = parse_ini_file(__DIR__ . '/../.env');
+$smtpUser = $env['SMTP_USER'];
+$smtpPass = $env['SMTP_PASS'];
+$smtpHost = $env['SMTP_HOST'];
+$smtpPort = $env['SMTP_PORT'];
 
 $usuario  = $_POST['usuario'];
 $password = $_POST['password'];
 
 
-$sql = "SELECT * FROM usuarios WHERE usuario = ?";
+$sql = "SELECT * FROM usuarios WHERE correo = ?";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("s", $usuario);
 $stmt->execute();
@@ -19,20 +32,20 @@ if ($resultado->num_rows == 1) {
 
     if (password_verify($password, $datos['password'])) {
 
-        $_SESSION['usuario'] = $datos['usuario'];
         $_SESSION['rol'] = $datos['rol'];
         $id_usuario = $datos['id'];
         if ($datos['rol'] == "paciente") {
-            $sql2 = "SELECT id_paciente FROM pacientes WHERE id_usuario = ?";
+            $sql2 = "SELECT id_paciente, nombres FROM pacientes WHERE id_usuario = ?";
             $stmt = $conexion->prepare($sql2);
             $stmt->bind_param("i", $id_usuario);
             $stmt->execute();
 
             $result = $stmt->get_result();
             $paciente = $result->fetch_assoc();
+            $_SESSION['temp_user'] = $paciente['nombres'];
             $_SESSION['id_usuario'] = $paciente['id_paciente'];
-        } else{
-            $sql = "SELECT id
+        } else {
+            $sql = "SELECT id, nombre
              FROM medicos
              WHERE id_usuario = ?";
 
@@ -44,20 +57,40 @@ if ($resultado->num_rows == 1) {
             $medico = $result2->fetch_assoc();
 
             $_SESSION['id_medico'] = $medico['id'];
+            $_SESSION['temp_user'] = $medico['nombre'];
         }
-        header("Location: ../index.php");
+        // 🔐 generar código
+        $codigo = rand(100000, 999999);
+
+        $_SESSION['otp'] = $codigo;
+        $_SESSION['otp_time'] = time();
+        $_SESSION['rol_temp'] = $datos['rol'];
+
+        $mail = new PHPMailer(true);
+
+        $mail->isSMTP();
+        $mail->Host = $smtpHost;
+        $mail->SMTPAuth = true;
+        $mail->Username = $smtpUser;
+        $mail->Password = $smtpPass;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = $smtpPort;
+
+        $mail->setFrom('ClinicaMaisonSante@gmail.com', 'Clinica Maison Sante');
+        $mail->addAddress($usuario);
+
+        $mail->Subject = "Codigo de verificacion";
+        $mail->Body = "Tu código es: $codigo";
+
+        $mail->send();
+        echo json_encode(["status" => "otp_sent"]);
         exit;
     } else {
-        echo "<script>
-            alert('Contraseña incorrecta');
-            window.location.href='../Sesion/login.php';
-        </script>";
+        echo json_encode(["status" => "error", "message" => "Contraseña incorrecta"]);
+        exit;
     }
 } else {
-    echo "<script>
-        alert('Usuario no existe');
-        window.location.href='../Sesion/login.php';
-    </script>";
+    echo json_encode(["status" => "error", "message" => "Usuario no existe"]);
 }
 
 $conexion->close();
