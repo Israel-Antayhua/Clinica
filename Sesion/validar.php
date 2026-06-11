@@ -17,7 +17,7 @@ $smtpPort = $env['SMTP_PORT'];
 
 $usuario  = $_POST['usuario'];
 $password = $_POST['password'];
-
+$modo_dev = true;
 
 $sql = "SELECT * FROM usuarios WHERE correo = ?";
 $stmt = $conexion->prepare($sql);
@@ -56,8 +56,8 @@ if ($resultado->num_rows == 1) {
             $result2 = $stmt2->get_result();
             $medico = $result2->fetch_assoc();
 
-            $_SESSION['id_medico'] = $medico['id'];
             $_SESSION['temp_user'] = $medico['nombre'];
+            $_SESSION['id_medico'] = $medico['id'];
         }
         // 🔐 generar código
         $codigo = rand(100000, 999999);
@@ -66,25 +66,33 @@ if ($resultado->num_rows == 1) {
         $_SESSION['otp_time'] = time();
         $_SESSION['rol_temp'] = $datos['rol'];
 
-        $mail = new PHPMailer(true);
+        if ($modo_dev) {
+            echo json_encode([
+                "status" => "otp_sent",
+                "debug_otp" => $modo_dev ? $codigo : null
+            ]);
+            exit;
+        } else {
+            $mail = new PHPMailer(true);
 
-        $mail->isSMTP();
-        $mail->Host = $smtpHost;
-        $mail->SMTPAuth = true;
-        $mail->Username = $smtpUser;
-        $mail->Password = $smtpPass;
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = $smtpPort;
+            $mail->isSMTP();
+            $mail->Host = $smtpHost;
+            $mail->SMTPAuth = true;
+            $mail->Username = $smtpUser;
+            $mail->Password = $smtpPass;
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = $smtpPort;
 
-        $mail->setFrom('ClinicaMaisonSante@gmail.com', 'Clinica Maison Sante');
-        $mail->addAddress($usuario);
+            $mail->setFrom('ClinicaMaisonSante@gmail.com', 'Clinica Maison Sante');
+            $mail->addAddress($usuario);
 
-        $mail->Subject = "Codigo de verificacion";
-        $mail->Body = "Tu código es: $codigo";
+            $mail->Subject = "Codigo de verificacion";
+            $mail->Body = "Tu código es: $codigo";
 
-        $mail->send();
-        echo json_encode(["status" => "otp_sent"]);
-        exit;
+            $mail->send();
+            echo json_encode(["status" => "otp_sent"]);
+            exit;
+        }
     } else {
         echo json_encode(["status" => "error", "message" => "Contraseña incorrecta"]);
         exit;

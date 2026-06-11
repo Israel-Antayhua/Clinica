@@ -109,10 +109,10 @@ if (isset($_SESSION['usuario'])) {
 
                             <div id="otpBox" class="mb-4" style="display:none;">
 
-                                <div class="mb-3">
+                                <div class="mb-8">
                                     <label class="form-label fw-semibold">Código OTP</label>
 
-                                    <div class="input-group input-group-lg">
+                                    <div class="input-group">
                                         <span class="input-group-text">
                                             <i class="bi bi-shield-lock-fill"></i>
                                         </span>
@@ -121,22 +121,11 @@ if (isset($_SESSION['usuario'])) {
                                             type="text"
                                             id="codigo"
                                             class="form-control text-center fw-bold"
-                                            placeholder="6 dígitos"
+                                            placeholder=""
                                             maxlength="6">
                                     </div>
                                 </div>
-
-                                <div class="d-grid">
-                                    <button
-                                        type="button"
-                                        class="btn btn-success btn-lg rounded-3 small"
-                                        onclick="verificar()">
-                                        <i class="bi bi-check-circle me-2"></i>
-                                        Verificar código
-                                    </button>
-                                </div>
-
-                                <div class="text-center mt-3 small">
+                                <div class="text-center small">
                                     <small class="text-muted">
                                         ¿No recibiste el código? Revisa tu correo o intenta nuevamente
                                     </small>
@@ -171,11 +160,33 @@ if (isset($_SESSION['usuario'])) {
     </div>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true
+    });
     document.getElementById("loginForm").addEventListener("submit", function(e) {
         e.preventDefault();
 
+        if (document.getElementById("otpBox").style.display === "block") {
+            verificar();
+            return;
+        }
+
         let formData = new FormData(this);
+
+        Toast.fire({
+            title: 'Enviando código...',
+            text: 'Por favor espera',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Toast.showLoading();
+            }
+        });
 
         fetch("validar.php", {
                 method: "POST",
@@ -183,24 +194,75 @@ if (isset($_SESSION['usuario'])) {
             })
             .then(res => res.json())
             .then(data => {
+                Toast.close();
 
                 if (data.status === "otp_sent") {
-                    alert("Código enviado al correo");
-
+                    if (data.debug_otp) {
+                        document.getElementById("codigo").value = data.debug_otp;
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Código listo',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2500
+                        }).fire({
+                            icon: 'success',
+                            title: 'Revisa tu correo para continuar'
+                        });
+                    }
                     document.getElementById("otpBox").style.display = "block";
+                    document.querySelector('button[type="submit"]').innerHTML =
+                        '<i class="bi bi-check-circle me-2"></i>Verificar código'
+                    '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...;';
                 }
 
                 if (data.status === "error") {
-                    alert(data.message);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
                 }
+            }).catch(error => {
+
+                Toast.close();
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un problema al procesar la solicitud'
+                });
+
+                console.error(error);
             });
+    });
+    console.log("OTP DEBUG:", data.debug_otp);
+    document.getElementById("codigo").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            verificar();
+        }
     });
 </script>
 <script>
     function verificar() {
 
         let codigo = document.getElementById("codigo").value;
-        console.log(codigo);
+        Toast.fire({
+            title: 'Verificando código...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
         fetch("verificar.php", {
                 method: "POST",
                 headers: {
@@ -210,11 +272,23 @@ if (isset($_SESSION['usuario'])) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log(codigo);
                 if (data.status === "ok") {
-                    window.location.href = "../index.php";
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Codigo correcto',
+                        timer: 1200,
+                        showConfirmButton: false
+                    }).then(() => {
+
+                        window.location.href = "../index.php";
+
+                    });
                 } else {
-                    alert(data.message);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Código incorrecto',
+                        text: data.message
+                    });
                 }
 
             });
