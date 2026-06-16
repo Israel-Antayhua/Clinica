@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../includes/cabecera.php';
 date_default_timezone_set('America/Lima');
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
@@ -447,9 +446,10 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 </div>
                                 <?php
                                 $cont_citas = $conexion->prepare("SELECT c.*,CONCAT(p.nombres,' ',p.apellidos)AS nombre,
-                                    p.correo, p.celular,TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) AS edad
+                                    u.correo, p.celular,TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) AS edad
                                     FROM citas c
                                     INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
+                                    Inner Join usuarios u On u.id = p.id_usuario
                                     WHERE (
                                             fecha = CURDATE() AND hora > CURTIME()
                                         ) OR fecha > CURDATE()

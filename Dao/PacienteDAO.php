@@ -9,9 +9,8 @@ class PacienteDAO {
     }
 
     public function registrarPaciente($data) {
-
         // 🔐 1. INSERTAR USUARIO
-        $sqlUsuario = "INSERT INTO usuarios (usuario, password, rol) VALUES (?, ?, ?)";
+        $sqlUsuario = "INSERT INTO usuarios (correo, password, rol) VALUES (?, ?, ?)";
         $stmt = $this->conexion->prepare($sqlUsuario);
 
         if (!$stmt) {
@@ -33,8 +32,8 @@ class PacienteDAO {
 
         // 🏥 2. INSERTAR PACIENTE
         $sqlPaciente = "INSERT INTO pacientes 
-        (id_usuario, nombres, apellidos, dni, fecha_nacimiento, celular, correo, direccion)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        (id_usuario, nombres, apellidos, dni, fecha_nacimiento, celular, direccion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         $stmt2 = $this->conexion->prepare($sqlPaciente);
 
@@ -43,14 +42,13 @@ class PacienteDAO {
         }
 
         $stmt2->bind_param(
-            "isssssss",
+            "issssss",
             $id_usuario,
             $data['nombres'],
             $data['apellidos'],
             $data['dni'],
             $data['fecha_nacimiento'],
             $data['celular'],
-            $data['correo'],
             $data['direccion']
         );
 

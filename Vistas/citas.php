@@ -1,5 +1,4 @@
 <?php
-session_start();
 if (isset($_SESSION['swal']));
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';

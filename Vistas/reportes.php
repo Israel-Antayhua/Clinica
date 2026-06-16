@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 
@@ -8,25 +7,35 @@ if ($_SESSION['rol'] == 'medico'):
     // KPIs
     $total_citas = $conexion->query("
         SELECT COUNT(*) as t 
-        FROM citas
+        FROM citas c
+        Inner join medicos m
+        on c.id_medico = m.id
+        where m.id = " . $_SESSION['id_medico'] . "
     ")->fetch_assoc()['t'];
 
     $citas_hoy = $conexion->query("
         SELECT COUNT(*) as t 
-        FROM citas
-        WHERE fecha = CURDATE()
+        FROM citas c
+        Inner join medicos m
+        on c.id_medico = m.id
+        WHERE fecha = CURDATE() and m.id = " . $_SESSION['id_medico'] . "
     ")->fetch_assoc()['t'];
 
     $total_pacientes = $conexion->query("
-        SELECT COUNT(*) as t 
-        FROM pacientes
+        SELECT 
+            COUNT(DISTINCT  c.id_paciente) AS t
+        FROM citas c
+        INNER JOIN medicos m ON c.id_medico = m.id
+        where m.id = " . $_SESSION['id_medico'] . "
     ")->fetch_assoc()['t'];
 
     $ingresos_mes = $conexion->query("
-        SELECT SUM(monto) as t 
-        FROM citas
-        WHERE estado_pago='Pagado'
-        AND MONTH(fecha)=MONTH(CURDATE())
+        SELECT SUM(c.monto) as t 
+        FROM citas c
+        Inner join medicos m
+        on c.id_medico = m.id
+        WHERE c.estado_pago='Pagado'
+        AND MONTH(c.fecha)<=MONTH(CURDATE()) AND m.id = " . $_SESSION['id_medico'] . "
     ")->fetch_assoc()['t'];
 
     $ingresos_mes = $ingresos_mes ?: 0;
@@ -232,32 +241,64 @@ if ($_SESSION['rol'] == 'medico'):
                         </div>
 
                     </div>
+                    <?php
+                    $consulta = $conexion->query("
+                        SELECT DAYOFWEEK(fecha) AS dia, COUNT(*) AS total
+                        FROM citas
+                        WHERE YEARWEEK(fecha, 1) = YEARWEEK(CURDATE() - INTERVAL 4 WEEK, 1)
+                        GROUP BY DAYOFWEEK(fecha)
+                    ");
 
+                    $data = [
+                        2 => 0,
+                        3 => 0,
+                        4 => 0,
+                        5 => 0,
+                        6 => 0,
+                        7 => 0
+                    ];
+                    $diasSemana = [
+                        2 => 'Lun',
+                        3 => 'Mar',
+                        4 => 'Mié',
+                        5 => 'Jue',
+                        6 => 'Vie',
+                        7 => 'Sáb'
+                    ];
+
+                    while ($row = $consulta->fetch_assoc()) {
+                        $data[$row['dia']] = $row['total'];
+                    }
+                    ?>
                     <div class="bg-light rounded-4 p-4">
 
-                        <div class="d-flex align-items-end justify-content-between"
-                            style="height:260px;">
+                        <div class="d-flex align-items-end justify-content-between" style="height:260px;">
 
-                            <?php
-                            $dias = [
-                                ['Lun', 45],
-                                ['Mar', 75],
-                                ['Mié', 95],
-                                ['Jue', 60],
-                                ['Vie', 85],
-                                ['Sáb', 40]
-                            ];
+                            <?php foreach ($diasSemana as $num => $nombre):
 
-                            foreach ($dias as $d):
+                                $valor = $data[$num] ?? 0;
+
+                                // escala (ajusta si quieres)
+                                $max = max($data);
+                                $max = $max > 0 ? $max : 1;
+
+                                $altura = ($valor / $max) * 100;
                             ?>
 
-                                <div class="text-center">
+                                <div class="text-center d-flex flex-column justify-content-end align-items-center" style="height:100%; width:60px;">
 
-                                    <div class="bg-primary rounded-top shadow-sm"
-                                        style="width:55px; height:<?php echo $d[1]; ?>%;"></div>
+                                    <!-- BARRA -->
+                                    <div class="bg-info rounded-top shadow-sm"
+                                        style="width:40px; height:<?= $altura ?>%; min-height:5%; transition:0.3s;">
+                                    </div>
 
+                                    <!-- TEXTO -->
                                     <small class="fw-semibold mt-2 d-block">
-                                        <?php echo $d[0]; ?>
+                                        <?= $nombre ?>
+                                    </small>
+
+                                    <small class="text-muted">
+                                        <?= $valor ?>
                                     </small>
 
                                 </div>
@@ -267,7 +308,6 @@ if ($_SESSION['rol'] == 'medico'):
                         </div>
 
                     </div>
-
                 </div>
 
             </div>
@@ -275,6 +315,21 @@ if ($_SESSION['rol'] == 'medico'):
         </div>
 
         <!-- Estado sistema -->
+        <?php
+                $res = $conexion->query("
+            SELECT estado_pago, COUNT(*) AS total
+            FROM citas
+            WHERE DATE(fecha) = 2026-05-21
+            GROUP BY estado_pago
+        ");
+
+        $data = [];
+
+        while ($row = $res->fetch_assoc()) {
+            $data[$row['estado']] = $row['total'];
+        }
+        ?>
+
         <div class="col-lg-4">
 
             <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -285,87 +340,46 @@ if ($_SESSION['rol'] == 'medico'):
                         Estado General
                     </h5>
 
-                    <div class="d-flex flex-column gap-4">
-
-                        <div>
-
-                            <div class="d-flex justify-content-between mb-2">
-
-                                <span class="fw-medium">
-                                    Pagos Completados
-                                </span>
-
-                                <span class="text-success fw-bold">
-                                    82%
-                                </span>
-
-                            </div>
-
-                            <div class="progress rounded-pill"
-                                style="height:10px;">
-
-                                <div class="progress-bar bg-success"
-                                    style="width:82%;"></div>
-
-                            </div>
-
-                        </div>
-
-                        <div>
-
-                            <div class="d-flex justify-content-between mb-2">
-
-                                <span class="fw-medium">
-                                    Citas Confirmadas
-                                </span>
-
-                                <span class="text-primary fw-bold">
-                                    91%
-                                </span>
-
-                            </div>
-
-                            <div class="progress rounded-pill"
-                                style="height:10px;">
-
-                                <div class="progress-bar bg-primary"
-                                    style="width:91%;"></div>
-
-                            </div>
-
-                        </div>
-
-                        <div>
-
-                            <div class="d-flex justify-content-between mb-2">
-
-                                <span class="fw-medium">
-                                    Cancelaciones
-                                </span>
-
-                                <span class="text-danger fw-bold">
-                                    12%
-                                </span>
-
-                            </div>
-
-                            <div class="progress rounded-pill"
-                                style="height:10px;">
-
-                                <div class="progress-bar bg-danger"
-                                    style="width:12%;"></div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <!-- GRÁFICO -->
+                    <canvas id="graficoCitasHoy"></canvas>
 
                 </div>
 
             </div>
 
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            new Chart(document.getElementById('graficoCitasHoy'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Atendidas', 'Pendientes', 'Canceladas'],
+                    datasets: [{
+                        data: [
+                            <?= $data['Atendido'] ?? 4 ?>,
+                            <?= $data['Pendiente'] ?? 5 ?>,
+                            <?= $data['Cancelado'] ?? 2 ?>
+                        ],
+                        backgroundColor: [
+                            '#28a745',
+                            '#ffc107',
+                            '#dc3545'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        </script>
 
     </div>
 
@@ -420,6 +434,9 @@ if ($_SESSION['rol'] == 'medico'):
                             FROM citas c
                             INNER JOIN pacientes p 
                             ON c.id_paciente = p.id_paciente
+                            INNER JOIN medicos m
+                            ON c.id_medico = m.id
+                            where MONTH(c.fecha)>=MONTH(CURDATE()) And m.id =" . $_SESSION['id_medico'] . " 
                             ORDER BY c.id DESC
                             LIMIT 5
                         ");

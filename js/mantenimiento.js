@@ -20,74 +20,60 @@ function cerrarFormulario2() {
   document.getElementById("formEspecialidades").style.display = "none";
   document.getElementById("tablaEspecialidades").style.display = "block";
 }
-document.querySelectorAll(".toggleEstado").forEach((btn) => {
+document.addEventListener("click", function (e) {
 
-  btn.addEventListener("click", function () {
+  let btn = e.target.closest(".toggleEstado");
 
-    let id = this.dataset.id;
+  if (!btn) return;
 
-    fetch("../Controler/Add_Especia.php", {
+  let id = btn.dataset.id;
 
-      method: "POST",
+  fetch("../Controler/Add_Especia.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: "accion=estado&id=" + id
+  })
+  .then(res => res.json())
+  .then(data => {
 
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    if (!data.success) return;
 
-      body: "accion=estado&id=" + id,
+    let icon = btn.querySelector("i");
+    let fila = btn.closest("tr");
+    let badge = fila.querySelector(".estadoBadge");
 
-    })
+    badge.innerText = data.estado;
 
-    .then((res) => res.json())
-
-    .then((data) => {
-
-      if (data.success) {
-
-        // ICONO
-        let icon = this.querySelector("i");
-
-        // FILA
-        let fila = this.closest("tr");
-
-        // BADGE
-        let badge = fila.querySelector(".estadoBadge");
-
-        // TEXTO BADGE
-        badge.innerText = data.estado;
-
-        if (data.estado === "Activo") {
-
-          // ICONO
-          icon.classList.remove("bi-toggle-off", "text-danger");
-          icon.classList.add("bi-toggle-on", "text-success");
-
-          // BADGE
-          badge.className =
-            "badge estadoBadge rounded-pill px-3 py-2 bg-success-subtle text-success border border-success-subtle shadow-sm";
-
-        } else {
-
-          // ICONO
-          icon.classList.remove("bi-toggle-on", "text-success");
-          icon.classList.add("bi-toggle-off", "text-danger");
-
-          // BADGE
-          badge.className =
-            "badge estadoBadge rounded-pill px-3 py-2 bg-danger-subtle text-danger border border-danger-subtle shadow-sm";
-        }
-      }
-    });
+    if (data.estado === "Activo") {
+      icon.className = "bi bi-toggle-on text-success";
+      badge.className = "badge estadoBadge bg-success-subtle text-success";
+    } else {
+      icon.className = "bi bi-toggle-off text-danger";
+      badge.className = "badge estadoBadge bg-danger-subtle text-danger";
+    }
   });
 });
-document.querySelectorAll(".btnEditar").forEach((btn) => {
-  btn.addEventListener("click", function () {
-    document.getElementById("edit_id").value = this.dataset.id;
-    document.getElementById("edit_nombre").value = this.dataset.nombre;
-    document.getElementById("edit_precio").value = this.dataset.precio;
+document.addEventListener("click", function (e) {
+  let btn = e.target.closest(".btnEditar");
 
-    new bootstrap.Modal(document.getElementById("modalEditar")).show();
-  });
+  if (!btn) return;
+
+  let id = btn.dataset.id;
+
+  document.getElementById("edit_id").value = id;
+
+  document.getElementById("edit_nombre").value = document.getElementById(
+    "nombre_" + id,
+  ).innerText;
+
+  document.getElementById("edit_precio").value = document
+    .getElementById("precio_" + id)
+    .innerText.replace("S/ ", "")
+    .trim();
+
+  new bootstrap.Modal(document.getElementById("modalEditar")).show();
 });
 document.querySelectorAll(".btnEditar2").forEach((btn) => {
   btn.addEventListener("click", function () {
@@ -101,6 +87,157 @@ document.querySelectorAll(".btnEditar2").forEach((btn) => {
     new bootstrap.Modal(document.getElementById("modalMedico")).show();
   });
 });
+document.addEventListener("DOMContentLoaded", function () {
+  // =========================
+  // EDITAR (ABRIR MODAL)
+  // =========================
+  document.querySelectorAll(".btnEditar").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      let id = this.dataset.id;
+
+      // 🔥 leer SIEMPRE desde la tabla (no data-*)
+      document.getElementById("edit_id").value = id;
+
+      document.getElementById("edit_nombre").value = document.getElementById(
+        "nombre_" + id,
+      ).innerText;
+
+      document.getElementById("edit_precio").value = document
+        .getElementById("precio_" + id)
+        .innerText.replace("S/ ", "")
+        .trim();
+
+      new bootstrap.Modal(document.getElementById("modalEditar")).show();
+    });
+  });
+
+  // =========================
+  // EDITAR (GUARDAR AJAX)
+  // =========================
+  document
+    .getElementById("formEspecialidadEditar")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      let formData = new FormData(this);
+
+      fetch("../Controler/Add_Especia.php", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            // =========================
+            // ACTUALIZAR TABLA
+            // =========================
+            document.getElementById("nombre_" + data.id).innerText =
+              data.nuevo_nombre;
+
+            document.getElementById("precio_" + data.id).innerText =
+              "S/ " + parseFloat(data.nuevo_precio).toFixed(2);
+
+            // =========================
+            // CERRAR MODAL BIEN
+            // =========================
+            let modalEl = document.getElementById("modalEditar");
+            let modal = bootstrap.Modal.getInstance(modalEl);
+
+            if (modal) modal.hide();
+
+            // limpiar backdrop (evita pantalla gris)
+            setTimeout(() => {
+              document
+                .querySelectorAll(".modal-backdrop")
+                .forEach((el) => el.remove());
+              document.body.classList.remove("modal-open");
+              document.body.style = "";
+            }, 200);
+
+            // =========================
+            // FEEDBACK
+            // =========================
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "success",
+              title: "Especialidad actualizada",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+
+            // highlight visual
+            let el = document.getElementById("nombre_" + data.id);
+            el.classList.add("text-warning");
+
+            setTimeout(() => {
+              el.classList.remove("text-warning");
+            }, 800);
+
+            this.reset();
+          } else {
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "error",
+              title: data.message || "Error",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+
+          Swal.fire({
+            icon: "error",
+            title: "Error en servidor",
+          });
+        });
+    });
+});
+document
+  .getElementById("formEspecialidad")
+  .addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+    formData.append("accion", "insertar");
+
+    fetch("../Controler/Add_Especia.php", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          recargarTabla(); // 🔥 refresca todo desde BD
+
+          let modal = bootstrap.Modal.getInstance(
+            document.getElementById("modalEditar"),
+          );
+          if (modal) modal.hide();
+
+          // limpiar form
+          this.reset();
+
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Especialidad agregada",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: data.message || "Error",
+          });
+        }
+      })
+      .catch((err) => console.error(err));
+  });
 function cambiarVista(vista) {
   let medicos = document.getElementById("vistaMedicos");
   let especialidades = document.getElementById("vistaEspecialidades");
@@ -127,4 +264,11 @@ function cambiarVista(vista) {
     btnMedicos.classList.remove("btn-primary");
     btnMedicos.classList.add("btn-outline-primary");
   }
+}
+function recargarTabla() {
+  fetch("../Controler/Get_Especia.php")
+    .then((res) => res.text())
+    .then((html) => {
+      document.getElementById("bodyEspecie").innerHTML = html;
+    });
 }

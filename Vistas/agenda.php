@@ -1,6 +1,4 @@
 <?php
-
-session_start();
 if (isset($_SESSION['swal']));
 date_default_timezone_set('America/Lima');
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');

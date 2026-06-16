@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-06-2026 a las 01:58:02
+-- Tiempo de generación: 17-06-2026 a las 01:34:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -105,7 +105,10 @@ INSERT INTO `especialidades` (`id`, `nombre`, `estado`, `precio_consulta`) VALUE
 (7, 'Reumatología', 'Activo', 160.00),
 (8, 'Medicina Interna', 'Activo', 120.00),
 (9, 'Traumatología', 'Activo', 130.00),
-(10, 'Gestion de lavadero', 'Activo', 300.00);
+(10, 'Gestion de lavadero', 'Activo', 300.00),
+(11, 'Odontologia', 'Activo', 110.00),
+(12, 'Neurocirugia', 'Activo', 230.00),
+(13, 'Ortopedia', 'Activo', 60.00);
 
 -- --------------------------------------------------------
 
@@ -127,7 +130,7 @@ CREATE TABLE `medicos` (
 --
 
 INSERT INTO `medicos` (`id`, `id_usuario`, `nombre`, `id_especialidad`, `telefono`, `estado`) VALUES
-(5, 5, 'Joses', 3, '943402323', 'Activo'),
+(5, 5, 'Jose', 3, '943402322', 'Activo'),
 (6, 6, 'Miguel', 1, '923323999', 'Activo'),
 (7, 9, 'Rusbelt', 4, '924321122', 'Activo'),
 (8, 10, 'Joshep', 1, '999232922', 'Activo'),
@@ -149,7 +152,6 @@ CREATE TABLE `pacientes` (
   `dni` int(8) NOT NULL,
   `fecha_nacimiento` date NOT NULL,
   `celular` int(9) NOT NULL,
-  `correo` varchar(50) NOT NULL,
   `direccion` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -157,10 +159,12 @@ CREATE TABLE `pacientes` (
 -- Volcado de datos para la tabla `pacientes`
 --
 
-INSERT INTO `pacientes` (`id_paciente`, `id_usuario`, `nombres`, `apellidos`, `dni`, `fecha_nacimiento`, `celular`, `correo`, `direccion`) VALUES
-(1, 3, 'Anderson', 'Achulla Huaraca', 75918856, '2002-12-19', 931139271, 'anderachu7@gmail.com', 'A.H Santa rosa Mz.D lt.3'),
-(2, 4, 'Israel', 'Huayta Peña', 42472472, '2004-07-14', 931120132, 'correo_prueba@gmail.com', 'Prueba Direccion 2'),
-(3, 14, 'Valery', 'Capcha Peña', 73483492, '2000-06-21', 942583934, 'correo_prueba2@gmail.com', 'Prueba Direccion 3');
+INSERT INTO `pacientes` (`id_paciente`, `id_usuario`, `nombres`, `apellidos`, `dni`, `fecha_nacimiento`, `celular`, `direccion`) VALUES
+(1, 3, 'Anderson', 'Achulla Huaraca', 75918856, '2002-12-19', 931139271, 'A.H Santa rosa Mz.D lt.4'),
+(2, 4, 'Israel', 'Huayta Peña', 42472472, '2004-07-14', 931120132, 'Hola'),
+(3, 14, 'Valery', 'Capcha Peña', 73483492, '2000-06-21', 942583934, 'Prueba Direccion 3'),
+(4, 25, 'Miguel', 'Espinoza Caman', 72482942, '2004-02-17', 934353271, 'Prueba Direccion 4'),
+(5, 26, 'Leyton', 'Garcia Linares', 47224823, '2026-06-26', 929320302, 'Prueba Direccion 27');
 
 -- --------------------------------------------------------
 
@@ -212,14 +216,16 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `correo`, `password`, `rol`) VALUES
 (3, 'anderachu7@gmail.com', '$2y$10$qM.vpb1Vy3Xum.QMilL7OeUs1DDOjSwtiakfSilrd8wdAb/5CQ3yq', 'paciente'),
 (4, 'israel@gmail.com', '$2y$10$Nl0EcRwe.HmGwcIY2YCg3.LgYR4ADtUKWtZnpR7pb8H7ufN1QgtLe', 'paciente'),
-(5, 'jose@gmail.com', '$2y$10$pEVijnTXO4r3lfxUqquUCejFs6H.VDZ/F2MgTwsSAmsMoMd4Qzyqq', 'medico'),
+(5, 'jose1@gmail.com', '$2y$10$pEVijnTXO4r3lfxUqquUCejFs6H.VDZ/F2MgTwsSAmsMoMd4Qzyqq', 'administrador'),
 (6, 'Miguel@gmail.com', '$2y$10$nxrzLGummzcRLr73b28eheJLHGogqe0pIfXuD.mdL9Paml/0xH1Qa', 'medico'),
 (9, 'Rusbelt@gmail.com', '$2y$10$PwqGait8r5j4Lo7P2aBMIuHFdP7.4d22SzDanzb2lK8QPH..0nlbu', 'medico'),
 (10, 'Joshep@gmail.com', '$2y$10$RXhczx.ixXhq0ZKf8u6fyeVne2TL6qLt8Fk9DVxE5lyDzM9BYIozu', 'medico'),
 (11, 'Carla@gmail.com', '$2y$10$l6tnmxdrNEzzTZsfrRw65u3eraFd0eQbRgWc53cuaIwi5MIMpBN3m', 'medico'),
 (12, 'Reile@gmail.com', '$2y$10$lmNR7ng0yb6ekdX9iufCFu9hseMezjkjAA/vf5C1mLPJZsrHaMXyW', 'medico'),
 (13, 'Cristina@gmail.com', '$2y$10$RcrQcbKqm9a447xxvDptl.J1QGVs5c7EzM75AAR.3rKoMJYa.nJuy', 'medico'),
-(14, 'Valery@gmail.com', '$2y$10$aOOrRpdLYfghWwWqF5yyZ.4LdNUX3bPJhhbpumE.3j9tdSoMwNF9S', 'paciente');
+(14, 'Valery@gmail.com', '$2y$10$aOOrRpdLYfghWwWqF5yyZ.4LdNUX3bPJhhbpumE.3j9tdSoMwNF9S', 'paciente'),
+(25, 'miguel45@gmail.com', '$2y$10$ad5y./V0davPllu1RjJuHu9JL4flqkAyEiFwjklz5a/OdY1XjaPAq', 'paciente'),
+(26, 'Leyton@gmail.com', '$2y$10$8ExTTGM3V8.GGp1OCX66yugkOy9CcfMpM87QqwYh7BlUOU4QH.H7C', 'paciente');
 
 --
 -- Índices para tablas volcadas
@@ -282,7 +288,7 @@ ALTER TABLE `citas`
 -- AUTO_INCREMENT de la tabla `especialidades`
 --
 ALTER TABLE `especialidades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `medicos`
@@ -294,7 +300,7 @@ ALTER TABLE `medicos`
 -- AUTO_INCREMENT de la tabla `pacientes`
 --
 ALTER TABLE `pacientes`
-  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
@@ -306,7 +312,7 @@ ALTER TABLE `pagos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Restricciones para tablas volcadas

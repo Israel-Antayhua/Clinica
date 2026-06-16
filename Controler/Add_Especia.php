@@ -26,8 +26,12 @@ if (isset($_POST['accion']) && $_POST['accion'] == 'editar') {
         'title' => 'Actualizado',
         'text' => 'Especialidad actualizada correctamente'
     ];
-
-    header("Location: ../Vistas/mantenimiento.php");
+    echo json_encode([
+        "status" => "ok",
+        "id" => $id,
+        "nuevo_precio" => $precio,
+        "nuevo_nombre" => $nombre
+    ]);
     exit;
 }
 
@@ -44,7 +48,6 @@ if (isset($_POST['accion']) && $_POST['accion'] == 'estado') {
         "success" => $nuevoEstado ? true : false,
         "estado" => $nuevoEstado
     ]);
-
     exit;
 }
 
@@ -52,32 +55,19 @@ if (isset($_POST['accion']) && $_POST['accion'] == 'estado') {
    REGISTRAR ESPECIALIDAD
 ========================= */
 
-$data = [
-    "nombre" => $_POST["nombre"],
-    "precio" => $_POST["precio_consulta"]
-];
+if (isset($_POST['accion']) && $_POST['accion'] == 'insertar') {
 
-$resultado = $dao->registrarEspecia($data);
-
-if ($resultado === true) {
-
-    $_SESSION['swal'] = [
-        'icon' => 'success',
-        'title' => 'Correcto',
-        'text' => 'Especialidad registrada correctamente'
+    $data = [
+        "nombre" => $_POST["nombre"],
+        "precio" => $_POST["precio_consulta"]
     ];
 
-    header("Location: ../Vistas/mantenimiento.php?msg=ok");
-    exit;
+    $resultado = $dao->registrarEspecia($data);
 
-} else {
-
-    $_SESSION['swal'] = [
-        'icon' => 'error',
-        'title' => 'Error',
-        'text' => $resultado
-    ];
-
-    header("Location: ../Vistas/mantenimiento.php?msg=error");
+    echo json_encode([
+        "status" => "ok",
+        "nombre" => $data['nombre'],
+        "precio" => $data['precio']
+    ]);
     exit;
 }

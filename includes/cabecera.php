@@ -19,6 +19,15 @@
 </head>
 
 <body class="bg-light">
+    <?php
+    session_start();
+
+    if (!isset($_SESSION['usuario'])) {
+        header("Location: ../index.php");
+        exit();
+    }
+    ?>
+
     <?php if (isset($_SESSION['usuario'])):
 
         $vista_actual = basename($_SERVER['PHP_SELF']);
@@ -153,7 +162,7 @@
                             <!-- Perfil -->
                             <li class="nav-item">
 
-                                <a href="#"
+                                <a href="perfil.php"
                                     class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
                            <?php echo $vista_actual == 'perfil.php'
                                 ? 'active bg-primary shadow text-white'
@@ -188,23 +197,6 @@
 
                             </li>
 
-                            <!-- Mantenimiento -->
-                            <li class="nav-item">
-
-                                <a href="../Vistas/mantenimiento.php"
-                                    class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
-                           <?php echo $vista_actual == 'mantenimiento.php'
-                                ? 'active bg-primary shadow text-white'
-                                : 'text-white opacity-75'; ?>">
-
-                                    <i class="bi bi-gear-wide-connected fs-6"></i>
-
-                                    <span>Mantenimiento</span>
-
-                                </a>
-
-                            </li>
-
                             <!-- Reportes -->
                             <li class="nav-item">
 
@@ -223,7 +215,24 @@
                             </li>
 
                         <?php endif; ?>
+                        <?php if ($_SESSION['rol'] == 'administrador'): ?>
+                            <!-- Mantenimiento -->
+                            <li class="nav-item">
 
+                                <a href="../Vistas/mantenimiento.php"
+                                    class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-4 fw-medium small
+                           <?php echo $vista_actual == 'mantenimiento.php'
+                                ? 'active bg-primary shadow text-white'
+                                : 'text-white opacity-75'; ?>">
+
+                                    <i class="bi bi-gear-wide-connected fs-6"></i>
+
+                                    <span>Mantenimiento</span>
+
+                                </a>
+
+                            </li>
+                        <?php endif; ?>
                     </ul>
 
                 </div>

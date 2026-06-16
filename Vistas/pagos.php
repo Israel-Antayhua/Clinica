@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
 if ($_SESSION['rol'] == 'paciente'): ?>

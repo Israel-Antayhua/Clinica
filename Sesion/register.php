@@ -61,7 +61,7 @@ if (isset($_SESSION['usuario'])) {
                     <!-- BODY -->
                     <div class="card-body p-4" style="max-height: 85vh; overflow-y: auto;">
 
-                        <form action="../Controler/Add_Paciente.php" method="POST">
+                        <form id="registerForm">
 
                             <div class="row g-2">
 
@@ -88,26 +88,21 @@ if (isset($_SESSION['usuario'])) {
                                 </div>
 
                                 <!-- CELULAR + CORREO -->
-                                <div class="col-4">
+                                <div class="col-3">
                                     <label class="form-label fw-semibold small">Celular</label>
-                                    <input type="text" name="celular" class="form-control form-control-sm" required>
-                                </div>
-
-                                <div class="col-8">
-                                    <label class="form-label fw-semibold small">Correo</label>
-                                    <input type="email" name="correo" class="form-control form-control-sm" required>
+                                    <input type="tel" name="celular" minlength="9" maxlength="9" pattern="[0-9]{9}" inputmode="numeric" class="form-control form-control-sm" required>
                                 </div>
 
                                 <!-- DIRECCION -->
-                                <div class="col-12">
+                                <div class="col-9">
                                     <label class="form-label fw-semibold small">Dirección</label>
-                                    <input type="text" name="direccion" class="form-control form-control-sm">
+                                    <input type="text" name="direccion" class="form-control form-control-sm" required>
                                 </div>
 
                                 <!-- USUARIO -->
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold small">Usuario</label>
-                                    <input type="text" name="usuario" class="form-control form-control-sm" required>
+                                    <label class="form-label fw-semibold small">Correo</label>
+                                    <input type="email" name="usuario" class="form-control form-control-sm" required>
                                 </div>
 
                                 <!-- CONTRASEÑA + CONFIRMAR -->
@@ -146,5 +141,55 @@ if (isset($_SESSION['usuario'])) {
     </div>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("../Controler/Add_Paciente.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "ok") {
+
+                    return Swal.fire({
+                        toast: true,
+                        position: 'top',
+                        icon: 'success',
+                        title: 'Usuario creado',
+                        text: 'Se registró correctamente. Ahora puede iniciar sesión.',
+                        confirmButtonText: 'Continuar'
+                    });
+
+                } else {
+
+                    throw new Error(data.message || "No se pudo registrar");
+
+                }
+
+            })
+            .then(() => {
+
+                window.location.href = "login.php";
+
+            })
+            .catch(error => {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                });
+
+                console.error(error);
+
+            });
+    });
+</script>
 
 </html>

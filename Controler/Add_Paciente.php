@@ -12,15 +12,19 @@ $data = [
     "dni" => $_POST["dni"],
     "fecha_nacimiento" => $_POST["fecha_nacimiento"],
     "celular" => $_POST["celular"],
-    "correo" => $_POST["correo"],
     "direccion" => $_POST["direccion"]
 ];
 
 $resultado = $dao->registrarPaciente($data);
 
-if ($resultado === true) {
-    header("Location: ../Sesion/login.php?msg=ok");
-    exit;
+if ($resultado) {
+    echo json_encode([
+        "status" => "ok",
+        "message" => "Usuario registrado"
+    ]);
 } else {
-    echo $resultado;
+    echo json_encode([
+        "status" => "error",
+        "message" => "Ocurrio un problema, ".$resultado
+    ]);
 }

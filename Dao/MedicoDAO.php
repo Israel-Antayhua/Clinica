@@ -123,7 +123,7 @@ class MedicoDAO
 
             // solo actualizar usuario
             $sql2 = "UPDATE usuarios 
-                SET usuario = ?
+                SET correo = ?
                 WHERE id = (
                     SELECT id_usuario FROM medicos WHERE id = ?
                 )";

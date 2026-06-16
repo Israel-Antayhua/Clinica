@@ -1,9 +1,7 @@
 <?php
-session_start();
-if (isset($_SESSION['swal']));
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
-if ($_SESSION['rol'] == 'medico'): ?>
+if ($_SESSION['rol'] == 'administrador'): ?>
     <div class="d-flex gap-2 mb-4">
 
         <button class="btn btn-primary rounded-4"
@@ -534,131 +532,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                         </thead>
 
-                        <tbody>
-
-                            <?php
-                            $espe = $conexion->query("SELECT * FROM especialidades");
-
-                            while ($e = $espe->fetch_assoc()):
-
-                                $badge = ($e['estado'] == 'Activo')
-                                    ? 'bg-success-subtle text-success border border-success-subtle'
-                                    : 'bg-danger-subtle text-danger border border-danger-subtle';
-                            ?>
-
-                                <tr>
-
-                                    <!-- ID -->
-                                    <td>
-
-                                        <span class="fw-semibold text-dark">
-
-                                            #<?php echo $e['id']; ?>
-
-                                        </span>
-
-                                    </td>
-
-                                    <!-- Especialidad -->
-                                    <td>
-
-                                        <div class="d-flex align-items-center gap-3">
-
-                                            <div class="bg-info bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center shadow-sm"
-                                                style="width:50px; height:50px;">
-
-                                                <i class="bi bi-heart-pulse-fill text-info fs-5"></i>
-
-                                            </div>
-
-                                            <div>
-
-                                                <div class="fw-bold text-dark">
-
-                                                    <?php echo $e['nombre']; ?>
-
-                                                </div>
-
-                                                <small class="text-secondary">
-                                                    Especialidad médica
-                                                </small>
-
-                                            </div>
-
-                                        </div>
-
-                                    </td>
-
-                                    <!-- Precio Consulta -->
-                                    <td>
-
-                                        <div class="bg-success bg-opacity-10 rounded-4 px-3 py-2 d-inline-flex align-items-center gap-2">
-
-                                            <i class="bi bi-cash-stack text-success"></i>
-
-                                            <div>
-
-                                                <div class="fw-bold text-success">
-
-                                                    S/ <?php echo number_format($e['precio_consulta'], 2); ?>
-
-                                                </div>
-
-                                                <small class="text-secondary">
-                                                    Consulta
-                                                </small>
-
-                                            </div>
-
-                                        </div>
-
-                                    </td>
-
-                                    <!-- Estado -->
-                                    <td>
-
-                                        <span class="badge estadoBadge rounded-pill px-3 py-2 <?php echo $badge; ?> shadow-sm">
-
-                                            <?php echo $e['estado']; ?>
-
-                                        </span>
-
-                                    </td>
-
-                                    <!-- Acciones -->
-                                    <td class="text-center">
-
-                                        <div class="d-flex justify-content-center gap-2">
-
-                                            <button class="btn btn-sm btn-light border rounded-3 shadow-sm btnEditar"
-                                                data-id="<?php echo $e['id']; ?>"
-                                                data-nombre="<?php echo $e['nombre']; ?>"
-                                                data-precio="<?php echo $e['precio_consulta']; ?>">
-
-                                                <i class="bi bi-pencil text-primary"></i>
-
-                                            </button>
-
-                                            <button
-                                                class="btn btn-sm btn-light border toggleEstado"
-                                                data-id="<?php echo $e['id']; ?>">
-
-                                                <?php if ($e['estado'] == 'Activo') { ?>
-                                                    <i class="bi bi-toggle-on text-success"></i>
-                                                <?php } else { ?>
-                                                    <i class="bi bi-toggle-off text-danger"></i>
-                                                <?php } ?>
-
-                                            </button>
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                            <?php endwhile; ?>
-
+                        <tbody id="bodyEspecie">
+                            <?php include("../Controler/Get_Especia.php"); ?>
                         </tbody>
 
                     </table>
@@ -697,7 +572,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                     </div>
 
-                    <form action="../Controler/Add_Especia.php" method="POST" id="formEspecialidad">
+                    <form id="formEspecialidad">
 
                         <!-- USUARIO -->
                         <!-- NOMBRE ESPECIALIDAD -->
@@ -775,7 +650,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
         <div class="modal fade" id="modalEditar">
             <div class="modal-dialog">
 
-                <form action="../Controler/Add_Especia.php" method="POST" class="modal-content">
+                <form class="modal-content" id="formEspecialidadEditar">
 
                     <div class="modal-header">
                         <h5>Editar Especialidad</h5>
@@ -812,6 +687,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
             </div>
         </div>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/mantenimiento.js"></script>
     <script>

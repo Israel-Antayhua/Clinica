@@ -16,6 +16,9 @@ switch ($_SESSION['rol']) {
     case 'paciente':
         header("Location: Vistas/index_paciente.php");
         break;
+    case 'administrador':
+        header("Location: Vistas/index_paciente.php");
+        break;
 }
 exit;
 ?>

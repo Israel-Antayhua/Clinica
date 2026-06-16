@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../includes/cabecera.php';
 date_default_timezone_set('America/Lima');
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
