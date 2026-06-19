@@ -9,34 +9,65 @@ if ($_SESSION['rol'] == 'medico'): ?>
     <div class="container-fluid py-4">
 
         <!-- BIENVENIDA -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
+            <!-- Bienvenida -->
             <div>
-
-                <h2 class="fw-bold mb-1">
-                    Bienvenido Dr. <?php echo $_SESSION['usuario']; ?>
+                <h2 class="fw-bold mb-1 text-primary">
+                    👨‍⚕️ Bienvenido Dr. <?php echo $_SESSION['usuario']; ?>
                 </h2>
 
-                <p class="text-secondary mb-0">
+                <p class="text-muted mb-0">
                     Panel principal de atención médica
                 </p>
-
             </div>
 
-            <div class="bg-white shadow-sm rounded-4 px-5 py-3"
+
+            <!-- Fecha -->
+            <div class="card border-0 shadow-sm rounded-4 px-4 py-3 bg-light"
                 style="min-width:200px;">
 
-                <div class="small text-secondary">
-                    Fecha actual
+                <div class="text-muted  mb-2 text-center">
+                    📅 Fecha y hora actual
                 </div>
 
-                <div class="fw-semibold fs-5">
-                    <?php echo date('d/m/Y'); ?>
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <!-- Fecha -->
+                    <div class="fw-bold text-dark">
+                        <?php echo date('d/m/Y'); ?>
+                    </div>
+
+                    <!-- Hora -->
+                    <div class="fw-semibold text-primary" id="reloj">
+                        --:--:--
+                    </div>
+
                 </div>
 
             </div>
 
+            <script>
+                function actualizarHora() {
+                    const ahora = new Date();
+
+                    const hora = ahora.toLocaleTimeString('es-PE', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    });
+
+                    document.getElementById("reloj").textContent = hora;
+                }
+
+                actualizarHora();
+                setInterval(actualizarHora, 1000);
+            </script>
+
+
         </div>
+
 
         <!-- CARDS -->
         <div class="row g-4 mb-4">
@@ -301,7 +332,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                             $estado = strtolower($f['estado']);
                                             $color = "primary";
 
-                                            if ($estado == "confirmada") $color = "success";
+                                            if ($estado == "confirmado") $color = "success";
                                             if ($estado == "pendiente") $color = "warning";
                                             if ($estado == "cancelada") $color = "danger";
                                             ?>

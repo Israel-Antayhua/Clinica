@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-06-2026 a las 01:34:42
+-- Tiempo de generación: 20-06-2026 a las 01:38:38
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -33,8 +33,8 @@ CREATE TABLE `citas` (
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
   `id_medico` int(11) DEFAULT NULL,
-  `estado` varchar(20) DEFAULT 'Confirmada',
-  `monto` decimal(10,2) DEFAULT 90.00,
+  `estado` varchar(20) DEFAULT 'Pendiente',
+  `monto` decimal(10,2) DEFAULT NULL,
   `estado_pago` varchar(20) DEFAULT 'Pendiente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -43,40 +43,45 @@ CREATE TABLE `citas` (
 --
 
 INSERT INTO `citas` (`id`, `id_paciente`, `fecha`, `hora`, `id_medico`, `estado`, `monto`, `estado_pago`) VALUES
-(12, 2, '2026-05-22', '22:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(13, 2, '2026-05-21', '08:00:00', 9, 'Confirmada', 190.00, 'Pagado'),
-(14, 2, '2026-05-21', '21:00:00', 9, 'Confirmada', 200.00, 'Pagado'),
-(15, 1, '2026-05-25', '15:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
-(16, 1, '2026-05-22', '17:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(17, 2, '2026-05-17', '12:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(18, 1, '2026-05-21', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(19, 1, '2026-05-28', '16:00:00', 9, 'Pendiente', 90.00, 'Pendiente'),
-(20, 1, '2026-05-20', '14:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(21, 3, '2026-05-23', '15:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(22, 3, '2026-05-25', '17:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
-(23, 1, '2026-05-21', '22:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(24, 2, '2026-05-23', '17:00:00', 5, 'Confirmada', 200.00, 'Pendiente'),
-(25, 3, '2026-05-22', '10:00:00', 9, 'Confirmada', 90.00, 'Pendiente'),
-(26, 2, '2026-05-22', '22:00:00', 9, 'Confirmada', 90.00, 'Pagado'),
-(27, 2, '2026-05-22', '18:00:00', 7, 'Confirmada', 90.00, 'Pendiente'),
-(28, 2, '2026-05-22', '15:00:00', 5, 'Confirmada', 90.00, 'Pagado'),
-(29, 2, '2026-05-31', '18:00:00', 8, 'Confirmada', 150.00, 'Pendiente'),
-(30, 2, '2026-05-20', '17:00:00', 7, 'Confirmada', 220.00, 'Pendiente'),
-(31, 2, '2026-05-25', '12:00:00', 9, 'Confirmada', NULL, 'Pendiente'),
-(32, 2, '2026-05-23', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(33, 2, '2026-05-24', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(34, 2, '2026-05-18', '18:00:00', 7, 'Confirmada', 100.00, 'Pendiente'),
-(35, 2, '2026-05-25', '18:00:00', 7, 'Confirmada', 100.00, 'Pendiente'),
-(36, 2, '2026-05-29', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(37, 2, '2026-06-01', '16:00:00', 5, 'Confirmada', 60.00, 'Pendiente'),
-(38, 2, '2026-05-23', '11:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(39, 2, '2026-05-25', '18:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(40, 2, '2026-05-25', '16:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(41, 2, '2026-05-25', '10:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(42, 2, '2026-05-25', '14:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(43, 2, '2026-05-29', '11:00:00', 8, 'Confirmada', 150.00, 'Pendiente'),
-(44, 2, '2026-06-04', '11:00:00', 9, 'Confirmada', 100.00, 'Pendiente'),
-(45, 2, '2026-05-25', '08:00:00', 9, 'Confirmada', 100.00, 'Pendiente');
+(12, 2, '2026-05-22', '22:00:00', 5, 'Confirmado', 90.00, 'Pagado'),
+(13, 2, '2026-05-21', '08:00:00', 9, 'Confirmado', 190.00, 'Pagado'),
+(14, 2, '2026-05-21', '21:00:00', 9, 'Confirmado', 200.00, 'Pagado'),
+(15, 1, '2026-05-25', '15:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(16, 1, '2026-05-22', '17:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(17, 2, '2026-05-17', '12:00:00', 9, 'Pendiente', 90.00, 'Pendiente'),
+(18, 1, '2026-05-21', '14:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(19, 1, '2026-05-28', '16:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(20, 1, '2026-05-20', '14:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(21, 3, '2026-05-21', '15:00:00', 9, 'Pendiente', 90.00, 'Pendiente'),
+(22, 3, '2026-05-25', '17:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(23, 1, '2026-05-21', '22:00:00', 5, 'Confirmado', 90.00, 'Pagado'),
+(24, 2, '2026-05-23', '17:00:00', 5, 'Pendiente', 200.00, 'Pendiente'),
+(25, 3, '2026-05-22', '10:00:00', 9, 'Pendiente', 90.00, 'Pendiente'),
+(26, 2, '2026-05-22', '22:00:00', 9, 'Confirmado', 90.00, 'Pagado'),
+(27, 2, '2026-05-22', '18:00:00', 7, 'Pendiente', 90.00, 'Pendiente'),
+(28, 2, '2026-05-22', '15:00:00', 5, 'Confirmado', 90.00, 'Pagado'),
+(29, 2, '2026-05-31', '18:00:00', 8, 'Pendiente', 150.00, 'Pendiente'),
+(30, 2, '2026-05-20', '17:00:00', 7, 'Pendiente', 220.00, 'Pendiente'),
+(31, 2, '2026-05-25', '12:00:00', 9, 'Pendiente', NULL, 'Pendiente'),
+(32, 2, '2026-05-23', '18:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(33, 2, '2026-05-24', '18:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(34, 2, '2026-05-18', '18:00:00', 7, 'Pendiente', 100.00, 'Pendiente'),
+(35, 2, '2026-05-25', '18:00:00', 7, 'Pendiente', 100.00, 'Pendiente'),
+(36, 2, '2026-05-21', '18:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(37, 2, '2026-06-01', '16:00:00', 5, 'Pendiente', 60.00, 'Pendiente'),
+(38, 2, '2026-05-23', '11:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(39, 2, '2026-05-25', '18:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(40, 2, '2026-05-25', '16:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(41, 2, '2026-05-25', '10:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(42, 2, '2026-05-25', '14:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(43, 2, '2026-05-29', '11:00:00', 8, 'Pendiente', 150.00, 'Pendiente'),
+(44, 2, '2026-06-04', '11:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(45, 2, '2026-05-25', '08:00:00', 9, 'Pendiente', 100.00, 'Pendiente'),
+(46, 1, '2026-06-23', '14:00:00', 10, 'Pendiente', 120.00, 'Pendiente'),
+(47, 1, '2026-06-25', '14:00:00', 9, 'Confirmado', 100.00, 'Pagado'),
+(48, 1, '2026-06-23', '14:00:00', 11, 'Confirmado', 300.00, 'Pagado'),
+(49, 1, '2026-06-22', '16:00:00', 8, 'Pendiente', 150.00, 'Pendiente'),
+(50, 1, '2026-06-30', '14:00:00', 11, 'Pendiente', 300.00, 'Pendiente');
 
 -- --------------------------------------------------------
 
@@ -194,7 +199,8 @@ INSERT INTO `pagos` (`id`, `id_cita`, `monto`, `estado`, `metodo_pago`, `culqi_c
 (5, 22, 90.00, 'Pagado', 'Visa', 'chr_test_h0n4enn6iSiyY3Jb', '2026-05-21 20:38:43'),
 (6, 23, 90.00, 'Pagado', 'Visa', 'chr_test_2ic50N8xPEWBakBw', '2026-05-21 20:49:23'),
 (7, 26, 90.00, 'Pagado', 'Visa', 'chr_test_b8Xh0Ns1epVj2GQ2', '2026-05-22 14:29:26'),
-(8, 28, 90.00, 'Pagado', 'Visa', 'chr_test_LDV0uD6EZmKURaAK', '2026-05-22 15:00:29');
+(8, 28, 90.00, 'Pagado', 'Visa', 'chr_test_LDV0uD6EZmKURaAK', '2026-05-22 15:00:29'),
+(9, 20, 90.00, 'Pagado', 'Visa', 'chr_test_TmPqnzh4AUpkhh2D', '2026-06-19 12:01:25');
 
 -- --------------------------------------------------------
 
@@ -282,7 +288,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`
@@ -306,7 +312,7 @@ ALTER TABLE `pacientes`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

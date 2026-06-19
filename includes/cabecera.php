@@ -260,31 +260,34 @@
                 <div class="bg-white rounded-4 shadow-sm p-3 mb-4 d-flex justify-content-between align-items-center">
 
                     <div>
-
                         <h5 class="fw-bold mb-0">
-                            Panel Principal
+                            Sistema de Gestión Clínica
                         </h5>
 
                         <small class="text-secondary">
-                            Bienvenido al sistema clínico
+                            <?= date('d/m/Y') ?>
                         </small>
-
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
 
-                        <button class="btn btn-light rounded-circle shadow-sm">
-                            <i class="bi bi-bell"></i>
-                        </button>
 
-                        <button class="btn btn-light rounded-circle shadow-sm">
-                            <i class="bi bi-gear"></i>
-                        </button>
+                        <div class="text-end">
+                            <div class="fw-semibold">
+                                <?= $_SESSION['usuario'] ?>
+                            </div>
+
+                            <small class="text-secondary text-capitalize">
+                                <?= $_SESSION['rol'] ?>
+                            </small>
+                        </div>
+
+
 
                     </div>
 
-                </div>
+        </div>
 
-                <!-- Aquí va tu contenido -->
+        <!-- Aquí va tu contenido -->
 
-            <?php endif; ?>
+    <?php endif; ?>

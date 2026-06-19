@@ -8,35 +8,62 @@ if ($_SESSION['rol'] == 'paciente'): ?>
     <div class="container-fluid py-4">
 
         <!-- HEADER -->
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
+            <!-- Bienvenida paciente -->
             <div>
-
-                <h2 class="fw-bold mb-1">
-                    Hola, <?php echo $_SESSION['usuario']; ?>👋
+                <h2 class="fw-bold mb-1 text-success">
+                    👤 Bienvenido/a <?php echo $_SESSION['usuario']; ?>
                 </h2>
 
-                <p class="text-secondary mb-0">
-                    Bienvenido nuevamente a Maison de Santé
+                <p class="text-muted mb-0">
+                    Consulta tus citas y estado de atención
                 </p>
-
             </div>
 
-            <!-- FECHA -->
-            <div class="bg-white shadow-sm rounded-4 px-5 py-4"
-                style="min-width:240px;">
+            <!-- Fecha + hora -->
+            <div class="card border-0 shadow-sm rounded-4 px-4 py-3 bg-light text-center"
+                style="min-width:200px;">
 
-                <div class="small text-secondary mb-1">
-                    Fecha actual
+                <div class="text-muted   mb-2">
+                    📅 Fecha y hora actual
                 </div>
 
-                <div class="fw-bold fs-4">
-                    <?php echo date('d/m/Y'); ?>
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <!-- Fecha -->
+                    <div class="fw-bold text-dark">
+                        <?php echo date('d/m/Y'); ?>
+                    </div>
+
+                    <!-- Hora -->
+                    <div class="fw-semibold text-success" id="reloj">
+                        --:--:--
+                    </div>
+
                 </div>
 
             </div>
 
         </div>
+
+        <script>
+            function actualizarHora() {
+                const ahora = new Date();
+
+                const hora = ahora.toLocaleTimeString('es-PE', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+
+                document.getElementById("reloj").textContent = hora;
+            }
+
+            actualizarHora();
+            setInterval(actualizarHora, 1000);
+        </script>
 
         <!-- ========================= -->
         <!-- CARDS -->
@@ -312,11 +339,12 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                             </div>
 
                         <?php } else {
-                            $color = "primary";
+                            $estado = strtolower($fila['estado']);
+                                    $color = "primary";
 
-                            if ($fila['estado'] == "Confirmada") $color = "success";
-                            if ($fila['estado'] == "Pendiente") $color = "warning";
-                            if ($fila['estado'] == "Cancelada") $color = "danger"; ?>
+                                    if ($estado == "confirmado") $color = "success";
+                                    if ($estado == "pendiente") $color = "warning";
+                                    if ($estado == "cancelada") $color = "danger"; ?>
                             <div class="d-flex justify-content-between align-items-center mb-4">
 
                                 <h4 class="fw-bold mb-0">
@@ -442,13 +470,13 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                             <!-- BOTONES -->
                             <div class="d-flex gap-3 mt-4 flex-wrap">
 
-                                <button class="btn btn-warning rounded-4 px-4">
+                                <!--<button class="btn btn-warning rounded-4 px-4">
 
                                     <i class="bi bi-tools me-2"></i>
 
                                     Trabajando ...
 
-                                </button>
+                                </button>-->
                                 <?php
                                 if ($fila['estado_pago'] == 'Pagado') {
                                 ?>
@@ -463,7 +491,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                     </a>
                                 <?php } else { ?>
                                     <a href="pagos.php"
-                                        class="btn btn-success btn-sm rounded-3 px-3">
+                                        class="btn btn-success btn-sm rounded-3 p-3">
 
                                         <i class="bi bi-credit-card me-1"></i>
 

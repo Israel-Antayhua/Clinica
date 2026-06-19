@@ -1,23 +1,12 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require '../PHPMailer/PHPMailer.php';
-require '../PHPMailer/SMTP.php';
-require '../PHPMailer/Exception.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
 
 include '../ConexionDB/conexion.php';
-
-$env = parse_ini_file(__DIR__ . '/../.env');
-$smtpUser = $env['SMTP_USER'];
-$smtpPass = $env['SMTP_PASS'];
-$smtpHost = $env['SMTP_HOST'];
-$smtpPort = $env['SMTP_PORT'];
+require 'codigo.php';
 
 $usuario  = $_POST['usuario'];
 $password = $_POST['password'];
-$modo_dev = true;
 
 $sql = "SELECT * FROM usuarios WHERE correo = ?";
 $stmt = $conexion->prepare($sql);
@@ -59,40 +48,14 @@ if ($resultado->num_rows == 1) {
             $_SESSION['temp_user'] = $medico['nombre'];
             $_SESSION['id_medico'] = $medico['id'];
         }
-        // 🔐 generar código
-        $codigo = rand(100000, 999999);
 
-        $_SESSION['otp'] = $codigo;
-        $_SESSION['otp_time'] = time();
         $_SESSION['rol_temp'] = $datos['rol'];
 
-        if ($modo_dev) {
-            echo json_encode([
-                "status" => "otp_sent",
-                "debug_otp" => $modo_dev ? $codigo : null
-            ]);
-            exit;
-        } else {
-            $mail = new PHPMailer(true);
+        $result = enviarCorreo($usuario,"Código de Inicio de Sesion","Verificación de login",
+        "Tu código OTP es: <b>{{codigo}}</b>"
+        );
 
-            $mail->isSMTP();
-            $mail->Host = $smtpHost;
-            $mail->SMTPAuth = true;
-            $mail->Username = $smtpUser;
-            $mail->Password = $smtpPass;
-            $mail->SMTPSecure = 'tls';
-            $mail->Port = $smtpPort;
-
-            $mail->setFrom('ClinicaMaisonSante@gmail.com', 'Clinica Maison Sante');
-            $mail->addAddress($usuario);
-
-            $mail->Subject = "Codigo de verificacion";
-            $mail->Body = "Tu código es: $codigo";
-
-            $mail->send();
-            echo json_encode(["status" => "otp_sent"]);
-            exit;
-        }
+        echo json_encode($result);
     } else {
         echo json_encode(["status" => "error", "message" => "Contraseña incorrecta"]);
         exit;

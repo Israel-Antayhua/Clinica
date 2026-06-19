@@ -1,7 +1,18 @@
 <?php
 include '../includes/cabecera.php';
 include '../ConexionDB/conexion.php';
+$offsetSemana = (int) ($_GET['s'] ?? 0);
 
+$base = new DateTime();
+$base->modify("monday this week");
+$base->modify("$offsetSemana week");
+
+$inicioSemana = clone $base;
+$finSemana = clone $base;
+$finSemana->modify("+6 days");
+
+$inicioSemana = $inicioSemana->format('Y-m-d');
+$finSemana = $finSemana->format('Y-m-d');
 if ($_SESSION['rol'] == 'medico'):
 
     // KPIs
@@ -18,27 +29,16 @@ if ($_SESSION['rol'] == 'medico'):
         FROM citas c
         Inner join medicos m
         on c.id_medico = m.id
-        WHERE fecha = CURDATE() and m.id = " . $_SESSION['id_medico'] . "
+        WHERE c.estado = 'Pendiente' and m.id = " . $_SESSION['id_medico'] . "
     ")->fetch_assoc()['t'];
 
     $total_pacientes = $conexion->query("
         SELECT 
-            COUNT(DISTINCT  c.id_paciente) AS t
+            COUNT(*) AS t
         FROM citas c
         INNER JOIN medicos m ON c.id_medico = m.id
-        where m.id = " . $_SESSION['id_medico'] . "
+        where c.estado = 'Cancelada' AND m.id = " . $_SESSION['id_medico'] . "
     ")->fetch_assoc()['t'];
-
-    $ingresos_mes = $conexion->query("
-        SELECT SUM(c.monto) as t 
-        FROM citas c
-        Inner join medicos m
-        on c.id_medico = m.id
-        WHERE c.estado_pago='Pagado'
-        AND MONTH(c.fecha)<=MONTH(CURDATE()) AND m.id = " . $_SESSION['id_medico'] . "
-    ")->fetch_assoc()['t'];
-
-    $ingresos_mes = $ingresos_mes ?: 0;
 
 ?>
 
@@ -57,13 +57,21 @@ if ($_SESSION['rol'] == 'medico'):
 
         </div>
 
-        <button class="btn btn-primary rounded-4 px-4 shadow-sm">
+        <div class="d-flex align-items-center gap-2 mb-3">
 
-            <i class="bi bi-download me-2"></i>
+            <a href="?s=<?= $offsetSemana - 1 ?>" class="btn btn-outline-primary btn-sm">
+                ← Anterior
+            </a>
 
-            Exportar Reporte
+            <span class="fw-semibold">
+    <?= date('d M', strtotime($inicioSemana)) ?> - <?= date('d M Y', strtotime($finSemana)) ?>
+</span>
 
-        </button>
+            <a href="?s=<?= $offsetSemana + 1 ?>" class="btn btn-outline-primary btn-sm">
+                Siguiente →
+            </a>
+
+        </div>
 
     </div>
 
@@ -71,7 +79,7 @@ if ($_SESSION['rol'] == 'medico'):
     <div class="row g-4 mb-4">
 
         <!-- Total citas -->
-        <div class="col-md-3">
+        <div class="col-md-4">
 
             <div class="card border-0 shadow-sm rounded-4 h-100">
 
@@ -106,8 +114,8 @@ if ($_SESSION['rol'] == 'medico'):
 
         </div>
 
-        <!-- Citas hoy -->
-        <div class="col-md-3">
+        <!-- Citas Pendientes Mes -->
+        <div class="col-md-4">
 
             <div class="card border-0 shadow-sm rounded-4 h-100">
 
@@ -118,83 +126,11 @@ if ($_SESSION['rol'] == 'medico'):
                         <div>
 
                             <small class="text-secondary">
-                                Citas Hoy
-                            </small>
-
-                            <h2 class="fw-bold text-success mt-2 mb-0">
-                                <?php echo $citas_hoy; ?>
-                            </h2>
-
-                        </div>
-
-                        <div class="bg-success bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                            style="width:65px; height:65px;">
-
-                            <i class="bi bi-activity text-success fs-3"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Pacientes -->
-        <div class="col-md-3">
-
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-
-                <div class="card-body p-4">
-
-                    <div class="d-flex justify-content-between align-items-center">
-
-                        <div>
-
-                            <small class="text-secondary">
-                                Pacientes
-                            </small>
-
-                            <h2 class="fw-bold text-info mt-2 mb-0">
-                                <?php echo $total_pacientes; ?>
-                            </h2>
-
-                        </div>
-
-                        <div class="bg-info bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
-                            style="width:65px; height:65px;">
-
-                            <i class="bi bi-people text-info fs-3"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Ingresos -->
-        <div class="col-md-3">
-
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-
-                <div class="card-body p-4">
-
-                    <div class="d-flex justify-content-between align-items-center">
-
-                        <div>
-
-                            <small class="text-secondary">
-                                Ingresos del Mes
+                                Citas pendientes del Mes
                             </small>
 
                             <h2 class="fw-bold text-warning mt-2 mb-0">
-                                S/ <?php echo number_format($ingresos_mes, 2); ?>
+                                <?php echo $citas_hoy; ?>
                             </h2>
 
                         </div>
@@ -202,7 +138,43 @@ if ($_SESSION['rol'] == 'medico'):
                         <div class="bg-warning bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
                             style="width:65px; height:65px;">
 
-                            <i class="bi bi-cash-stack text-warning fs-3"></i>
+                            <i class="bi bi-activity text-warning fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Citas Canceladas -->
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-secondary">
+                                Citas Canceladas
+                            </small>
+
+                            <h2 class="fw-bold text-danger mt-2 mb-0">
+                                <?php echo $total_pacientes; ?>
+                            </h2>
+
+                        </div>
+
+                        <div class="bg-danger bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center"
+                            style="width:65px; height:65px;">
+
+                            <i class="bi bi-people text-danger fs-3"></i>
 
                         </div>
 
@@ -243,10 +215,11 @@ if ($_SESSION['rol'] == 'medico'):
                     </div>
                     <?php
                     $consulta = $conexion->query("
-                        SELECT DAYOFWEEK(fecha) AS dia, COUNT(*) AS total
-                        FROM citas
-                        WHERE YEARWEEK(fecha, 1) = YEARWEEK(CURDATE() - INTERVAL 4 WEEK, 1)
-                        GROUP BY DAYOFWEEK(fecha)
+                        SELECT DAYOFWEEK(c.fecha) AS dia, COUNT(*) AS total
+                        FROM citas c
+                        INNER JOIN medicos m on c.id_medico = m.id
+                        WHERE c.fecha BETWEEN '$inicioSemana' AND '$finSemana' AND m.id = " . $_SESSION['id_medico'] . "
+                        GROUP BY DAYOFWEEK(c.fecha)
                     ");
 
                     $data = [
@@ -316,11 +289,13 @@ if ($_SESSION['rol'] == 'medico'):
 
         <!-- Estado sistema -->
         <?php
-                $res = $conexion->query("
-            SELECT estado_pago, COUNT(*) AS total
-            FROM citas
-            WHERE DATE(fecha) = 2026-05-21
-            GROUP BY estado_pago
+        $res = $conexion->query("
+            SELECT c.estado, COUNT(*) AS total
+            FROM citas c
+            Inner join medicos m
+            on c.id_medico = m.id
+            WHERE c.fecha BETWEEN '$inicioSemana' AND '$finSemana' and m.id = " . $_SESSION['id_medico'] . "
+            GROUP BY c.estado
         ");
 
         $data = [];
@@ -358,9 +333,9 @@ if ($_SESSION['rol'] == 'medico'):
                     labels: ['Atendidas', 'Pendientes', 'Canceladas'],
                     datasets: [{
                         data: [
-                            <?= $data['Atendido'] ?? 4 ?>,
-                            <?= $data['Pendiente'] ?? 5 ?>,
-                            <?= $data['Cancelado'] ?? 2 ?>
+                            <?= $data['Confirmado'] ?? 0 ?>,
+                            <?= $data['Pendiente'] ?? 0 ?>,
+                            <?= $data['Cancelado'] ?? 0 ?>
                         ],
                         backgroundColor: [
                             '#28a745',
@@ -503,5 +478,4 @@ if ($_SESSION['rol'] == 'medico'):
         </div>
 
     </div>
-
 <?php endif; ?>

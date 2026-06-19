@@ -34,31 +34,49 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
         <div class="modal-dialog modal-dialog-centered">
 
-            <form action="../Controler/Add_Cita.php" method="POST" class="modal-content" id="formCambiarHora">
+            <form class="modal-content" id="formCambiarHora">
 
                 <div class="modal-header bg-warning">
-
-                    <h5 class="modal-title">Cambiar Hora de Cita</h5>
-
-                    <button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
-
+                    <h5 class="modal-title">Reprogramar / Cancelar Cita</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <input type="hidden" name="accion" value="cambiar_hora">
-
-                    <input type="hidden" id="edit_id_medico" name="id_medico">
+                    <div class="alert alert-info py-2 mt-2">
+                        Selecciona nueva fecha y hora para reprogramar la cita
+                    </div>
+                    <input type="hidden" name="accion" value="verificar_otp">
 
                     <input type="hidden" id="edit_id" name="id">
 
-                    <input type="hidden" id="edit_fecha" name="fecha">
+                    <!-- OTP -->
+                    <label class="form-label fw-semibold">Código OTP</label>
+                    <input type="text" id="codigo" name="otp" class="form-control" placeholder="Ingresa el código enviado al correo">
 
-                    <input type="hidden" id="edit_monto" name="monto">
+                    <hr>
 
-                    <label class="form-label fw-semibold">Hora</label>
+                    <!-- Opcional: acción -->
+                    <label class="form-label fw-semibold">Acción</label>
+                    <select name="tipo_accion" class="form-select">
+                        <option value="reprogramar">Reprogramar</option>
+                        <option value="cancelar">Cancelar</option>
+                    </select>
 
-                    <select name="hora" id="edit_hora" class="form-select" required>
+                    <label class="form-label fw-semibold">Fecha de la cita</label>
+
+                    <input type="date"
+                        name="fecha"
+                        id="edit_fecha"
+                        class="form-control"
+                        >
+                        
+
+                    <!-- Hora opcional (solo si reprograma) -->
+                    <input type="hidden"> <input type="hidden" id="edit_id_medico" name="id_medico"><input type="hidden" id="edit_monto" name="monto">
+                    <label class="form-label fw-semibold mt-2">Nueva Hora (opcional)</label>
+                    <select name="hora" id="edit_hora" class="form-select">
+
+                        <option value="">-- Sin hora --</option>
 
                         <?php
                         for ($h = 8; $h <= 18; $h++) {
@@ -68,21 +86,20 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                         ?>
 
                     </select>
-
                 </div>
 
                 <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Cancelar
                     </button>
 
                     <button class="btn btn-warning">
-                        Actualizar Hora
+                        Confirmar
                     </button>
                 </div>
+
             </form>
+
         </div>
     </div>
     <!-- Formulario -->
@@ -238,7 +255,6 @@ if ($_SESSION['rol'] == 'paciente'): ?>
         </div>
 
     </div>
-    <!-- Tabla -->
     <!-- FILTROS -->
     <div class="d-flex gap-2 mb-4">
 
@@ -323,13 +339,17 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                         while ($f = $citas->fetch_assoc()):
 
-                            $badge = ($f['estado'] == 'Confirmada')
-                                ? 'bg-success-subtle text-success border border-success-subtle'
-                                : 'bg-warning-subtle text-warning border border-warning-subtle';
+                            $estado = strtolower($f['estado']);
+                            $color = "primary";
+
+                            if ($estado == "confirmado") $color = "success";
+                            if ($estado == "pendiente") $color = "warning";
+                            if ($estado == "cancelada") $color = "danger";
 
                             $tipo = (strtotime($f['fecha']) >= strtotime(date('Y-m-d')))
                                 ? 'proxima'
                                 : 'historial';
+
                         ?>
 
                             <tr class="fila-cita <?php echo $tipo; ?>">
@@ -388,7 +408,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                 <!-- Estado -->
                                 <td>
 
-                                    <span class="badge rounded-pill px-3 py-2 <?php echo $badge; ?>">
+                                    <span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?> rounded-pill px-3 py-2">
 
                                         <?php echo $f['estado']; ?>
 
@@ -412,8 +432,9 @@ if ($_SESSION['rol'] == 'paciente'): ?>
 
                                         </button>
 
-                                        <a href="eliminar.php?id=<?php echo $f['id']; ?>"
-                                            class="btn btn-sm btn-outline-danger rounded-3">
+                                        <a href="#"
+                                            class="btn btn-sm btn-outline-danger rounded-3 btnCancelarCita"
+                                            data-id="<?php echo $f['id']; ?>">
 
                                             <i class="bi bi-x-circle me-1"></i>
 
@@ -482,16 +503,5 @@ if ($_SESSION['rol'] == 'paciente'): ?>
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/cita.js"></script>
-    <script>
-        Swal.fire({
-
-            icon: '<?php echo $_SESSION['swal']['icon']; ?>',
-
-            title: '<?php echo $_SESSION['swal']['title']; ?>',
-
-            text: '<?php echo $_SESSION['swal']['text']; ?>'
-
-        });
-    </script>
     <?php unset($_SESSION['swal']); ?>
 <?php endif; ?>

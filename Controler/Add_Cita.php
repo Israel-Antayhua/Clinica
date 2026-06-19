@@ -36,32 +36,74 @@ function validarCruce($dao, $fecha, $hora, $id_medico)
 /* =========================
    CAMBIAR HORA (AJAX O FORM)
 ========================= */
-if (isset($_POST['accion']) && $_POST['accion'] == 'cambiar_hora') {
+if (isset($_POST['accion']) && $_POST['accion'] == 'verificar_otp') {
 
-    $cruce = validarCruce($dao, $fecha, $hora, $id_medico);
 
-    if ($cruce !== "ok") {
-        echo $cruce;
-        exit; // 🔴 IMPORTANTE: detener todo
+    if (!isset($_SESSION['otp']) || $_POST['otp'] != $_SESSION['otp']) {
+        echo "error|OTP incorrecto";
+        exit;
     }
 
+    if (time() - $_SESSION['otp_time'] > 300) {
+        echo "error|OTP expirado";
+        exit;
+    }
 
     $id = $_POST['id'];
+    $tipo = $_POST['tipo_accion'];
 
-    $sql = "UPDATE citas SET hora = ? WHERE id = ?";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("si", $hora, $id);
+    if ($tipo == 'reprogramar') {
+        $cruce = validarCruce($dao, $fecha, $hora, $id_medico);
 
-    $resultado = $stmt->execute();
+        if ($cruce !== "ok") {
+            echo $cruce;
+            exit; // 🔴 IMPORTANTE: detener todo
+        }
 
-    if ($resultado) {
-        echo "ok|Hora actualizada correctamente";
-    } else {
+        $sqlEstado = "SELECT estado_pago FROM citas WHERE id = ?";
+        $stmtEstado = $conexion->prepare($sqlEstado);
+        $stmtEstado->bind_param("i", $id);
+        $stmtEstado->execute();
+        $resultado = $stmtEstado->get_result()->fetch_assoc();
 
-        echo "error|Error al actualizar la hora";
+        $estadoPago = $resultado['estado_pago'];
+
+        // decidir nuevo estado
+        $nuevoEstado = "Pendiente";
+
+        if ($estadoPago == "Pagado") {
+            $nuevoEstado = "Confirmado";
+        }
+
+
+        $sql = "UPDATE citas 
+            SET fecha = ?, 
+                hora = ?, 
+                estado = ? 
+            WHERE id = ?";
+
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("sssi", $fecha, $hora, $nuevoEstado, $id);
+        if ($stmt->execute()) {
+            echo "ok|Hora actualizada correctamente";
+        } else {
+            echo "error|No se pudo actualizar";
+        }
+        exit;
     }
+    if ($tipo == 'cancelar') {
 
-    exit;
+        $sql = "UPDATE citas SET estado = 'Cancelada' WHERE id = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $id);
+
+        if ($stmt->execute()) {
+            echo "ok|Cita cancelada correctamente";
+        } else {
+            echo "error|Error al cancelar";
+        }
+        exit;
+    }
 }
 /* =========================
    INSERTAR CITA

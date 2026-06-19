@@ -197,6 +197,7 @@ if (isset($_SESSION['usuario'])) {
                 Toast.close();
 
                 if (data.status === "otp_sent") {
+                    console.log("OTP DEBUG:", data.debug_otp);
                     if (data.debug_otp) {
                         document.getElementById("codigo").value = data.debug_otp;
                         Swal.fire({
@@ -244,7 +245,6 @@ if (isset($_SESSION['usuario'])) {
                 console.error(error);
             });
     });
-    console.log("OTP DEBUG:", data.debug_otp);
     document.getElementById("codigo").addEventListener("keypress", function(e) {
         if (e.key === "Enter") {
             e.preventDefault();

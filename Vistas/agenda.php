@@ -78,7 +78,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                 INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
                 INNER JOIN medicos m  ON c.id_medico = m.id 
                 INNER JOIN especialidades e ON m.id_especialidad = e.id
-                WHERE fecha = ? AND id_medico = ?
+                WHERE c.fecha = ? AND c.id_medico = ? And c.estado = 'Confirmado'
                 Order by hora Asc");
                 $agenda->bind_param("si", $fecha, $_SESSION['id_medico']);
                 $agenda->execute();
@@ -88,15 +88,14 @@ if ($_SESSION['rol'] == 'medico'): ?>
 
                 <?php if ($resultado->num_rows > 0): ?>
 
-                    <?php while ($f = $resultado->fetch_assoc()): ?>
+                    <?php while ($f = $resultado->fetch_assoc()):
 
-                        <?php
-                        $estado = strtolower($f['estado']);
-                        $color = "primary";
+                                    $estado = strtolower($f['estado']);
+                                    $color = "primary";
 
-                        if ($estado == "confirmada") $color = "success";
-                        if ($estado == "pendiente") $color = "warning";
-                        if ($estado == "cancelada") $color = "danger";
+                                    if ($estado == "confirmado") $color = "success";
+                                    if ($estado == "pendiente") $color = "warning";
+                                    if ($estado == "cancelada") $color = "danger";
                         ?>
 
                         <div class="card border-0 shadow-sm rounded-4 overflow-hidden card-cita" data-fecha="<?php echo $f['fecha']; ?>">
@@ -104,7 +103,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                             <div class="row g-0 align-items-center">
 
                                 <!-- INFO -->
-                                <div class="col-lg-9 col-info p-4 border-end">
+                                <div class="col-lg-12 col-info p-4 border-end">
 
                                     <div class="fw-bold fs-4 text-primary">
                                         <?php echo $f['hora']; ?>
@@ -127,28 +126,6 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     </div>
 
                                 </div>
-
-                                <!-- ACCIONES -->
-                                <div class="col-lg-3 col-acciones d-flex justify-content-center align-items-center p-3">
-
-                                    <div class="d-flex gap-2">
-
-                                        <button class="btn btn-light border rounded-3">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-
-                                        <button class="btn btn-light border rounded-3">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-
-                                        <button class="btn btn-light border rounded-3">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
                             </div>
                         </div>
 
@@ -219,7 +196,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                 ON c.id_medico = m.id
                             INNER JOIN especialidades e 
                                 ON m.id_especialidad = e.id
-                            WHERE c.id_medico = ?
+                            WHERE c.id_medico = ? and c.estado= 'Confirmado'
                             ORDER BY c.fecha DESC, c.hora DESC
                         ");
 
@@ -233,7 +210,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     $estado = strtolower($h['estado']);
                                     $color = "primary";
 
-                                    if ($estado == "confirmada") $color = "success";
+                                    if ($estado == "confirmado") $color = "success";
                                     if ($estado == "pendiente") $color = "warning";
                                     if ($estado == "cancelada") $color = "danger";
                                 ?>

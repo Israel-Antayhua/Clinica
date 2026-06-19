@@ -82,13 +82,65 @@ document.querySelectorAll(".btnEditarCita").forEach((btn) => {
     document.getElementById("edit_fecha").value = this.dataset.fecha;
     document.getElementById("edit_hora").value = this.dataset.hora;
     document.getElementById("edit_id_medico").value = this.dataset.medico;
-    new bootstrap.Modal(document.getElementById("modalEditarHora")).show();
+    Swal.fire({
+      title: "Editar cita",
+      text: "Se enviará un código OTP para confirmar",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, continuar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 🔐 enviar OTP
+        document.querySelector('[name="tipo_accion"]').value = "reprogramar";
+        fetch("../Controler/Get_Otp.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            titulo: "Codigo de confirmacion",
+            asunto: "Cambio de horario de cita",
+            cuerpo: "Codigo para cambiar el horario: ",
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.debug_otp) {
+              document.getElementById("codigo").value = data.debug_otp;
+              Swal.fire({
+                toast: true,
+                position: "top-end",
+                icon: "success",
+                title: "Código listo",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "No se pudo generar el OTP",
+            });
+          });
+
+        let modal = new bootstrap.Modal(
+          document.getElementById("modalEditarHora"),
+        );
+        modal.show();
+      }
+    });
   });
 });
-document.getElementById("formCambiarHora").addEventListener("submit", function (e) {
+document
+  .getElementById("formCambiarHora")
+  .addEventListener("submit", function (e) {
     e.preventDefault();
     let formData = new FormData(this);
-    fetch("../Controler/Add_cita.php", {
+    fetch("../Controler/Add_Cita.php", {
       method: "POST",
       body: formData,
     })
@@ -97,6 +149,15 @@ document.getElementById("formCambiarHora").addEventListener("submit", function (
         let partes = data.split("|");
         let status = partes[0];
         let message = partes[1];
+        if (status === "error") {
+          Swal.fire({
+            icon: "error",
+            title: "Error OTP",
+            text: message,
+          });
+
+          return;
+        }
         if (status === "ocupado") {
           Swal.fire({
             icon: "warning",
@@ -107,7 +168,7 @@ document.getElementById("formCambiarHora").addEventListener("submit", function (
         } else if (status === "ok") {
           Swal.fire({
             icon: "success",
-            title: "Horario Actualizado",
+            title: "Cita Actualizada",
             text: message,
           }).then(() => {
             // 🔥 CERRAR MODAL
@@ -119,6 +180,62 @@ document.getElementById("formCambiarHora").addEventListener("submit", function (
             title: "Error",
             text: message,
           });
+          console.log(status);
         }
       });
+  });
+document.querySelectorAll(".btnCancelarCita").forEach((btn) => {
+  btn.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const id = this.dataset.id;
+
+    Swal.fire({
+      title: "Cancelar cita",
+      text: "Se enviará un código OTP para confirmar",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, continuar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("../Controler/Get_Otp.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            titulo: "Código de confirmación",
+            asunto: "Cancelación de cita",
+            cuerpo: "Código para cancelar la cita:",
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.debug_otp) {
+              document.getElementById("codigo").value = data.debug_otp;
+              Swal.fire({
+                toast: true,
+                position: "top-end",
+                icon: "success",
+                title: "Código listo",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+            }
+            // guardar id de la cita
+            document.getElementById("edit_id").value = id;
+
+            // indicar acción
+            document.querySelector('[name="tipo_accion"]').value = "cancelar";
+
+            // abrir modal OTP
+            let modal = new bootstrap.Modal(
+              document.getElementById("modalEditarHora"),
+            );
+
+            modal.show();
+          });
+      }
+    });
+  });
 });
