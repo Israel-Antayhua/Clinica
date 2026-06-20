@@ -51,8 +51,53 @@ if ($resultado->num_rows == 1) {
 
         $_SESSION['rol_temp'] = $datos['rol'];
 
-        $result = enviarCorreo($usuario,"Código de Inicio de Sesion","Verificación de login",
-        "Tu código OTP es: <b>{{codigo}}</b>"
+        $result = enviarCorreo(
+            $usuario,
+            "Codigo de Verificacion de Inicio de Sesion",
+            "Verificación de seguridad",
+            "
+    <div style='font-family: Arial, sans-serif; background:#f4f6f9; padding:20px;'>
+        
+        <div style='max-width:500px; margin:auto; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);'>
+            
+            <div style='background:#0d6efd; color:white; padding:15px 20px; text-align:center;'>
+                <h2 style='margin:0;'>🔐 Verificación de Seguridad</h2>
+            </div>
+
+            <div style='padding:25px; color:#333;'>
+                
+                <p style='font-size:15px;'>
+                    Hola, hemos recibido una solicitud para iniciar sesión en tu cuenta.
+                </p>
+
+                <p style='font-size:15px;'>
+                    Para continuar, utiliza el siguiente código de verificación OTP:
+                </p>
+
+                <div style='text-align:center; margin:25px 0;'>
+                    <span style='display:inline-block; font-size:28px; letter-spacing:5px; font-weight:bold; background:#f1f3f5; padding:12px 25px; border-radius:8px; color:#0d6efd;'>
+                        {{codigo}}
+                    </span>
+                </div>
+
+                <p style='font-size:14px; color:#555;'>
+                    ⚠️ Este código es válido por <b>5 minutos</b> y no debe ser compartido con nadie.
+                </p>
+
+                <p style='font-size:14px; color:#555;'>
+                    Si no fuiste tú quien intentó iniciar sesión, puedes ignorar este mensaje de forma segura.
+                </p>
+
+                <hr style='margin:20px 0; border:none; border-top:1px solid #eee;'>
+
+                <p style='font-size:12px; color:#888; text-align:center;'>
+                    Sistema de Seguridad - Clínica | Todos los derechos reservados
+                </p>
+
+            </div>
+        </div>
+    </div>
+    "
         );
 
         echo json_encode($result);

@@ -12,12 +12,11 @@ switch ($_SESSION['rol']) {
     case 'medico':
         header("Location: Vistas/index_medico.php");
         break;
-
     case 'paciente':
         header("Location: Vistas/index_paciente.php");
         break;
     case 'administrador':
-        header("Location: Vistas/index_paciente.php");
+        header("Location: Vistas/index_administrador.php");
         break;
 }
 exit;

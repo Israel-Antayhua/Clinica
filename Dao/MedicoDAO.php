@@ -10,62 +10,63 @@ class MedicoDAO
         $this->conexion = $conexion;
     }
 
-    public function registrarMedico($data)
-    {
+public function registrarMedico($data)
+{
+    try {
 
-        try {
+        $sqlUser = "INSERT INTO usuarios (correo, password, rol) VALUES (?, ?, ?)";
+        $stmtUser = $this->conexion->prepare($sqlUser);
 
-            // 🔐 1. CREAR USUARIO
-            $sqlUser = "INSERT INTO usuarios (usuario, password, rol) VALUES (?, ?, ?)";
-            $stmtUser = $this->conexion->prepare($sqlUser);
-
-            if (!$stmtUser) {
-                return "Error usuario: " . $this->conexion->error;
-            }
-
-            $usuario = $data['usuario'];
-            $password = password_hash($data['password'], PASSWORD_BCRYPT);
-            $rol = "medico";
-
-            $stmtUser->bind_param("sss", $usuario, $password, $rol);
-
-            if (!$stmtUser->execute()) {
-                return "Error al crear usuario: " . $stmtUser->error;
-            }
-
-            $id_usuario = $stmtUser->insert_id;
-            $stmtUser->close();
-
-            // 🧑‍⚕️ 2. CREAR MÉDICO
-            $sqlMedico = "INSERT INTO medicos (id_usuario, nombre, telefono, id_especialidad)
-                          VALUES (?, ?, ?, ?)";
-
-            $stmtMedico = $this->conexion->prepare($sqlMedico);
-
-            if (!$stmtMedico) {
-                return "Error medico: " . $this->conexion->error;
-            }
-
-            $stmtMedico->bind_param(
-                "issi",
-                $id_usuario,
-                $data['usuario'],
-                $data['telefono'],
-                $data['id_especialidad']
-            );
-
-            if (!$stmtMedico->execute()) {
-                return "Error al crear médico: " . $stmtMedico->error;
-            }
-
-            $stmtMedico->close();
-
-            return true;
-        } catch (Exception $e) {
-            return "Exception: " . $e->getMessage();
+        if (!$stmtUser) {
+            die("ERROR PREP USER: " . $this->conexion->error);
         }
-    }
 
+        $usuario = $data['usuario'];
+        $password = password_hash($data['password'], PASSWORD_BCRYPT);
+        $rol = "medico";
+
+        if (!$stmtUser->bind_param("sss", $usuario, $password, $rol)) {
+            die("ERROR BIND USER");
+        }
+
+        if (!$stmtUser->execute()) {
+            die("ERROR EXEC USER: " . $stmtUser->error);
+        }
+
+        $id_usuario = $this->conexion->insert_id;
+        $stmtUser->close();
+
+        $sqlMedico = "INSERT INTO medicos (id_usuario, nombre, telefono, id_especialidad)
+                      VALUES (?, ?, ?, ?)";
+
+        $stmtMedico = $this->conexion->prepare($sqlMedico);
+
+        if (!$stmtMedico) {
+            die("ERROR PREP MEDICO: " . $this->conexion->error);
+        }
+
+        if (!$stmtMedico->bind_param(
+            "issi",
+            $id_usuario,
+            $data['nombre'],
+            $data['telefono'],
+            $data['id_especialidad']
+        )) {
+            die("ERROR BIND MEDICO");
+        }
+
+        if (!$stmtMedico->execute()) {
+            die("ERROR EXEC MEDICO: " . $stmtMedico->error);
+        }
+
+        $stmtMedico->close();
+
+        return true;
+
+    } catch (Exception $e) {
+        die("EXCEPTION: " . $e->getMessage());
+    }
+}
     public function editarMedico($data)
     {
         // actualizar datos del médico

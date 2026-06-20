@@ -13,9 +13,14 @@ class Pago
 
     // REGISTRAR PAGO
     public function agregarPago($id_cita, $monto, $estado, $charge_id, $metodo)
-    {
-        try {
-            $sql = "INSERT INTO pagos (
+{
+    try {
+
+        // 🔥 INICIAR TRANSACCIÓN
+        $this->conexion->begin_transaction();
+
+        // 1. INSERTAR PAGO
+        $sql = "INSERT INTO pagos (
                     id_cita,
                     monto,
                     estado,
@@ -24,35 +29,51 @@ class Pago
                 )
                 VALUES (?, ?, ?, ?, ?)";
 
-            $stmt = $this->conexion->prepare($sql);
+        $stmt = $this->conexion->prepare($sql);
 
-            $stmt->bind_param(
-                "idsss",
-                $id_cita,
-                $monto,
-                $estado,
-                $charge_id,
-                $metodo
-            );
+        if (!$stmt) {
+            throw new Exception("Error prepare pagos");
+        }
 
-            // 2. Actualizar cita a Confirmada
-            $sql2 = "UPDATE citas 
+        $stmt->bind_param(
+            "idsss",
+            $id_cita,
+            $monto,
+            $estado,
+            $charge_id,
+            $metodo
+        );
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error insert pago: " . $stmt->error);
+        }
+
+        // 2. ACTUALIZAR CITA
+        $sql2 = "UPDATE citas 
                  SET estado = 'Confirmado'
                  WHERE id = ?";
 
-            $stmt2 = $this->conexion->prepare($sql2);
-            $stmt2->bind_param("i", $id_cita);
-            $stmt2->execute();
+        $stmt2 = $this->conexion->prepare($sql2);
 
-            // Confirmar todo
-            $this->conexion->commit();
-
-            return true;
-        } catch (Exception $e) {
-
-            // Revertir si algo falla
-            $this->conexion->rollback();
-            return false;
+        if (!$stmt2) {
+            throw new Exception("Error prepare citas");
         }
+
+        $stmt2->bind_param("i", $id_cita);
+
+        if (!$stmt2->execute()) {
+            throw new Exception("Error update cita: " . $stmt2->error);
+        }
+
+        // 🔥 CONFIRMAR TODO
+        $this->conexion->commit();
+
+        return true;
+
+    } catch (Exception $e) {
+
+        $this->conexion->rollback();
+        return false;
     }
+}
 }

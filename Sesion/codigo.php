@@ -10,12 +10,16 @@ function enviarCorreo($to, $asunto, $titulo, $cuerpo)
     // 🔐 generar OTP si lo necesitas dentro del cuerpo
     $codigo = rand(100000, 999999);
     $env = parse_ini_file(__DIR__ . '/../.env');
+
+    if (!$env) {
+        throw new Exception("No se pudo cargar .env");
+    }
     $modo_dev = true;
     $_SESSION['otp'] = $codigo;
     $_SESSION['otp_time'] = time();
 
     // reemplazar en el cuerpo si quieres usar {{codigo}}
-    $cuerpo = str_replace("{{codigo}}", $codigo, $cuerpo);
+     $cuerpo = str_replace("{codigo}", $codigo, $cuerpo);
 
     if ($modo_dev) {
         return [
@@ -24,29 +28,38 @@ function enviarCorreo($to, $asunto, $titulo, $cuerpo)
         ];
     }
 
+    try {
+
     $mail = new PHPMailer(true);
 
     $mail->isSMTP();
-    $mail->Host = $env['SMTP_HOST'];
+    $mail->Host = $env['SMTP_HOST'] ?? '';
     $mail->SMTPAuth = true;
-    $mail->Username = $env['SMTP_USER'];
-    $mail->Password = $env['SMTP_PASS'];
+    $mail->Username = $env['SMTP_USER'] ?? '';
+    $mail->Password = $env['SMTP_PASS'] ?? '';
     $mail->SMTPSecure = 'tls';
-    $mail->Port = $env['SMTP_PORT'];
+    $mail->Port = $env['SMTP_PORT'] ?? 587;
 
     $mail->setFrom('ClinicaMaisonSante@gmail.com', 'Clinica Maison Sante');
     $mail->addAddress($to);
 
     $mail->Subject = $asunto;
-
-    // HTML bonito
     $mail->isHTML(true);
+
     $mail->Body = "
         <h3>$titulo</h3>
-        <p>$cuerpo</p>
+        <div>$cuerpo</div>
     ";
 
     $mail->send();
 
-    return ["status" => "otp_sent"];
+    return ["status" => "otp_sent",
+        "codigo" => $codigo];
+
+} catch (Exception $e) {
+    return [
+        "status" => "error",
+        "message" => $mail->ErrorInfo ?? $e->getMessage()
+    ];
+}
 }

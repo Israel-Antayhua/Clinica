@@ -1,4 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 session_start();
 include("../ConexionDB/conexion.php");
 include("../Dao/MedicoDAO.php");
@@ -8,7 +12,6 @@ $dao = new MedicoDAO($conexion);
 /* =========================
    REGISTRAR / EDITAR MÉDICO
 ========================= */
-
 if (isset($_POST['accion']) && $_POST['accion'] == 'guardar') {
 
     $data = [
@@ -19,7 +22,6 @@ if (isset($_POST['accion']) && $_POST['accion'] == 'guardar') {
         "password" => $_POST["password"] ?? "",
         "id_especialidad" => $_POST["id_especialidad"]
     ];
-
     // EDITAR
     if (!empty($data["id"])) {
 
@@ -36,7 +38,7 @@ if (isset($_POST['accion']) && $_POST['accion'] == 'guardar') {
     else {
 
         $resultado = $dao->registrarMedico($data);
-
+        
         $_SESSION['swal'] = [
             'icon' => $resultado ? 'success' : 'error',
             'title' => $resultado ? 'Correcto' : 'Error',

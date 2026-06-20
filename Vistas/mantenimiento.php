@@ -274,7 +274,14 @@ if ($_SESSION['rol'] == 'administrador'): ?>
                                 <input type="password" name="password" class="form-control form-control-sm" required>
                             </div>
                         </div>
-
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold small text-secondary">Nombre</label>
+                            <div class="input-group">
+                            <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                            <input type="text" name="nombre" id="edit_nombre" class="form-control">
+                        </div>            
                         <!-- TELEFONO -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">Teléfono</label>
@@ -307,7 +314,7 @@ if ($_SESSION['rol'] == 'administrador'): ?>
 
                             </select>
                         </div>
-
+                           <input type="hidden" name="accion" value="guardar">         
                         <!-- BOTONES -->
                         <div class="d-grid gap-2 mt-4">
 
@@ -687,16 +694,17 @@ if ($_SESSION['rol'] == 'administrador'): ?>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/mantenimiento.js"></script>
-    <script>
-        Swal.fire({
-
-            icon: <?php echo json_encode($_SESSION['swal']['icon']); ?>,
-            title: <?php echo json_encode($_SESSION['swal']['title']); ?>,
-            text: <?php echo json_encode($_SESSION['swal']['text']); ?>
-
-        });
-    </script>
+    <?php if (isset($_SESSION['swal'])): ?>
+        <script>
+            Swal.fire({
+                icon: <?= json_encode($_SESSION['swal']['icon']) ?>,
+                title: <?= json_encode($_SESSION['swal']['title']) ?>,
+                text: <?= json_encode($_SESSION['swal']['text']) ?>
+            });
+        </script>
+        <?php unset($_SESSION['swal']); ?>
+    <?php endif; ?>
 <?php endif; ?>
