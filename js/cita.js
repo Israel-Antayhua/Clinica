@@ -98,9 +98,7 @@ document.querySelectorAll(".btnEditarCita").forEach((btn) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            titulo: "Codigo de confirmacion",
             asunto: "Cambio de horario de cita",
-            cuerpo: "Codigo para cambiar el horario: ",
           }),
         })
           .then((res) => res.json())
@@ -135,9 +133,7 @@ document.querySelectorAll(".btnEditarCita").forEach((btn) => {
     });
   });
 });
-document
-  .getElementById("formCambiarHora")
-  .addEventListener("submit", function (e) {
+document.getElementById("formCambiarHora").addEventListener("submit", function (e) {
     e.preventDefault();
     let formData = new FormData(this);
     fetch("../Controler/Add_Cita.php", {
@@ -204,9 +200,7 @@ document.querySelectorAll(".btnCancelarCita").forEach((btn) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            titulo: "Código de confirmación",
             asunto: "Cancelación de cita",
-            cuerpo: "Código para cancelar la cita:",
           }),
         })
           .then((res) => res.json())

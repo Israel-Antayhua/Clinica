@@ -14,11 +14,9 @@ require '../Sesion/codigo.php';
 $data = json_decode(file_get_contents("php://input"), true);
 $titulo = $data['titulo'];
 $asunto = $data['asunto'];
-$cuerpo = $data['cuerpo'];
 $result = enviarCorreo(
     $to,
     $asunto,
-    $titulo,
-    $cuerpo
+    $titulo
 );
 echo json_encode($result);

@@ -5,6 +5,12 @@ if (isset($_SESSION['usuario'])) {
     header("Location: ../index.php");
     exit();
 }
+$mostrarTimeout = false;
+
+if (isset($_SESSION['timeout'])) {
+    $mostrarTimeout = true;
+    unset($_SESSION['timeout']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -156,11 +162,26 @@ if (isset($_SESSION['usuario'])) {
         </div>
 
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </div>
+    <?php if ($mostrarTimeout): ?>
 
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Sesión expirada",
+                    text: "Tu sesión se cerró por inactividad.",
+                    confirmButtonText: "Aceptar"
+                });
+
+            });
+        </script>
+
+    <?php endif; ?>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</script>
 <script>
     const Toast = Swal.mixin({
         toast: true,
@@ -180,11 +201,11 @@ if (isset($_SESSION['usuario'])) {
         let formData = new FormData(this);
 
         Toast.fire({
-            title: 'Enviando código...',
+            title: 'Verificando Credenciales ...',
             text: 'Por favor espera',
             allowOutsideClick: false,
             didOpen: () => {
-                Toast.showLoading();
+                Swal.showLoading();
             }
         });
 
@@ -231,6 +252,14 @@ if (isset($_SESSION['usuario'])) {
                         title: 'Error',
                         text: data.message
                     });
+                }
+                if (data.status === "blocked") {
+                    Toast.fire({
+                        icon: "warning",
+                        title: "Cuenta bloqueada",
+                        text: data.message
+                    });
+                    return;
                 }
             }).catch(error => {
 

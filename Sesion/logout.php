@@ -1,11 +1,21 @@
 <?php
-// 1. Inicializamos la sesión para poder manipularla
 session_start();
 
-// 2. Destruimos todas las variables de la sesión activa
+$timeout = isset($_GET['timeout']);
+
+session_unset();
 session_destroy();
 
-// 3. Redirigimos al usuario inmediatamente de vuelta al login
-header("Location: ../Sesion/login.php");
-exit();
-?>
+if ($timeout) {
+
+    session_start();
+    $_SESSION['mensaje_timeout'] = true;
+
+    header("Location: login.php");
+
+} else {
+
+    header("Location: login.php");
+}
+
+exit;
