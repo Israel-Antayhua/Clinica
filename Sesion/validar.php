@@ -34,7 +34,7 @@ if ($resultado->num_rows == 1) {
     if (password_verify($password, $datos['password'])) {
         $_SESSION['rol'] = $datos['rol'];
         $id_usuario = $datos['id'];
-        if ($datos['rol'] == "paciente") {
+        if ($datos['rol'] == "paciente" || $datos['rol'] == "Paciente") {
             $sql2 = "SELECT id_paciente, nombres FROM pacientes WHERE id_usuario = ?";
             $stmt = $conexion->prepare($sql2);
             $stmt->bind_param("i", $id_usuario);

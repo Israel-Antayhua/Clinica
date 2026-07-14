@@ -91,6 +91,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                     $cont_citas = $conexion->prepare("SELECT COUNT(*) AS cantidad
                                     FROM citas
                                     WHERE id_paciente = ? 
+                                    AND estado <> 'Cancelada'
                                     AND (
                                     fecha > CURDATE()
                                     OR (
@@ -154,7 +155,8 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                         fecha = CURDATE()
                                         AND hora > CURTIME()
                                     ))
-                                    AND estado_pago = 'Pendiente'");
+                                    AND estado_pago = 'Pendiente'
+                                    AND estado <> 'Cancelada'");
                                         $cont_pago->bind_param("i", $_SESSION['id_usuario']);
                                         $cont_pago->execute();
                                         $result = $cont_pago->get_result();
@@ -210,6 +212,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                             fecha = CURDATE() AND hora > CURTIME()
                                         ) OR fecha > CURDATE()
                                     AND id_paciente = ?
+                                    AND c.estado <> 'Cancelada'
                                     ORDER BY fecha ASC, hora ASC");
                                     $agenda->bind_param("i", $_SESSION['id_usuario']);
                                     $agenda->execute();
@@ -309,6 +312,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                             fecha = CURDATE() AND hora > CURTIME()
                                         ) OR fecha > CURDATE()
                                     AND id_paciente = ?
+                                    AND c.estado <> 'Cancelada'
                                     ORDER BY fecha ASC, hora ASC");
                         $cont_citas->bind_param("i", $_SESSION['id_usuario']);
                         $cont_citas->execute();
@@ -565,6 +569,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                                     )
                                     AND c.id_paciente = ?
                                     AND c.estado_pago = 'Pendiente'
+                                    AND c.estado <> 'Cancelada'
                                     ORDER BY c.fecha ASC, c.hora ASC
                                      LIMIT 1");
                             $agenda->bind_param("i", $_SESSION['id_usuario']);

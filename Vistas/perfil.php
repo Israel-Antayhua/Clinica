@@ -177,7 +177,7 @@ $paciente = $stmt->get_result()->fetch_assoc();
                                 type="email"
                                 name="correo"
                                 class="form-control"
-                                value="<?= htmlspecialchars($paciente['correo']) ?>">
+                                value="<?= htmlspecialchars($paciente['correo']) ?>"disabled>
 
                         </div>
 

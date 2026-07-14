@@ -90,7 +90,8 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     <?php
                                     $cont_citas = $conexion->prepare("SELECT COUNT(*) AS cantidad
                                     FROM citas
-                                    WHERE fecha = ? AND id_medico = ?");
+                                    WHERE fecha = ? AND id_medico = ?
+                                    AND estado <> 'Cancelada'");
                                     $cont_citas->bind_param("si", $fecha, $_SESSION['id_medico']);
                                     $cont_citas->execute();
                                     $result = $cont_citas->get_result();
@@ -188,6 +189,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                             fecha = CURDATE() AND hora > CURTIME()
                                         ) OR fecha > CURDATE()
                                         AND id_medico = ?
+                                        AND estado <> 'Cancelada'
                                         ORDER BY fecha ASC, hora ASC
                                         LIMIT 1;
                                     ");
@@ -236,6 +238,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                     FROM citas
                                     WHERE hora > CURTIME()
                                     AND fecha = CURDATE()
+                                    AND estado <> 'Cancelada'
                                     AND id_medico = ?
                                     ");
                                     $cont_citas->bind_param("i", $_SESSION['id_medico']);
@@ -404,6 +407,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                         INNER JOIN especialidades e ON m.id_especialidad = e.id
                         WHERE fecha = CURDATE()
                         AND hora > CURTIME() 
+                        AND c.estado <> 'Cancelada'
                         AND id_medico = ?
                         ORDER BY hora ASC");
                         $agenda->bind_param("i", $_SESSION['id_medico']);
@@ -485,6 +489,7 @@ if ($_SESSION['rol'] == 'medico'): ?>
                                             fecha = CURDATE() AND hora > CURTIME()
                                         ) OR fecha > CURDATE()
                                     AND id_medico = ?
+                                    AND c.estado <> 'Cancelada'
                                     ORDER BY fecha ASC, hora ASC
                                     LIMIT 1
                                     ");

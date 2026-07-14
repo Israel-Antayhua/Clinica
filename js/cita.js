@@ -99,6 +99,7 @@ document.querySelectorAll(".btnEditarCita").forEach((btn) => {
           },
           body: JSON.stringify({
             asunto: "Cambio de horario de cita",
+            titulo: "Cambio de hora",
           }),
         })
           .then((res) => res.json())
@@ -201,6 +202,7 @@ document.querySelectorAll(".btnCancelarCita").forEach((btn) => {
           },
           body: JSON.stringify({
             asunto: "Cancelación de cita",
+            titulo: "Cancelar cita",
           }),
         })
           .then((res) => res.json())

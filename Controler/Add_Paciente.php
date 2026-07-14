@@ -17,14 +17,4 @@ $data = [
 
 $resultado = $dao->registrarPaciente($data);
 
-if ($resultado) {
-    echo json_encode([
-        "status" => "ok",
-        "message" => "Usuario registrado"
-    ]);
-} else {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Ocurrio un problema, ".$resultado
-    ]);
-}
+echo json_encode($resultado);

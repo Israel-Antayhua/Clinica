@@ -281,6 +281,7 @@ if ($_SESSION['rol'] == 'administrador'): ?>
                                     <i class="bi bi-person"></i>
                                 </span>
                             <input type="text" name="nombre" id="edit_nombre" class="form-control">
+                            </div>
                         </div>            
                         <!-- TELEFONO -->
                         <div class="mb-3">
@@ -401,7 +402,7 @@ if ($_SESSION['rol'] == 'administrador'): ?>
                                 name="usuario"
                                 id="med_usuario"
                                 class="form-control rounded-3"
-                                required>
+                                disabled>
 
                         </div>
 

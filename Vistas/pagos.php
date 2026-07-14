@@ -79,6 +79,7 @@ if ($_SESSION['rol'] == 'paciente'): ?>
                         INNER JOIN medicos m ON c.id_medico = m.id 
                         INNER JOIN especialidades e ON m.id_especialidad = e.id
                         WHERE id_paciente = '" . $_SESSION['id_usuario'] . "'
+                        AND c.estado <> 'Cancelada'
                         ORDER BY fecha ASC, hora ASC"
                         );
 
